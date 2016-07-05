@@ -70,11 +70,7 @@ class PluginRepository
      */
     protected function load($pluginKey)
     {
-        list($vendor, $pluginName) = explode('\\', $pluginKey);
-        // uppercase first letter convention
-        $pluginClassName = '\\Phile\\Plugin\\' . ucfirst($vendor) . '\\' . ucfirst($pluginName) . '\\Plugin';
-
-        if (!class_exists($pluginClassName)) {
+        if (!class_exists($pluginKey)) {
             throw new PluginException(
                 "the plugin '{$pluginKey}' could not be loaded!",
                 1398536479
@@ -84,7 +80,7 @@ class PluginRepository
         /**
          * @var \Phile\Plugin\AbstractPlugin $plugin
         */
-        $plugin = new $pluginClassName;
+        $plugin = new $pluginKey;
         if (($plugin instanceof AbstractPlugin) === false) {
             throw new PluginException(
                 "the plugin '{$pluginKey}' is not an instance of \\Phile\\Plugin\\AbstractPlugin",
