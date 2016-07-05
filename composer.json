@@ -32,6 +32,11 @@
       "role": "Developer"
     }
   ],
+  "autoload": {
+    "psr-4": {
+      "Phile\\": "src/Phile"
+    }
+  },
   "require": {
     "php": ">=5.4.0",
     "twig/twig": "^1.15.0",
