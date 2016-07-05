@@ -88,7 +88,7 @@ class Bootstrap
         defined('PHILE_CLI_MODE') || define('PHILE_CLI_MODE', (php_sapi_name() === 'cli'));
         defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 
-        $rootDir = $_SERVER['SCRIPT_FILENAME'] . DS . '..' . DS;
+        $rootDir = dirname($_SERVER['SCRIPT_FILENAME']) . DS . '..' . DS;
         $rootDir = realpath($rootDir);
         defined('ROOT_DIR') || define('ROOT_DIR', $rootDir);
     }
