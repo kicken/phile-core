@@ -34,7 +34,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Phile\\": "src/Phile"
+      "Phile\\": "lib/Phile"
     }
   },
   "require": {
