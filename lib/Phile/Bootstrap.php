@@ -4,6 +4,7 @@
  */
 namespace Phile;
 
+use Phile\Core\Router;
 use Phile\Exception\PluginException;
 use Phile\Plugin\PluginRepository;
 
@@ -62,12 +63,14 @@ class Bootstrap
 
     /**
      * initialize basics
+     * @param array $configuration
+     * @return $this
+     * @throws PluginException
      */
-    public function initializeBasics()
+    public function initializeBasics(array $configuration=[])
     {
         $this->initializeDefinitions();
-        $this->initializeAutoloader();
-        $this->initializeConfiguration();
+        $this->initializeConfiguration($configuration);
         $this->initializeFilesAndFolders();
         $this->initializePlugins();
         return $this;
@@ -85,48 +88,46 @@ class Bootstrap
         defined('PHILE_CLI_MODE') || define('PHILE_CLI_MODE', (php_sapi_name() === 'cli'));
         defined('DS') || define('DS', DIRECTORY_SEPARATOR);
         defined('ROOT_DIR') || define('ROOT_DIR', realpath(__DIR__ . DS . '..' . DS . '..' . DS) . DS);
-        defined('CONTENT_DIR') || define('CONTENT_DIR', ROOT_DIR . 'content' . DS);
-        defined('CONTENT_EXT') || define('CONTENT_EXT', '.md');
-        defined('LIB_DIR') || define('LIB_DIR', ROOT_DIR . 'lib' . DS);
-        defined('PLUGINS_DIR') || define('PLUGINS_DIR', ROOT_DIR . 'plugins' . DS);
-        defined('THEMES_DIR') || define('THEMES_DIR', ROOT_DIR . 'themes' . DS);
-        defined('CACHE_DIR') || define('CACHE_DIR', LIB_DIR . 'cache' . DS);
-        defined('STORAGE_DIR') || define('STORAGE_DIR', LIB_DIR . 'datastorage' . DS);
-    }
-
-    /**
-     * initialize the autoloader
-     */
-    protected function initializeAutoloader()
-    {
-        spl_autoload_extensions(".php");
-        // load phile core
-        spl_autoload_register(
-            function ($className) {
-                $fileName = LIB_DIR . str_replace("\\", DS, $className) . '.php';
-                if (file_exists($fileName)) {
-                    include_once $fileName;
-                }
-            }
-        );
-        // load phile plugins
-        spl_autoload_register('\Phile\Plugin\PluginRepository::autoload');
-
-        include LIB_DIR . 'vendor' . DS . 'autoload.php';
     }
 
     /**
      * initialize configuration
+     * @param array $configuration
      */
-    protected function initializeConfiguration()
+    protected function initializeConfiguration(array $configuration)
     {
-        $defaults      = Utility::load(ROOT_DIR . 'default_config.php');
-        $localSettings = Utility::load(ROOT_DIR . 'config.php');
-        if (is_array($localSettings)) {
-            $this->settings = array_replace_recursive($defaults, $localSettings);
-        } else {
-            $this->settings = $defaults;
-        }
+        $defaults = [
+            'base_url' => (new Router)->getBaseUrl()
+            , 'site_title' => 'PhileCMS'
+            , 'theme' => 'default'
+            , 'date_format' => 'jS M Y'
+            , 'pages_order' => 'meta.title:desc'
+            , 'timezone' => date_default_timezone_get()
+            , 'charset' => 'UTF-8'
+            , 'display_errors' => 0
+            , 'content_dir' => ROOT_DIR . DS . 'content'
+            , 'content_ext' => '.md'
+            , 'themes_dir' => ROOT_DIR . DS . 'themes'
+            , 'cache_dir' => ROOT_DIR . DS . 'var' . DS . 'cache'
+            , 'storage_dir' => ROOT_DIR . DS . 'var' . DS . 'datastorage'
+            , 'plugins' => [
+                'phile\\errorHandler' => [
+                    'active' => true,
+                    'handler' => \Phile\Plugin\Phile\ErrorHandler\Plugin::HANDLER_DEVELOPMENT
+                ],
+                'phile\\setupCheck' => ['active' => true],
+                'phile\\parserMarkdown' => ['active' => true],
+                'phile\\parserMeta' => [
+                    'active' => true,
+                    'format' => 'Phile'
+                ],
+                'phile\\templateTwig' => ['active' => true],
+                'phile\\phpFastCache' => ['active' => true],
+                'phile\\simpleFileDataPersistence' => ['active' => true]
+            ]
+        ];
+
+        $this->settings = array_replace_recursive($defaults, $configuration);
 
         Registry::set('Phile_Settings', $this->settings);
         date_default_timezone_set($this->settings['timezone']);
@@ -138,26 +139,18 @@ class Bootstrap
     protected function initializeFilesAndFolders()
     {
         $dirs = [
-        ['path' => CACHE_DIR],
-        ['path' => STORAGE_DIR]
+            $this->settings['cache_dir']
+            , $this->settings['storage_dir']
         ];
-        $defaults = ['protected' => true];
 
         foreach ($dirs as $dir) {
-            $dir += $defaults;
-            $path = $dir['path'];
-            if (empty($path) || strpos($path, ROOT_DIR) !== 0) {
+            $path = realpath($dir);
+            if (empty($path) || strpos($path, ROOT_DIR) === false) {
                 continue;
             }
+
             if (!file_exists($path)) {
                 mkdir($path, 0775, true);
-            }
-            if ($dir['protected']) {
-                $file = "$path.htaccess";
-                if (!file_exists($file)) {
-                    $content = "order deny,allow\ndeny from all\nallow from 127.0.0.1";
-                    file_put_contents($file, $content);
-                }
             }
         }
     }

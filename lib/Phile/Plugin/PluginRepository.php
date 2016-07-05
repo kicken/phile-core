@@ -82,8 +82,8 @@ class PluginRepository
         }
 
         /**
- * @var \Phile\Plugin\AbstractPlugin $plugin
-*/
+         * @var \Phile\Plugin\AbstractPlugin $plugin
+        */
         $plugin = new $pluginClassName;
         if (($plugin instanceof AbstractPlugin) === false) {
             throw new PluginException(
@@ -103,31 +103,5 @@ class PluginRepository
     {
         $this->loadErrors = [];
         $this->plugins = [];
-    }
-
-    /**
-     * auto-loader plugin namespace
-     *
-     * @param $className
-     */
-    public static function autoload($className)
-    {
-        if (strpos($className, "Phile\\Plugin\\") !== 0) {
-            return;
-        }
-
-        $className = substr($className, 13);
-        $classNameParts = explode('\\', $className);
-        $pluginVendor = lcfirst(array_shift($classNameParts));
-        $pluginName = lcfirst(array_shift($classNameParts));
-        $classPath = array_merge(
-            [$pluginVendor, $pluginName, 'Classes'],
-            $classNameParts
-        );
-
-        $fileName = PLUGINS_DIR . implode(DIRECTORY_SEPARATOR, $classPath) . '.php';
-        if (file_exists($fileName)) {
-            include_once $fileName;
-        }
     }
 }
