@@ -102,7 +102,7 @@ class Bootstrap
             $rootDirectory = dirname($_SERVER['SCRIPT_FILENAME']) . DS . '..';
             $rootDirectory = (string)realpath($rootDirectory);
         }
-        
+
         $defaults = [
             'base_url' => (new Router)->getBaseUrl()
             , 'site_title' => 'PhileCMS'
@@ -117,10 +117,11 @@ class Bootstrap
             , 'themes_dir' => $rootDirectory . DS . 'themes'
             , 'cache_dir' => $rootDirectory . DS . 'var' . DS . 'cache'
             , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
+            , 'public_dir' => $rootDirectory . DS . 'public'
             , 'plugins' => [
                 'phile\\errorHandler' => [
                     'active' => true,
-                    'handler' => \Phile\Plugin\Phile\ErrorHandler\Plugin::HANDLER_DEVELOPMENT
+                    'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
                 ],
                 'phile\\setupCheck' => ['active' => true],
                 'phile\\parserMarkdown' => ['active' => true],
@@ -135,6 +136,7 @@ class Bootstrap
         ];
 
         $this->settings = array_replace_recursive($defaults, $configuration);
+        $this->settings['root_dir'] = $rootDirectory;
 
         Registry::set('Phile_Settings', $this->settings);
         date_default_timezone_set($this->settings['timezone']);
@@ -152,7 +154,7 @@ class Bootstrap
 
         foreach ($dirs as $dir) {
             $path = realpath($dir);
-            if (empty($path) || strpos($path, ROOT_DIR) === false) {
+            if (empty($path) || strpos($path, $this->settings['root_dir']) === false) {
                 continue;
             }
 
