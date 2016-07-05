@@ -1,5 +1,5 @@
 {
-    "name": "phile-cms/phile",
+    "name": "phile-cms/phile-core",
     "type": "project",
     "description": "A file-based CMS with a swappable parser, template engine, cache and storage services, error handler, and meta parser.",
     "keywords": ["cms", "markdown", "flat", "file", "twig", "plugins"],
@@ -25,9 +25,6 @@
             "role": "Developer"
         }
     ],
-    "config": {
-        "vendor-dir": "lib/vendor"
-    },
     "require": {
         "php": ">=5.4.0",
         "twig/twig": "^1.15.0",

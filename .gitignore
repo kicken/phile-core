@@ -1,8 +1,6 @@
 # Composer
 composer.phar
-
-# Twig
-lib/vendor/*
+vendor/*
 
 # OS Generated
 .DS_Store*
@@ -16,19 +14,5 @@ dist/*
 # phpDocs
 docs/*
 
-# User themes
-themes/*
-!themes/index.html
-!themes/default/*
-
 # PHPStorm settings
 .idea
-
-# cache folder
-!lib/cache
-lib/cache/*
-!lib/cache/.htaccess
-
-# datastorage
-datastorage/*
-!datastorage/.htaccess
