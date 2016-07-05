@@ -87,7 +87,10 @@ class Bootstrap
         defined('PHILE_VERSION') || define('PHILE_VERSION', '1.7.1');
         defined('PHILE_CLI_MODE') || define('PHILE_CLI_MODE', (php_sapi_name() === 'cli'));
         defined('DS') || define('DS', DIRECTORY_SEPARATOR);
-        defined('ROOT_DIR') || define('ROOT_DIR', realpath(__DIR__ . DS . '..' . DS . '..' . DS) . DS);
+
+        $rootDir = $_SERVER['SCRIPT_FILENAME'] . DS . '..' . DS;
+        $rootDir = realpath($rootDir);
+        defined('ROOT_DIR') || define('ROOT_DIR', $rootDir);
     }
 
     /**
