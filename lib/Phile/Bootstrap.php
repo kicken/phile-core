@@ -64,13 +64,14 @@ class Bootstrap
     /**
      * initialize basics
      * @param array $configuration
+     * @param string $rootDirectory
      * @return $this
      * @throws PluginException
      */
-    public function initializeBasics(array $configuration=[])
+    public function initializeBasics(array $configuration=[], $rootDirectory='')
     {
         $this->initializeDefinitions();
-        $this->initializeConfiguration($configuration);
+        $this->initializeConfiguration($configuration, $rootDirectory);
         $this->initializeFilesAndFolders();
         $this->initializePlugins();
         return $this;
@@ -87,18 +88,21 @@ class Bootstrap
         defined('PHILE_VERSION') || define('PHILE_VERSION', '1.7.1');
         defined('PHILE_CLI_MODE') || define('PHILE_CLI_MODE', (php_sapi_name() === 'cli'));
         defined('DS') || define('DS', DIRECTORY_SEPARATOR);
-
-        $rootDir = dirname($_SERVER['SCRIPT_FILENAME']) . DS . '..' . DS;
-        $rootDir = realpath($rootDir);
-        defined('ROOT_DIR') || define('ROOT_DIR', $rootDir);
     }
 
     /**
      * initialize configuration
      * @param array $configuration
+     * @param $rootDirectory
      */
-    protected function initializeConfiguration(array $configuration)
+    protected function initializeConfiguration(array $configuration, $rootDirectory)
     {
+        if ($rootDirectory === ''){
+            //Attempt to determine the root directory location automatically.
+            $rootDirectory = dirname($_SERVER['SCRIPT_FILENAME']) . DS . '..';
+            $rootDirectory = (string)realpath($rootDirectory);
+        }
+        
         $defaults = [
             'base_url' => (new Router)->getBaseUrl()
             , 'site_title' => 'PhileCMS'
@@ -108,11 +112,11 @@ class Bootstrap
             , 'timezone' => date_default_timezone_get()
             , 'charset' => 'UTF-8'
             , 'display_errors' => 0
-            , 'content_dir' => ROOT_DIR . DS . 'content'
+            , 'content_dir' => $rootDirectory . DS . 'content'
             , 'content_ext' => '.md'
-            , 'themes_dir' => ROOT_DIR . DS . 'themes'
-            , 'cache_dir' => ROOT_DIR . DS . 'var' . DS . 'cache'
-            , 'storage_dir' => ROOT_DIR . DS . 'var' . DS . 'datastorage'
+            , 'themes_dir' => $rootDirectory . DS . 'themes'
+            , 'cache_dir' => $rootDirectory . DS . 'var' . DS . 'cache'
+            , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
             , 'plugins' => [
                 'phile\\errorHandler' => [
                     'active' => true,
