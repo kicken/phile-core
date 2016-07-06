@@ -6,7 +6,6 @@ namespace Phile\Plugin;
 
 use Phile\Core\Event;
 use Phile\Core\Registry;
-use Phile\Core\Utility;
 use Phile\Gateway\EventObserverInterface;
 
 /**
