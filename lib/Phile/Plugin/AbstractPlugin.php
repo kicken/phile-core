@@ -51,7 +51,7 @@ abstract class AbstractPlugin implements EventObserverInterface
          * init $plugin property
          */
         $this->plugin['key'] = $pluginKey;
-        $this->plugin['dir'] = dirname($rf->getFileName());
+        $this->plugin['dir'] = dirname($rf->getFileName()) . DS;
 
         /**
          * init events
