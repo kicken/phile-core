@@ -48,6 +48,7 @@
     "phpdocumentor/phpdocumentor": "^2.8",
     "phing/phing": "^2.14",
     "phpunit/phpunit": "^5.2",
-    "squizlabs/php_codesniffer": "^2.3"
+    "squizlabs/php_codesniffer": "^2.3",
+    "composer/composer": "^1.1"
   }
 }
