@@ -119,12 +119,12 @@ class Bootstrap
             , 'timezone' => date_default_timezone_get()
             , 'charset' => 'UTF-8'
             , 'display_errors' => 0
-            , 'content_dir' => $rootDirectory . DS . 'content'
+            , 'content_dir' => $rootDirectory . DS . 'content' . DS
             , 'content_ext' => '.md'
-            , 'themes_dir' => $rootDirectory . DS . 'themes'
-            , 'cache_dir' => $rootDirectory . DS . 'var' . DS . 'cache'
-            , 'public_dir' => $rootDirectory . DS . 'public'
-            , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
+            , 'themes_dir' => $rootDirectory . DS . 'themes' . DS
+            , 'cache_dir' => $rootDirectory . DS . 'var' . DS . 'cache' . DS
+            , 'public_dir' => $rootDirectory . DS . 'public' . DS
+            , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage' . DS
         ];
 
         $defaults['plugins'] = [
