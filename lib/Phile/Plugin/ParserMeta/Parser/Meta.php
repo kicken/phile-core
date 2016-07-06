@@ -29,9 +29,15 @@ class Meta implements MetaInterface
      */
     public function __construct(array $config = null)
     {
-        if (!is_null($config)) {
-            $this->config = $config;
-        }
+        $defaults = [
+            'fences' => [
+                'c' => ['open' => '/*', 'close' => '*/'],
+                'html' => ['open' => '<!--', 'close' => '-->'],
+                'yaml' => ['open' => '---', 'close' => '---']
+            ]
+        ];
+
+        $this->config = array_merge($defaults, $config?$config:[]);
     }
 
     /**
