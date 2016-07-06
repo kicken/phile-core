@@ -21,8 +21,8 @@ class Development implements ErrorHandlerInterface
 {
 
     /**
- * @var array settings
-*/
+     * @var array settings
+     */
     protected $settings;
 
     /**
@@ -48,6 +48,10 @@ class Development implements ErrorHandlerInterface
      */
     public function handleError($errno, $errstr, $errfile, $errline, array $errcontext)
     {
+        if ((error_reporting() & $errno) == 0){
+            return;
+        }
+        
         $backtrace = debug_backtrace();
         $backtrace = array_slice($backtrace, 2);
         $this->displayDeveloperOutput(
