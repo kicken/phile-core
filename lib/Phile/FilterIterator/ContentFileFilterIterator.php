@@ -3,6 +3,7 @@
  * the filter class for content files
  */
 namespace Phile\FilterIterator;
+use Phile\Core\Registry;
 
 /**
  * Class ContentFileFilterIterator
@@ -12,14 +13,15 @@ namespace Phile\FilterIterator;
 class ContentFileFilterIterator extends \FilterIterator
 {
     /**
-     * method to decide if file is filterd or not
+     * method to decide if file is filtered or not
      * @return bool
      */
     public function accept()
     {
+        $settings = Registry::get('Phile_Settings');
         /**
- * @var \SplFileInfo $this
-*/
-        return (preg_match('/^[^\.]{1}.*'.CONTENT_EXT.'/', $this->getFilename()) > 0);
+         * @var \SplFileInfo $this
+         */
+        return (preg_match('/^[^\.]{1}.*'.$settings['content_ext'].'/', $this->getFilename()) > 0);
     }
 }
