@@ -5,7 +5,7 @@
 
 namespace Phile\Plugin\ErrorHandler\Handler;
 
-use Phile\Registry;
+use Phile\Core\Registry;
 use Phile\ServiceLocator\ErrorHandlerInterface;
 use Phile\Core\Utility;
 
@@ -310,7 +310,8 @@ class Development implements ErrorHandlerInterface
             return $title;
         }
 
-        $href = $this->settings['base_url'] . '/' . $filename;
+        $global = Registry::get('Phile_Settings');
+        $href = $global['base_url'] . '/' . $filename;
         if ($method) {
             $href .= '#method_' . $method;
         }
