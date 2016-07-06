@@ -37,7 +37,8 @@ class Twig implements TemplateInterface
      */
     public function __construct($settings = [])
     {
-        $this->settings = $settings;
+        $global = Registry::get('Phile_Settings');
+        $this->settings = array_merge($global, $settings);
     }
 
     /**
