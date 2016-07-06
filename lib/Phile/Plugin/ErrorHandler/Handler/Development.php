@@ -5,6 +5,7 @@
 
 namespace Phile\Plugin\ErrorHandler\Handler;
 
+use Phile\Registry;
 use Phile\ServiceLocator\ErrorHandlerInterface;
 use Phile\Core\Utility;
 
@@ -119,8 +120,10 @@ class Development implements ErrorHandlerInterface
             5,
             5
         );
+
+        $global = Registry::get('Phile_Settings');
         $marker = [
-        'base_url' => $this->settings['base_url'],
+        'base_url' => $global['base_url'],
         'type' => $exception ? 'Exception' : 'Error',
         'exception_message' => htmlspecialchars($message),
         'exception_code' => htmlspecialchars($code),
