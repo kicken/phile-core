@@ -142,6 +142,7 @@ class Bootstrap
             FastCachePlugin::class => [
                 'active' => true
                 , 'driver' => 'auto'
+                , 'path' => $defaults['cache_dir']
             ],
             FileDataPersistencePlugin::class => [
                 'active' => true
