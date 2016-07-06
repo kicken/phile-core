@@ -71,7 +71,6 @@ abstract class AbstractPlugin implements EventObserverInterface
         // settings precedence: global > default > class
         $this->settings = array_replace_recursive(
             $this->settings,
-            $defaults,
             $globals['plugins'][$pluginKey]
         );
 
