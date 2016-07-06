@@ -144,7 +144,8 @@ class Bootstrap
                 , 'themes_dir' => $defaults['themes_dir']
                 , 'template_extension' => 'html'
                 , 'options' => [
-                    'cache' => $defaults['cache_dir']
+                    'cache' => false
+                    , 'autoescape' => false
                 ]
             ],
             FastCachePlugin::class => [
