@@ -123,22 +123,29 @@ class Bootstrap
             , 'content_ext' => '.md'
             , 'themes_dir' => $rootDirectory . DS . 'themes'
             , 'cache_dir' => $rootDirectory . DS . 'var' . DS . 'cache'
-            , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
             , 'public_dir' => $rootDirectory . DS . 'public'
-            , 'plugins' => [
-                ErrorHandlerPlugin::class => [
-                    'active' => true,
-                    'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
-                ],
-                SetupCheckPlugin::class => ['active' => true],
-                MarkdownPlugin::class => ['active' => true],
-                MetaParserPlugin::class => [
-                    'active' => true,
-                    'format' => 'Phile'
-                ],
-                TwigTemplatePlugin::class => ['active' => true],
-                FastCachePlugin::class => ['active' => true],
-                FileDataPersistencePlugin::class => ['active' => true]
+            , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
+        ];
+        
+        $defaults['plugins'] = [
+            ErrorHandlerPlugin::class => [
+                'active' => true,
+                'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
+            ],
+            SetupCheckPlugin::class => ['active' => true],
+            MarkdownPlugin::class => ['active' => true],
+            MetaParserPlugin::class => [
+                'active' => true,
+                'format' => 'Phile'
+            ],
+            TwigTemplatePlugin::class => ['active' => true],
+            FastCachePlugin::class => [
+                'active' => true
+                , 'storage_dir' => $defaults['storage_dir']
+            ],
+            FileDataPersistencePlugin::class => [
+                'active' => true
+                , 'storage_dir' => $defaults['storage_dir']
             ]
         ];
 
