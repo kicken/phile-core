@@ -26,11 +26,6 @@ class Twig implements TemplateInterface
     protected $settings;
 
     /**
-     * @var array the config for twig
-     */
-    protected $config;
-
-    /**
      * @var Page the page model
      */
     protected $page;
@@ -39,11 +34,9 @@ class Twig implements TemplateInterface
      * the constructor
      *
      * @param array $settings
-     * @param array $config the configuration
      */
-    public function __construct($settings = [], $config = [])
+    public function __construct($settings = [])
     {
-        $this->config = $config;
         $this->settings = $settings;
     }
 
@@ -101,11 +94,12 @@ class Twig implements TemplateInterface
      */
     protected function getEngine()
     {
+        $options = isset($this->settings['options'])?$this->settings['options']:[];
         $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
-        $twig = new \Twig_Environment($loader, $this->config);
+        $twig = new \Twig_Environment($loader, $options);
 
         // load the twig debug extension if required
-        if (!empty($this->config['debug'])) {
+        if (!empty($options['debug'])) {
             $twig->addExtension(new \Twig_Extension_Debug());
         }
         return $twig;
@@ -123,8 +117,8 @@ class Twig implements TemplateInterface
         if (empty($template)) {
             $template = 'index';
         }
-        if (!empty($this->config['template-extension'])) {
-            $template .= '.' . $this->config['template-extension'];
+        if (!empty($this->settings['template_extension'])) {
+            $template .= '.' . $this->settings['template_extension'];
         }
         $templatePath = $this->getTemplatePath($template);
         if (!file_exists($templatePath)) {

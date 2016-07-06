@@ -138,7 +138,15 @@ class Bootstrap
                 'active' => true,
                 'format' => 'Phile'
             ],
-            TwigTemplatePlugin::class => ['active' => true],
+            TwigTemplatePlugin::class => [
+                'active' => true
+                , 'theme' => $defaults['theme']
+                , 'themes_dir' => $defaults['themes_dir']
+                , 'template_extension' => 'html'
+                , 'options' => [
+                    'cache' => $defaults['cache_dir']
+                ]
+            ],
             FastCachePlugin::class => [
                 'active' => true
                 , 'driver' => 'auto'
