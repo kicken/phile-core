@@ -63,11 +63,6 @@ abstract class AbstractPlugin implements EventObserverInterface
         /**
          * init plugin settings
          */
-        $defaults = Utility::load($this->getPluginPath('config.php'));
-        if (empty($defaults) || !is_array($defaults)) {
-            $defaults = [];
-        }
-
         $globals = Registry::get('Phile_Settings');
         if (!isset($globals['plugins'][$pluginKey])) {
             $globals['plugins'][$pluginKey] = [];
