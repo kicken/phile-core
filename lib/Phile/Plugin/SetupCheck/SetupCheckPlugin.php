@@ -70,8 +70,9 @@ class SetupCheckPlugin extends AbstractPlugin
             return;
         }
         $engine = $eventData['templateEngine'];
+        $path = $this->getPluginPath('setup.md');
 
-        $page = new Page($this->getPluginPath('setup.md'));
+        $page = new Page($path, dirname($path));
         $vars = ['encryption_key' => $this->generateToken()];
         $this->insertVars($page, $vars);
 
