@@ -16,7 +16,7 @@ class SetupScript {
     public static function run(Event $event)
     {
         $io = $event->getIO();
-        
+
         $io->write('Welcome to PhileCMS');
         $io->write('To continue we first need to get a few configuration details out of the way.');
 
@@ -29,39 +29,39 @@ class SetupScript {
         self::createVarDirectory($io);
     }
 
-    private function askSiteTitle(IOInterface $io)
+    private static function askSiteTitle(IOInterface $io)
     {
         $title = 'PhileCMS';
         $question = sprintf('<question>Site Title [%s]:</question> ', $title);
 
         return $io->ask($question, $title);
     }
-    
-    private function askEncryptionKey(IOInterface $io)
+
+    private static function askEncryptionKey(IOInterface $io)
     {
-        $key = $this->generateRandomKey();
+        $key = self::generateRandomKey();
         $question = sprintf('<question>Encryption Key [%s]:</question>', '<random>');
-        
+
         return $io->ask($question, $key);
     }
 
-    private function generateRandomKey()
+    private static function generateRandomKey()
     {
         return Utility::generateSecureToken(64);
     }
 
-    private function getPath($sub)
+    private static function getPath($sub)
     {
         $rootDir = __DIR__ . '/../';
 
         return str_replace('/', DIRECTORY_SEPARATOR, $rootDir . $sub);
     }
 
-    private function writeConfiguration(IOInterface $io, array $config)
+    private static function writeConfiguration(IOInterface $io, array $config)
     {
         $contents = '<?php return ' . var_export($config, true) . ';';
 
-        $configFile = $this->getPath('config.php');
+        $configFile = self::getPath('config.php');
         $fp = fopen($configFile, 'w');
         if (!$fp) {
             $io->write('<error>Could not open configuration file (' . $configFile . ') for writing.</error>');
@@ -73,10 +73,10 @@ class SetupScript {
         }
     }
 
-    private function createVarDirectory(IOInterface $io)
+    private static function createVarDirectory(IOInterface $io)
     {
-        $cacheDir = $this->getPath('var/cache');
-        $storageDir = $this->getPath('var/datastorage');
+        $cacheDir = self::getPath('var/cache');
+        $storageDir = self::getPath('var/datastorage');
 
         $result = true;
         if (!file_exists($cacheDir)) {
