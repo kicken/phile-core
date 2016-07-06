@@ -32,8 +32,8 @@ class FastCachePlugin extends AbstractPlugin
         }
         unset($this->settings['active']);
         $config = $this->settings + \phpFastCache::$config;
-        $storage = $this->settings['storage_dir'];
-        $cache = phpFastCache($storage, $config);
+        $driver = $this->settings['driver'];
+        $cache = phpFastCache($driver, $config);
         ServiceLocator::registerService('Phile_Cache', new PhpFastCache($cache));
     }
 }

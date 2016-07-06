@@ -126,7 +126,7 @@ class Bootstrap
             , 'public_dir' => $rootDirectory . DS . 'public'
             , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
         ];
-        
+
         $defaults['plugins'] = [
             ErrorHandlerPlugin::class => [
                 'active' => true,
@@ -141,7 +141,7 @@ class Bootstrap
             TwigTemplatePlugin::class => ['active' => true],
             FastCachePlugin::class => [
                 'active' => true
-                , 'storage_dir' => $defaults['storage_dir']
+                , 'driver' => 'auto'
             ],
             FileDataPersistencePlugin::class => [
                 'active' => true
