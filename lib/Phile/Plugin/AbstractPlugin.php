@@ -21,18 +21,18 @@ abstract class AbstractPlugin implements EventObserverInterface
 {
 
     /**
- * @var string plugin attributes
-*/
+     * @var string plugin attributes
+     */
     protected $plugin = [];
 
     /**
- * @var array subscribed Phile events ['eventName' => 'classMethodToCall']
-*/
+     * @var array subscribed Phile events ['eventName' => 'classMethodToCall']
+     */
     protected $events = [];
 
     /**
- * @var array the plugin settings
-*/
+     * @var array the plugin settings
+     */
     protected $settings = [];
 
     /**
@@ -46,13 +46,12 @@ abstract class AbstractPlugin implements EventObserverInterface
      */
     public function initializePlugin($pluginKey)
     {
+        $rf = new \ReflectionObject($this);
         /**
          * init $plugin property
          */
         $this->plugin['key'] = $pluginKey;
-        list($vendor, $name) = explode('\\', $this->plugin['key']);
-        $DS = DIRECTORY_SEPARATOR;
-        $this->plugin['dir'] = PLUGINS_DIR . $vendor . $DS . $name . $DS;
+        $this->plugin['dir'] = dirname($rf->getFileName());
 
         /**
          * init events
