@@ -6,7 +6,14 @@ namespace Phile;
 
 use Phile\Core\Router;
 use Phile\Exception\PluginException;
+use Phile\Plugin\ErrorHandler\ErrorHandlerPlugin;
+use Phile\Plugin\ParserMarkdown\MarkdownPlugin;
+use Phile\Plugin\ParserMeta\MetaParserPlugin;
+use Phile\Plugin\PhpFastCache\FastCachePlugin;
 use Phile\Plugin\PluginRepository;
+use Phile\Plugin\SetupCheck\SetupCheckPlugin;
+use Phile\Plugin\SimpleFileDataPersistence\FileDataPersistencePlugin;
+use Phile\Plugin\TemplateTwig\TwigTemplatePlugin;
 
 /**
  * Phile
@@ -119,19 +126,19 @@ class Bootstrap
             , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage'
             , 'public_dir' => $rootDirectory . DS . 'public'
             , 'plugins' => [
-                'phile\\errorHandler' => [
+                ErrorHandlerPlugin::class => [
                     'active' => true,
                     'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
                 ],
-                'phile\\setupCheck' => ['active' => true],
-                'phile\\parserMarkdown' => ['active' => true],
-                'phile\\parserMeta' => [
+                SetupCheckPlugin::class => ['active' => true],
+                MarkdownPlugin::class => ['active' => true],
+                MetaParserPlugin::class => [
                     'active' => true,
                     'format' => 'Phile'
                 ],
-                'phile\\templateTwig' => ['active' => true],
-                'phile\\phpFastCache' => ['active' => true],
-                'phile\\simpleFileDataPersistence' => ['active' => true]
+                TwigTemplatePlugin::class => ['active' => true],
+                FastCachePlugin::class => ['active' => true],
+                FileDataPersistencePlugin::class => ['active' => true]
             ]
         ];
 
