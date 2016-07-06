@@ -8,22 +8,19 @@
 
 namespace Phile\Composer;
 
-use Composer\Composer;
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
 use Phile\Core\Utility;
 
 class SetupScript {
     private $io;
-    private $composer;
 
-    public function __construct(IOInterface $io, Composer $composer){
+    public function __construct(IOInterface $io){
         $this->io = $io;
-        $this->composer = $composer;
     }
 
     public static function run(Event $event){
-        $script = new self($event->getIO(), $event->getComposer());
+        $script = new self($event->getIO());
         $script->execute();
     }
 
@@ -59,7 +56,7 @@ class SetupScript {
     }
 
     private function getPath($sub){
-        $rootDir = $this->composer->getPackage()->getTargetDir();
+        $rootDir = getcwd();
 
         return str_replace('/', DIRECTORY_SEPARATOR, $rootDir . '/'. $sub);
     }
