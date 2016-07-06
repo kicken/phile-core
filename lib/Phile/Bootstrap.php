@@ -121,7 +121,7 @@ class Bootstrap
             , 'display_errors' => 0
             , 'content_dir' => $rootDirectory . DS . 'content' . DS
             , 'content_ext' => '.md'
-            , 'themes_dir' => $rootDirectory . DS . 'themes' . DS
+            , 'themes_dir' => $rootDirectory . DS . 'public' . DS . 'themes' . DS
             , 'cache_dir' => $rootDirectory . DS . 'var' . DS . 'cache' . DS
             , 'public_dir' => $rootDirectory . DS . 'public' . DS
             , 'storage_dir' => $rootDirectory . DS . 'var' . DS . 'datastorage' . DS
