@@ -4,8 +4,11 @@
  */
 namespace Phile;
 
+use Phile\Core\Event;
+use Phile\Core\Registry;
 use Phile\Core\Response;
 use Phile\Core\Router;
+use Phile\Core\ServiceLocator;
 use Phile\Model\Page;
 use Phile\Repository\Page as Repository;
 

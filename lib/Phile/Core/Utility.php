@@ -27,17 +27,6 @@ class Utility
     }
 
     /**
-     * detect base url
-     *
-     * @return     string
-     * @deprecated since 1.5 will be removed
-     */
-    public static function getBaseUrl()
-    {
-        return (new Router)->getBaseUrl();
-    }
-
-    /**
      * detect install path
      *
      * @return     string
@@ -45,7 +34,7 @@ class Utility
      */
     public static function getInstallPath()
     {
-        $path = self::getBaseUrl();
+        $path = (new Router())->getBaseUrl();
         $path = substr($path, strpos($path, '://') + 3);
         $path = substr($path, strpos($path, '/') + 1);
 
@@ -61,10 +50,6 @@ class Utility
      */
     public static function resolveFilePath($path)
     {
-        // resolve MOD: prefix
-        if (strtoupper(substr($path, 0, 3)) === 'MOD') {
-            $path = str_ireplace('mod:', PLUGINS_DIR, $path);
-        }
         // check if file exists
         if (file_exists($path)) {
             return $path;
