@@ -4,10 +4,12 @@
  */
 namespace Phile\Model;
 
-use Phile\Core\Registry;
-use Phile\Core\Router;
-use Phile\Core\Event;
-use Phile\Core\ServiceLocator;
+use Phile\Event\LoadPageContentEvent;
+use Phile\Event\ParsePageContentEvent;
+use Phile\Event\ParsePageMetaEvent;
+use Phile\ServiceLocator\MetaParserInterface;
+use Phile\ServiceLocator\ParserInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * the Model class for a page
@@ -19,166 +21,87 @@ use Phile\Core\ServiceLocator;
  */
 class Page
 {
-    /**
-     * @var \Phile\Model\Meta the meta model
-     */
-    protected $meta;
+    /** @var array Phile global settings */
+    private $settings;
+    /** @var EventDispatcherInterface Event dispatcher */
+    private $dispatcher;
+    /** @var string Content file path */
+    private $contentFile;
+    /** @var ParserInterface Content parser to use */
+    private $parser;
+    /** @var MetaParserInterface Meta parser to use  */
+    private $metaParser;
 
-    /**
-     * @var string the content
-     */
-    protected $content;
+    /** @var string Loaded file content cache */
+    private $content;
+    /** @var string Parsed page content cache */
+    private $parsedContent;
+    /** @var array Page meta data cache*/
+    private $meta;
 
-    /**
-     * @var string the path to the original file
-     */
-    protected $filePath;
-
-    /**
-     * @var string the raw file
-     */
-    protected $rawData;
-
-    /**
-     * @var \Phile\ServiceLocator\ParserInterface the parser
-     */
-    protected $parser;
-
-    /**
-     * @var string the pageId of the page
-     */
-    protected $pageId;
-
-    /**
-     * @var \Phile\Model\Page the previous page if one exist
-     */
-    protected $previousPage;
-
-    /**
-     * @var \Phile\Model\Page the next page if one exist
-     */
-    protected $nextPage;
-
-    /**
-     * @var string The content folder, as passed to the class constructor when initiating the object.
-     */
-    protected $contentFolder;
-
-    /**
-     * the constructor
-     *
-     * @param $filePath
-     * @param string   $folder
-     */
-    public function __construct($filePath, $folder)
+    public function __construct(array $settings, EventDispatcherInterface $dispatcher, ParserInterface $parser, MetaParserInterface $metaParser, $contentFile)
     {
-        $this->contentFolder = $folder;
-        $this->setFilePath($filePath);
-
-        /**
-         * @triggerEvent before_load_content this event is triggered before the content is loaded
-         *
-         * @param            string filePath the path to the file
-         * @param \Phile\Model\Page page     the page model
-         */
-        Event::triggerEvent('before_load_content', array('filePath' => &$this->filePath, 'page' => &$this));
-        if (file_exists($this->filePath)) {
-            $this->rawData = file_get_contents($this->filePath);
-            $this->parseRawData();
-        }
-        /**
-         * @triggerEvent after_load_content this event is triggered after the content is loaded
-         *
-         * @param            string filePath the path to the file
-         * @param            string rawData  the raw data
-         * @param \Phile\Model\Page page     the page model
-         */
-        Event::triggerEvent(
-            'after_load_content',
-            [
-                'filePath' => &$this->filePath,
-                'rawData' => $this->rawData,
-                'page' => &$this
-            ]
-        );
-
-        $this->parser = ServiceLocator::getService('Phile_Parser');
+        $this->settings = $settings;
+        $this->dispatcher = $dispatcher;
+        $this->contentFile = $contentFile;
+        $this->parser = $parser;
+        $this->metaParser = $parser;
     }
 
-    /**
-     * method to get content of page, this method returned the parsed content
-     *
-     * @return mixed
-     */
     public function getContent()
     {
-        /**
-         * @triggerEvent before_parse_content this event is triggered before the content is parsed
-         *
-         * @param            string content the raw data
-         * @param \Phile\Model\Page page    the page model
-         */
-        Event::triggerEvent('before_parse_content', array('content' => $this->content, 'page' => &$this));
-        $content = $this->parser->parse($this->content);
-        /**
-         * @triggerEvent after_parse_content this event is triggered after the content is parsed
-         *
-         * @param            string content the parsed content
-         * @param \Phile\Model\Page page    the page model
-         */
-        Event::triggerEvent('after_parse_content', array('content' => &$content, 'page' => &$this));
+        if (!$this->content) {
+            $event = new LoadPageContentEvent($this);
+            $this->dispatcher->dispatch(LoadPageContentEvent::BEFORE, $event);
 
-        return $content;
-    }
+            $content = $event->getContent();
+            if ($content === null) {
+                $content = file_get_contents($this->contentFile);
+                $event->setContent($content);
+            }
 
-    /**
-     * set content of page
-     *
-     * @param $content
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-    }
+            $this->dispatcher->dispatch(LoadPageContentEvent::AFTER, $event);
+            $this->content = $event->getContent();
+        }
 
-    /**
-     * get raw (un-parsed) page content
-     *
-     * @return string
-     */
-    public function getRawContent()
-    {
         return $this->content;
     }
 
-    /**
-     * get the meta model
-     *
-     * @return Meta
-     */
-    public function getMeta()
-    {
-        return $this->meta;
+    public function getParsedContent(){
+        if (!$this->parsedContent){
+            $content = $this->getContent();
+
+            $event = new ParsePageContentEvent($this, $content);
+            $this->dispatcher->dispatch(ParsePageContentEvent::BEFORE, $event);
+
+            $content = $event->getContent();
+            $parsedContent = $this->parser->parse($content);
+            $event->setParsedContent($parsedContent);
+
+            $this->dispatcher->dispatch(ParsePageContentEvent::AFTER, $event);
+            $this->parsedContent = $event->getParsedContent();
+        }
+
+        return $this->parsedContent;
     }
 
-    /**
-     * parse the raw content
-     */
-    protected function parseRawData()
+    public function getMeta()
     {
-        $this->meta = new Meta($this->rawData);
-        // Remove only the optional, leading meta-block comment
-        $rawData = trim($this->rawData);
-        if (strncmp('<!--', $rawData, 4) === 0) {
-            // leading meta-block comment uses the <!-- --> style
-            $this->content = substr($rawData, max(4, strpos($rawData, '-->') + 3));
-        } elseif (strncmp('/*', $rawData, 2) === 0) {
-            // leading meta-block comment uses the /* */ style
-            $this->content = substr($rawData, strpos($rawData, '*/') + 2);
-        } else {
-            // no leading meta-block comment
-            $this->content = $rawData;
+        if (!$this->meta){
+            $content = $this->getContent();
+
+            $event = new ParsePageMetaEvent($this, $content);
+            $this->dispatcher->dispatch(ParsePageMetaEvent::BEFORE, $event);
+
+            $content = $event->getContent();
+            $meta = $this->metaParser->parse($content);
+            $event->setMeta($meta);
+
+            $this->dispatcher->dispatch(ParsePageMetaEvent::AFTER, $event);
+            $this->meta = new Meta($event->getMeta());
         }
+
+        return $this->meta;
     }
 
     /**
@@ -188,91 +111,10 @@ class Page
      */
     public function getTitle()
     {
-        return $this->getMeta()->get('title');
+        return $this->meta['title'];
     }
 
-    /**
-     * get Phile $pageId
-     *
-     * @param  string $filePath
-     * @return string
-     */
-    protected function buildPageId($filePath)
-    {
-        $settings = Registry::get('Phile_Settings');
-        $pageId = str_replace($this->contentFolder, '', $filePath);
-        $pageId = str_replace($settings['content_ext'], '', $pageId);
-        $pageId = str_replace(DIRECTORY_SEPARATOR, '/', $pageId);
-        $pageId = ltrim($pageId, '/');
-        $pageId = preg_replace('/(?<=^|\/)index$/', '', $pageId);
-        return $pageId;
-    }
-
-    /**
-     * get the url of page
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return (new Router)->urlForPage($this->pageId, false);
-    }
-
-    /**
-     * set the filepath of the page
-     *
-     * @param string $filePath
-     */
-    public function setFilePath($filePath)
-    {
-        $this->filePath = $filePath;
-        $this->pageId = $this->buildPageId($this->filePath);
-    }
-
-    /**
-     * get the filepath of the page
-     *
-     * @return string
-     */
-    public function getFilePath()
-    {
-        return $this->filePath;
-    }
-
-    /**
-     * get the folder name
-     *
-     * @return string
-     */
-    public function getFolder()
-    {
-        return basename(dirname($this->getFilePath()));
-    }
-
-    public function getPageId()
-    {
-        return $this->pageId;
-    }
-
-    /**
-     * get the previous page if one exist
-     *
-     * @return null|\Phile\Model\Page
-     */
-    public function getPreviousPage()
-    {
-        $pageRepository = new \Phile\Repository\Page();
-        return $pageRepository->getPageOffset($this, -1);
-    }
-
-    /**
-     * get the next page if one exist
-     *
-     * @return null|\Phile\Model\Page
-     */
-    public function getNextPage()
-    {
-        $pageRepository = new \Phile\Repository\Page();
-        return $pageRepository->getPageOffset($this, 1);
+    public function getContentFile(){
+        return $this->contentFile;
     }
 }

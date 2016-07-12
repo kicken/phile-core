@@ -11,7 +11,7 @@ namespace Phile\ServiceLocator;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\ServiceLocator
  */
-interface MetaInterface
+interface MetaParserInterface
 {
     /**
      * parse the content

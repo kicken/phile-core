@@ -11,7 +11,7 @@ namespace Phile\Core;
  *
  * Response is chainable and can be used anywhere:
  *
- *     (new Respose)->setBody('Hello World')->send();
+ *     (new Response)->setBody('Hello World')->send();
  *
  * After send() Phile is terminated.
  *
@@ -43,6 +43,11 @@ class Response
      */
     protected $statusCode = 200;
 
+    public function __construct()
+    {
+        $this->setHeader('Content-Type', 'text/html; charset=' . $this->charset);
+    }
+
     /**
      * redirect to another URL
      *
@@ -54,8 +59,7 @@ class Response
         $this->setStatusCode($statusCode)
             ->setHeader('Location', $url, true)
             ->setBody('')
-            ->send()
-            ->stop();
+        ;
     }
 
     /**
@@ -112,36 +116,34 @@ class Response
     }
 
     /**
-     * sends the HTTP response
-     *
-     * @return $this
+     * @return string
      */
-    public function send()
+    public function getBody()
     {
-        if (!isset($this->headers['Content-Type'])) {
-            $this->setHeader('Content-Type', 'text/html; charset=' . $this->charset);
-        }
-        $this->outputHeader();
-        http_response_code($this->statusCode);
-        echo $this->body;
-        return $this;
+        return $this->body;
     }
 
     /**
-     * helper for easy testing
+     * @return string
      */
-    public function stop()
+    public function getCharset()
     {
-        die();
+        return $this->charset;
     }
 
     /**
-     * output all set response headers
+     * @return array
      */
-    protected function outputHeader()
+    public function getHeaders()
     {
-        foreach ($this->headers as $header) {
-            header($header);
-        }
+        return $this->headers;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
     }
 }

@@ -4,6 +4,8 @@
  */
 namespace Phile\ServiceLocator;
 
+use Phile\Model\Page;
+
 /**
  * Interface TemplateInterface
  *
@@ -16,16 +18,8 @@ interface TemplateInterface
     /**
      * render the template
      *
+     * @param Page $page
      * @return mixed
      */
-    public function render();
-
-    /**
-     * set current page
-     *
-     * @param \Phile\Model\Page $page
-     *
-     * @return mixed
-     */
-    public function setCurrentPage(\Phile\Model\Page $page);
+    public function render(Page $page);
 }

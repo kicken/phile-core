@@ -4,7 +4,7 @@
  */
 namespace Phile\Plugin\ParserMeta\Parser;
 
-use Phile\ServiceLocator\MetaInterface;
+use Phile\ServiceLocator\MetaParserInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\Yaml\Yaml;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Plugin\Phile\ParserMeta\Parser
  */
-class Meta implements MetaInterface
+class MetaParser implements MetaParserInterface
 {
     /**
  * @var array $config the configuration for this parser

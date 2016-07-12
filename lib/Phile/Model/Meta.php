@@ -4,10 +4,6 @@
  */
 namespace Phile\Model;
 
-use Phile\Core\Event;
-use Phile\Core\Registry;
-use Phile\Core\ServiceLocator;
-
 /**
  * Meta model
  *
@@ -16,78 +12,37 @@ use Phile\Core\ServiceLocator;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Model
  */
-class Meta extends AbstractModel
+class Meta implements \ArrayAccess
 {
 
+    private $data;
+
     /**
-     * the construtor
-     *
-     * @param string $rawData the raw data to parse
+     * Meta constructor.
+     * @param array $data
      */
-    public function __construct($rawData = null)
+    public function __construct(array $data)
     {
-        if ($rawData !== null) {
-            $this->setRawData($rawData);
-        }
+        $this->data = $data;
     }
 
-    /**
-     * set the raw data to parse
-     *
-     * @param string $rawData the raw data
-     */
-    public function setRawData($rawData)
+    public function offsetExists($offset)
     {
-        /**
-         * @triggerEvent before_read_file_meta this event is triggered before the meta data readed and parsed
-         *
-         * @param string rawData the unparsed data
-         * @param \Phile\Model\Meta meta   the meta model
-         */
-        Event::triggerEvent('before_read_file_meta', array('rawData' => &$rawData, 'meta' => &$this));
-        $this->parseRawData($rawData);
-        /**
-         * @triggerEvent after_read_file_meta this event is triggered after the meta data readed and parsed
-         *
-         * @param string rawData the unparsed data
-         * @param \Phile\Model\Meta meta   the meta model
-         */
-        Event::triggerEvent('after_read_file_meta', array('rawData' => &$rawData, 'meta' => &$this));
+        return array_key_exists($offset, $this->data);
     }
 
-    /**
-     * get formatted date
-     *
-     * @return bool|null|string
-     */
-    public function getFormattedDate()
+    public function offsetGet($offset)
     {
-        $config = Registry::get('Phile_Settings');
-        if (!isset($this->data['date'])) {
-            return null;
-        }
-        $date = $this->data['date'];
-        if (!is_numeric($date)) {
-            $date = strtotime($date);
-        }
-        return date($config['date_format'], $date);
+        return $this->offsetExists($offset)?$this->data[$offset]:null;
     }
 
-    /**
-     * parse the raw data
-     *
-     * @param $rawData
-     */
-    protected function parseRawData($rawData)
+    public function offsetSet($offset, $value)
     {
-        /**
- * @var \Phile\ServiceLocator\MetaInterface $metaParser
-*/
-        $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
-        $data       = $metaParser->parse($rawData);
+        $this->data[$offset] = $value;
+    }
 
-        foreach ($data as $key => $value) {
-            $this->set($key, $value);
-        }
+    public function offsetUnset($offset)
+    {
+        unset($this->data[$offset]);
     }
 }

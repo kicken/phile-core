@@ -4,9 +4,7 @@
  */
 namespace Phile\Plugin;
 
-use Phile\Core\Event;
-use Phile\Core\Registry;
-use Phile\Gateway\EventObserverInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * the AbstractPlugin class for implementing a plugin for PhileCMS
@@ -16,98 +14,37 @@ use Phile\Gateway\EventObserverInterface;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Plugin
  */
-abstract class AbstractPlugin implements EventObserverInterface
+abstract class AbstractPlugin implements EventSubscriberInterface
 {
-
+    /** @var array Plugin specific configuration */
+    protected $config;
+    /** @var array Phile's global configuration */
+    protected $phileConfig;
+    
     /**
-     * @var string plugin attributes
-     */
-    protected $plugin = [];
-
-    /**
-     * @var array subscribed Phile events ['eventName' => 'classMethodToCall']
-     */
-    protected $events = [];
-
-    /**
-     * @var array the plugin settings
-     */
-    protected $settings = [];
-
-    /**
-     * initialize plugin
+     * AbstractPlugin constructor.
      *
-     * try to keep all initialization in one method to have a clean class
-     * for the plugin-user
-     *
-     * @param      string $pluginKey
+     * @param array $pluginConfig Plugin specific configuration
+     * @param array $phileConfig Global Phile configuration
      */
-    final public function initializePlugin($pluginKey)
-    {
-        $rf = new \ReflectionObject($this);
-        /**
-         * init $plugin property
-         */
-        $this->plugin['key'] = $pluginKey;
-        $this->plugin['dir'] = dirname($rf->getFileName()) . DS;
-
-        /**
-         * init events
-         */
-        foreach ($this->events as $event => $method) {
-            Event::registerEvent($event, $this);
-        }
-
-        /**
-         * init plugin settings
-         */
-        $globals = Registry::get('Phile_Settings');
-        if (!isset($globals['plugins'][$pluginKey])) {
-            $globals['plugins'][$pluginKey] = [];
-        }
-
-        // settings precedence: global > default > class
-        $this->settings = array_replace_recursive(
-            $this->settings,
-            $globals['plugins'][$pluginKey]
-        );
-
-        $globals['plugins'][$pluginKey]['settings'] = $this->settings;
-        Registry::set('Phile_Settings', $globals);
-
+    public function __construct($pluginConfig, $phileConfig){
+        $this->config = $pluginConfig;
+        $this->phileConfig = $phileConfig;
     }
 
     /**
-     * implements EventObserverInterface
+     * Get a path relative to the plugin's source directory.
      *
-     * @param  string $eventKey
-     * @param  null   $data
-     * @return void
+     * @param string $sub
+     * @return string
      */
-    public function on($eventKey, $data = null)
-    {
-        if (!isset($this->events[$eventKey])) {
-            return;
+    public function getPluginPath($sub=''){
+        static $dir = null;
+        if ($dir === null){
+            $rf = new \ReflectionObject($this);
+            $dir = dirname($rf->getFileName()) . DIRECTORY_SEPARATOR;
         }
-        $method = $this->events[$eventKey];
-        if (!is_callable([$this, $method])) {
-            $class = get_class($this);
-            throw new \RuntimeException(
-                "Event $eventKey can't invoke $class::$method(). Not callable.",
-                1428564865
-            );
-        }
-        $this->{$this->events[$eventKey]}($data);
-    }
-
-    /**
-     * get file path to plugin root (trailing slash) or to a sub-item
-     *
-     * @param  string $subPath
-     * @return null|string null if item does not exist
-     */
-    protected function getPluginPath($subPath = '')
-    {
-        return $this->plugin['dir'] . ltrim($subPath, DIRECTORY_SEPARATOR);
+        
+        return $dir . ltrim($sub, DIRECTORY_SEPARATOR);
     }
 }
