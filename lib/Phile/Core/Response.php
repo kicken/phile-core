@@ -99,7 +99,7 @@ class Response
         if ($clear) {
             $this->headers = [];
         }
-        $this->headers[$key] = "$key: $value";
+        $this->headers[$key] = $value;
         return $this;
     }
 
