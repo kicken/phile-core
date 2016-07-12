@@ -62,6 +62,24 @@ class Router implements RouterInterface
         return $event->getContentPath();
     }
 
+    public function matchRedirect($url)
+    {
+        $redirect = null;
+        $contentFile = $this->resolvePath($url);
+        if ($contentFile) {
+            $default = '/index' . $this->settings['content_ext'];
+
+            $endsInSlash = $url[strlen($url) - 1] === '/';
+            $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
+
+            if (!$endsInSlash && $isDefaultFile) {
+                $redirect = $this->urlForPath($contentFile);
+            }
+        }
+        
+        return $redirect;
+    }
+    
     private function normalizeUrl($url){
         $queryPos = strpos($url, '?');
         if ($queryPos !== false){

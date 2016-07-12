@@ -20,6 +20,14 @@ interface RouterInterface
     public function match($url);
 
     /**
+     * See if the URL resolves to a redirect.
+     * 
+     * @param string $url
+     * @return string|null New URL if found, otherwise null.
+     */
+    public function matchRedirect($url);
+    
+    /**
      * Generate a URL for a given path.
      * 
      * @param string $path

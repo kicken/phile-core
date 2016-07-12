@@ -196,9 +196,16 @@ class Core
 
     public function handleRequest()
     {
-        $contentFile = $this->router->match($_SERVER['REQUEST_URI']);
+        $url = $_SERVER['REQUEST_URI'];
+        $contentFile = $this->router->match($url);
         if ($contentFile === null){
-            $response = $this->handleNotFound();
+            $redirect = $this->router->matchRedirect($url);
+            if (!$redirect) {
+                $response = $this->handleNotFound();
+            } else {
+                $response = new Response();
+                $response->redirect($redirect);
+            }
         } else {
             $response = $this->handleContentFile($contentFile);
         }

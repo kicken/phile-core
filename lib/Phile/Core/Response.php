@@ -58,7 +58,7 @@ class Response
     {
         $this->setStatusCode($statusCode)
             ->setHeader('Location', $url, true)
-            ->setBody('')
+            ->setBody('<a href="'.$url.'">'.$url.'</a>')
         ;
     }
 
