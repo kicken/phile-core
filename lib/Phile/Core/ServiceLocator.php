@@ -49,9 +49,8 @@ class ServiceLocator
      */
     public static function registerService($serviceKey, $object)
     {
-        $interfaces = class_implements($object);
         $interface  = self::$serviceMap[$serviceKey];
-        if ($interfaces === false || !in_array($interface, $interfaces)) {
+        if (!($object instanceof $interface)) {
             throw new ServiceLocatorException("the object must implement the interface: '{$interface}'", 1398536617);
         }
         self::$services[$serviceKey] = $object;
