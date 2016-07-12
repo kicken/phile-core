@@ -64,7 +64,7 @@ class Core
         $this->dispatcher = new EventDispatcher();
         $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
 
-        Registry::set('Phile_EventDispatcher', $this->dispatcher);
+        ServiceLocator::registerService('Phile_EventDispatcher', $this->dispatcher);
         Registry::set('Phile_Settings', $this->settings);
     }
 
@@ -228,7 +228,7 @@ class Core
     private function handleContentFile($contentFile)
     {
         /** @var TemplateInterface $template */
-        $template = Registry::get('Phile_Template');
+        $template = ServiceLocator::getService('Phile_Template');
         $page = $this->createPageModel($contentFile);
 
         $event = new RenderingEvent($page, $template, $page->getParsedContent());
@@ -252,8 +252,8 @@ class Core
 
     private function createPageModel($contentFile)
     {
-        $parser = Registry::get('Phile_Parser');
-        $metaParser = Registry::get('Phile_Parser_Meta');
+        $parser = ServiceLocator::getService('Phile_Parser');
+        $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
 
         return new Page($this->settings, $this->dispatcher, $parser, $metaParser, $contentFile);
     }

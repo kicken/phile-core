@@ -154,13 +154,13 @@ class Page
     }
 
     private function createPageModel($filePath){
-        $dispatcher = Registry::get('Phile_EventDispatcher');
-        $parser = Registry::get('Phile_Parser');
-        $metaParser = Registry::get('Phile_Parser_Meta');
-        
+        $dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
+        $parser = ServiceLocator::getService('Phile_Parser');
+        $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
+
         return new PageModel($this->settings, $dispatcher, $parser, $metaParser, $filePath);
     }
-    
+
     private function getFiles($folder){
         $directoryIterator = new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
