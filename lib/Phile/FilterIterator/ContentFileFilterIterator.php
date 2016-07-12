@@ -3,7 +3,8 @@
  * the filter class for content files
  */
 namespace Phile\FilterIterator;
-use Phile\Core\Registry;
+
+use Iterator;
 
 /**
  * Class ContentFileFilterIterator
@@ -12,16 +13,38 @@ use Phile\Core\Registry;
  */
 class ContentFileFilterIterator extends \FilterIterator
 {
+    private $contentExtension;
+
+    public function __construct(Iterator $iterator, $contentExtension)
+    {
+        parent::__construct($iterator);
+        $this->contentExtension = $contentExtension;
+    }
+
     /**
      * method to decide if file is filtered or not
      * @return bool
      */
     public function accept()
     {
-        $settings = Registry::get('Phile_Settings');
-        /**
-         * @var \SplFileInfo $this
-         */
-        return (preg_match('/^[^\.]{1}.*'.$settings['content_ext'].'/', $this->getFilename()) > 0);
+        /** @var \SplFileInfo $file */
+        $file = $this->current();
+
+        return !$this->isHidden($file) && $this->isNot404($file) && $this->isCorrectExtension($file);
+    }
+
+    private function isHidden(\SplFileInfo $file)
+    {
+        return substr($file->getFilename(), 0, 1) !== '.';
+    }
+
+    private function isNot404(\SplFileInfo $file)
+    {
+        return $file->getFilename() !== '404' . $this->contentExtension;
+    }
+
+    private function isCorrectExtension(\SplFileInfo $file)
+    {
+        return substr($file->getPathname(), -strlen($this->contentExtension)) === $this->contentExtension;
     }
 }

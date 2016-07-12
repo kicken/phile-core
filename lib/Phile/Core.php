@@ -17,7 +17,6 @@ use Phile\Plugin\ErrorHandler\ErrorHandlerPlugin;
 use Phile\Plugin\ParserMarkdown\MarkdownPlugin;
 use Phile\Plugin\ParserMeta\MetaParserPlugin;
 use Phile\Plugin\PhpFastCache\FastCachePlugin;
-use Phile\Plugin\SetupCheck\SetupCheckPlugin;
 use Phile\Plugin\SimpleFileDataPersistence\FileDataPersistencePlugin;
 use Phile\Plugin\TemplateTwig\TwigTemplatePlugin;
 use Phile\ServiceLocator\TemplateInterface;
@@ -63,7 +62,10 @@ class Core
         $this->settings = $config;
         $this->plugins = $plugins;
         $this->dispatcher = new EventDispatcher();
-        $this->router = new Router($config, $this->dispatcher, $_SERVER);
+        $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
+
+        Registry::set('Phile_EventDispatcher', $this->dispatcher);
+        Registry::set('Phile_Settings', $this->settings);
     }
 
     /**
@@ -109,8 +111,7 @@ class Core
             ],
             MarkdownPlugin::class => ['active' => true],
             MetaParserPlugin::class => [
-                'active' => true,
-                'format' => 'Phile'
+                'active' => true
             ],
             TwigTemplatePlugin::class => [
                 'active' => true,
@@ -175,7 +176,7 @@ class Core
             if (isset($pluginSpecificConfig['active']) && !$pluginSpecificConfig['active']) {
                 continue;
             }
-            
+
             if (!class_exists($class)) {
                 throw new PluginNotFoundException($class);
             }

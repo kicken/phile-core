@@ -6,7 +6,7 @@ namespace Phile\Repository;
 
 use Phile\Core\Registry;
 use Phile\Core\ServiceLocator;
-use Phile\Core\Utility;
+use Phile\FilterIterator\ContentFileFilterIterator;
 use Phile\Model\Page as PageModel;
 
 /**
@@ -45,6 +45,7 @@ class Page
         if ($settings === null) {
             $settings = Registry::get('Phile_Settings');
         }
+
         $this->settings = $settings;
         if (ServiceLocator::hasService('Phile_Cache')) {
             $this->cache = ServiceLocator::getService('Phile_Cache');
@@ -86,7 +87,7 @@ class Page
         if (!file_exists($file)) {
             return null;
         }
-        return $this->getPage($file, $folder);
+        return $this->getPage($file);
     }
 
     /**
@@ -107,66 +108,16 @@ class Page
             function () use ($options, $folder) {
                 $options += $this->settings;
                 // ignore files with a leading '.' in its filename
-                $files = Utility::getFiles($folder, '\Phile\FilterIterator\ContentFileFilterIterator');
-                $pages = array();
+                $files = $this->getFiles($folder);
+                $pages = [];
+
                 foreach ($files as $file) {
-                    if (str_replace($folder, '', $file) == '404' . $this->settings['content_ext']) {
-                        // jump to next page if file is the 404 page
-                        continue;
-                    }
-                    $pages[] = $this->getPage($file, $folder);
+                    $pages[] = $this->getPage($file);
                 }
 
-                if (empty($options['pages_order'])) {
-                    return $pages;
+                if ($options['pages_order']) {
+                    $pages = $this->sortPages($pages, $options['pages_order']);
                 }
-
-                // parse search	criteria
-                $sorting = [];
-                $terms = preg_split('/\s+/', $options['pages_order'], -1, PREG_SPLIT_NO_EMPTY);
-                foreach ($terms as $term) {
-                    $sub = explode('.', $term);
-                    if (count($sub) > 1) {
-                        $type = array_shift($sub);
-                    } else {
-                        $type = null;
-                    }
-                    $sub = explode(':', $sub[0]);
-                    if (count($sub) === 1) {
-                        $sub[1] = 'asc';
-                    }
-                    $sorting[] = array('type' => $type, 'key' => $sub[0], 'order' => $sub[1], 'string' => $term);
-                }
-
-                // prepare search criteria for array_multisort
-                foreach ($sorting as $sort) {
-                    $key = $sort['key'];
-                    $column = array();
-                    foreach ($pages as $page) {
-                        /**
-                         * @var PageModel $page
-                         */
-                        $meta = $page->getMeta();
-                        if ($sort['type'] === 'page') {
-                            $method = 'get' . ucfirst($key);
-                            $value = $page->$method();
-                        } elseif ($sort['type'] === 'meta') {
-                            $value = $meta->get($key);
-                        } else {
-                            trigger_error(
-                                "Page order '{$sort['string']}' was ignored. Type '{$sort['type']}' not recognized.",
-                                E_USER_WARNING
-                            );
-                            continue 2;
-                        }
-                        $column[] = $value;
-                    }
-                    $sortHelper[] = $column;
-                    $sortHelper[] = constant('SORT_' . strtoupper($sort['order']));
-                }
-                $sortHelper[] = &$pages;
-
-                call_user_func_array('array_multisort', $sortHelper);
 
                 return $pages;
             }
@@ -174,40 +125,14 @@ class Page
     }
 
     /**
-     * return page at offset from $page in applied search order
-     *
-     * @param  PageModel $page
-     * @param  int               $offset
-     * @return null|PageModel
-     */
-    public function getPageOffset(PageModel $page, $offset = 0)
-    {
-        $pages = $this->findAll();
-        $order = array();
-        foreach ($pages as $p) {
-            $order[] = $p->getFilePath();
-        }
-        $key = array_search($page->getFilePath(), $order) + $offset;
-        if (!isset($order[$key])) {
-            return null;
-        }
-        return $this->getPage($order[$key]);
-    }
-
-    /**
      * get page from cache or filepath
      *
      * @param $filePath
-     * @param string   $folder
      *
      * @return mixed|PageModel
      */
-    protected function getPage($filePath, $folder=null)
+    protected function getPage($filePath)
     {
-        if ($folder === null){
-            $folder = $this->settings['content_dir'];
-        }
-
         $key = 'Phile_Model_Page_' . md5($filePath);
         if (isset($this->storage[$key])) {
             return $this->storage[$key];
@@ -217,14 +142,83 @@ class Page
             if ($this->cache->has($key)) {
                 $page = $this->cache->get($key);
             } else {
-                $page = new PageModel($filePath, $folder);
+                $page = $this->createPageModel($filePath);
                 $this->cache->set($key, $page);
             }
         } else {
-            $page = new PageModel($filePath, $folder);
+            $page = $this->createPageModel($filePath);
         }
         $this->storage[$key] = $page;
 
         return $page;
+    }
+
+    private function createPageModel($filePath){
+        $dispatcher = Registry::get('Phile_EventDispatcher');
+        $parser = Registry::get('Phile_Parser');
+        $metaParser = Registry::get('Phile_Parser_Meta');
+        
+        return new PageModel($this->settings, $dispatcher, $parser, $metaParser, $filePath);
+    }
+    
+    private function getFiles($folder){
+        $directoryIterator = new \RecursiveDirectoryIterator($folder, \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+        $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
+        $filterIterator = new ContentFileFilterIterator($recursiveIterator, $this->settings['content_ext']);
+
+        $result = [];
+        foreach ($filterIterator as $file){
+            $result[] = $file->getPathname();
+        }
+
+        return $result;
+    }
+
+    private function parseSortCriteria($criteria)
+    {
+        $terms = preg_split('/\s+/', $criteria, -1, PREG_SPLIT_NO_EMPTY);
+        $sorting = [];
+        foreach ($terms as $term) {
+            $sub = explode('.', $term);
+            if (count($sub) > 1) {
+                $type = array_shift($sub);
+            } else {
+                $type = null;
+            }
+            $sub = explode(':', $sub[0]);
+            if (count($sub) === 1) {
+                $sub[1] = 'asc';
+            }
+            $sorting[] = array('type' => $type, 'key' => $sub[0], 'order' => $sub[1], 'string' => $term);
+        }
+
+        return $sorting;
+    }
+
+    private function sortPages($pages, $options)
+    {
+        // parse search	criteria
+        $sorting = $this->parseSortCriteria($options['pages_order']);
+
+        // prepare search criteria for array_multisort
+        foreach ($sorting as $sort) {
+            $key = $sort['key'];
+            $column = array();
+
+            /** @var PageModel $page */
+            foreach ($pages as $page) {
+                $meta = $page->getMeta();
+                $value = $meta[$key];
+                $column[] = $value;
+            }
+
+            $sortHelper[] = $column;
+            $sortHelper[] = constant('SORT_' . strtoupper($sort['order']));
+        }
+        $sortHelper[] = &$pages;
+
+        call_user_func_array('array_multisort', $sortHelper);
+
+        return $pages;
     }
 }
