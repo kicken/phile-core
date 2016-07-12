@@ -77,7 +77,7 @@ class Router implements RouterInterface
     private function resolvePath($path){
         $contentDir = $this->settings['content_dir'];
         $contentExt = $this->settings['content_ext'];
-        $base = $contentDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $base = $contentDir . str_replace('/', DIRECTORY_SEPARATOR, $path);
 
         $path = $base . $contentExt;
         if (file_exists($path) && is_file($path)){
@@ -109,7 +109,7 @@ class Router implements RouterInterface
         }
 
         $contentExt = $this->settings['content_ext'];
-        $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+        $path = '/' . str_replace(DIRECTORY_SEPARATOR, '/', $path);
 
         if (substr($path, -strlen($contentExt)) === $contentExt){
             $path = substr($path, 0, -strlen($contentExt));
