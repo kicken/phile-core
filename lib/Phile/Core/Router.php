@@ -79,10 +79,11 @@ class Router implements RouterInterface
     private function needsRedirect($url, $contentFile){
         $default = DIRECTORY_SEPARATOR . 'index' . $this->settings['content_ext'];
 
+        $root = $url === "";
         $endsInSlash = substr($url, -1) === '/';
         $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
 
-        return !$endsInSlash && $isDefaultFile;
+        return !$root && !$endsInSlash && $isDefaultFile;
     }
 
     private function normalizeUrl($url){
