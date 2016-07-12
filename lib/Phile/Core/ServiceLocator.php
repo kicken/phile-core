@@ -7,10 +7,10 @@ namespace Phile\Core;
 use Phile\Exception\ServiceLocatorException;
 use Phile\Model\Meta;
 use Phile\ServiceLocator\CacheInterface;
+use Phile\ServiceLocator\ErrorHandlerInterface;
 use Phile\ServiceLocator\ParserInterface;
 use Phile\ServiceLocator\PersistenceInterface;
 use Phile\ServiceLocator\TemplateInterface;
-use Predis\Response\ErrorInterface;
 
 /**
  * the Service Locator class
@@ -36,7 +36,7 @@ class ServiceLocator
     'Phile_Parser'           => ParserInterface::class,
     'Phile_Data_Persistence' => PersistenceInterface::class,
     'Phile_Parser_Meta'      => Meta::class,
-    'Phile_ErrorHandler'     => ErrorInterface::class,
+    'Phile_ErrorHandler'     => ErrorHandlerInterface::class,
     );
 
     /**
