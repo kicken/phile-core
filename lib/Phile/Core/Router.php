@@ -106,7 +106,7 @@ class Router implements RouterInterface
             return $path;
         }
 
-        $path = $base . DIRECTORY_SEPARATOR . 'index' . $contentExt;
+        $path = $base . 'index' . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
         }
