@@ -185,7 +185,7 @@ class Core
                 unset($pluginSpecificConfig['active']);
                 $plugins[] = new $class($pluginSpecificConfig, $config);
             } catch (\Exception $ex){
-                throw new PluginInitializationException('Exception caught while trying to instantiate plugin', $ex);
+                throw new PluginInitializationException($class, $ex);
             }
         }
 
