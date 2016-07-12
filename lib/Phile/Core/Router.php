@@ -54,7 +54,9 @@ class Router implements RouterInterface
         if ($event->getContentPath() === null){
             $url = $event->getRequestUrl();
             $contentPath = $this->resolvePath($url);
-            $event->setContentPath($contentPath);
+            if (!$this->needsRedirect($url, $contentPath)) {
+                $event->setContentPath($contentPath);
+            }
         }
 
         $this->dispatcher->dispatch(RoutingEvent::AFTER, $event);
@@ -66,20 +68,22 @@ class Router implements RouterInterface
     {
         $redirect = null;
         $contentFile = $this->resolvePath($url);
-        if ($contentFile) {
-            $default = '/index' . $this->settings['content_ext'];
-
-            $endsInSlash = $url[strlen($url) - 1] === '/';
-            $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
-
-            if (!$endsInSlash && $isDefaultFile) {
-                $redirect = $this->urlForPath($contentFile);
-            }
+        if ($contentFile && $this->needsRedirect($url, $contentFile)) {
+            $redirect = $this->urlForPath($contentFile);
         }
-        
+
         return $redirect;
     }
-    
+
+    private function needsRedirect($url, $contentFile){
+        $default = '/index' . $this->settings['content_ext'];
+
+        $endsInSlash = $url[strlen($url) - 1] === '/';
+        $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
+
+        return !$endsInSlash && $isDefaultFile;
+    }
+
     private function normalizeUrl($url){
         $queryPos = strpos($url, '?');
         if ($queryPos !== false){
@@ -137,7 +141,7 @@ class Router implements RouterInterface
         if (substr($path, -strlen($default)) === $default){
             $path = substr($path, 0, -strlen($default) + 1);
         }
-        
+
         $url = $path;
         if ($absolute){
             $url = $this->settings['base_url'] . $url;
