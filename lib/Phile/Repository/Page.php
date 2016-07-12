@@ -195,10 +195,10 @@ class Page
         return $sorting;
     }
 
-    private function sortPages($pages, $options)
+    private function sortPages($pages, $criteria)
     {
         // parse search	criteria
-        $sorting = $this->parseSortCriteria($options['pages_order']);
+        $sorting = $this->parseSortCriteria($criteria);
 
         // prepare search criteria for array_multisort
         foreach ($sorting as $sort) {
