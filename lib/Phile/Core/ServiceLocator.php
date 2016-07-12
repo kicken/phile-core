@@ -1,6 +1,6 @@
 <?php
 /**
- * The SerciveLocator class
+ * The ServiceLocator class
  */
 namespace Phile\Core;
 

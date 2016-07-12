@@ -12,7 +12,7 @@ namespace Phile\FilterIterator;
 class GeneralFileFilterIterator extends \FilterIterator
 {
     /**
-     * method to decide if file is filterd or not
+     * method to decide if file is filtered or not
      * @return bool
      */
     public function accept()

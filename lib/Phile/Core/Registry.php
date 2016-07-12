@@ -73,7 +73,7 @@ class Registry extends \ArrayObject
      * @param string $index - get the value associated with $index
      *
      * @return mixed
-     * @throws \Exception if no entry is registerd for $index.
+     * @throws \Exception if no entry is registered for $index.
      */
     public static function get($index)
     {

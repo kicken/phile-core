@@ -125,7 +125,7 @@ class Page
     }
 
     /**
-     * get page from cache or filepath
+     * get page from cache or file path
      *
      * @param $filePath
      *

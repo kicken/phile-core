@@ -9,7 +9,7 @@
 namespace Phile\Exception;
 
 /**
- * Class AbstarctException
+ * Class AbstractException
  *
  * @author  Frank Nägler
  * @link    https://philecms.com
