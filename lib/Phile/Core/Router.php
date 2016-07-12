@@ -119,14 +119,10 @@ class Router implements RouterInterface
         if (substr($path, -strlen($default)) === $default){
             $path = substr($path, 0, -strlen($default) + 1);
         }
-
-        if (strlen($path) > 1){
-            $path = ltrim($path, '/');
-        }
-
+        
         $url = $path;
         if ($absolute){
-            $url = $this->settings['base_url'] . '/' . $url;
+            $url = $this->settings['base_url'] . $url;
         }
 
         return $url;
