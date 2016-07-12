@@ -80,7 +80,7 @@ class Core
         $defaultConfiguration = self::defaultConfiguration($rootDirectory, $baseUrl);
         $config = array_replace_recursive($defaultConfiguration, $config);
 
-        $plugins = static::loadPlugins($config['plugins']);
+        $plugins = static::loadPlugins($config);
 
         return new static($config, $plugins);
     }
