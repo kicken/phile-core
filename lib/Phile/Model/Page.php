@@ -45,7 +45,7 @@ class Page
         $this->dispatcher = $dispatcher;
         $this->contentFile = $contentFile;
         $this->parser = $parser;
-        $this->metaParser = $parser;
+        $this->metaParser = $metaParser;
     }
 
     public function getContent()
