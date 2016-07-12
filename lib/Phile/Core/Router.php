@@ -102,13 +102,14 @@ class Router implements RouterInterface
         $contentDir = $this->settings['content_dir'];
         $contentExt = $this->settings['content_ext'];
         $base = $contentDir . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $base = rtrim($base, DIRECTORY_SEPARATOR);
 
         $path = $base . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
         }
 
-        $path = $base . 'index' . $contentExt;
+        $path = $base . DIRECTORY_SEPARATOR . 'index' . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
         }
