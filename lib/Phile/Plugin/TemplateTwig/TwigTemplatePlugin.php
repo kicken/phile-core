@@ -99,10 +99,13 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
             'theme_url' => $this->phileConfig['base_url'] . '/' . basename($this->config['themes_dir']) . '/' . $this->config['theme'],
         ];
 
-        /**
-         * @var array $templateVars
-         */
-        $templateVars = Registry::get('templateVars');
+        $templateVars = [];
+
+        try {
+            $templateVars = Registry::get('templateVars');
+        } catch (\RuntimeException $e){
+        }
+
         $templateVars += $defaults;
 
         return $templateVars;
