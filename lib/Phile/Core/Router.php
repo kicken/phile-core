@@ -109,7 +109,6 @@ class Router implements RouterInterface
         }
 
         $contentExt = $this->settings['content_ext'];
-        $path = $this->resolvePath($path);
         $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
 
         if (substr($path, -strlen($contentExt)) === $contentExt){
