@@ -21,7 +21,7 @@ class Router
 
     /** @var array Phile global settings */
     private $settings;
-    
+
     /**
      * @var array with $_SERVER environment
      */
@@ -31,7 +31,7 @@ class Router
      * @var EventDispatcherInterface Event dispatcher
      */
     private $dispatcher;
-    
+
     /**
      * @param array $settings Phile global settings
      * @param EventDispatcherInterface $dispatcher
@@ -41,52 +41,53 @@ class Router
     {
         $this->settings = $settings;
         $this->server = $server;
+        $this->dispatcher = $dispatcher;
     }
 
     public function match($url){
         $url = $this->normalizeUrl($url);
-        
+
         $event = new RoutingEvent($url);
         $this->dispatcher->dispatch(RoutingEvent::BEFORE, $event);
-        
+
         if ($event->getContentPath() === null){
             $url = $event->getRequestUrl();
             $contentPath = $this->resolvePath($url);
             $event->setContentPath($contentPath);
         }
-        
+
         $this->dispatcher->dispatch(RoutingEvent::AFTER, $event);
-        
+
         return $event->getContentPath();
     }
-    
+
     private function normalizeUrl($url){
         $queryPos = strpos($url, '?');
         if ($queryPos !== false){
             $url = substr($url, 0, $queryPos);
         }
-        
+
         $url = ltrim($url, '/');
         $url = rawurldecode($url);
-        
+
         return $url;
     }
-    
+
     private function resolvePath($path){
         $contentDir = $this->settings['content_dir'];
         $contentExt = $this->settings['content_ext'];
         $base = $contentDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
-        
+
         $path = $base . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
-        } 
-        
+        }
+
         $path = $base . DIRECTORY_SEPARATOR . 'index' . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
         }
-        
+
         return null;
     }
 
@@ -108,21 +109,21 @@ class Router
         if (substr($path, -strlen($contentExt)) === $contentExt){
             $path = substr($path, 0, -strlen($contentExt));
         }
-        
+
         $default = '/index';
         if (substr($path, -strlen($default)) === $default){
             $path = substr($path, 0, -strlen($default) + 1);
         }
-        
+
         if (strlen($path) > 1){
             $path = ltrim($path, '/');
         }
-        
+
         $url = $path;
         if ($absolute){
             $url = $this->settings['base_url'] . '/' . $url;
         }
-        
+
         return $url;
     }
 }
