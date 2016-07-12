@@ -66,6 +66,7 @@ class Router implements RouterInterface
 
     public function matchRedirect($url)
     {
+        $url = $this->normalizeUrl($url);
         $redirect = null;
         $contentFile = $this->resolvePath($url);
         if ($contentFile && $this->needsRedirect($url, $contentFile)) {
@@ -78,7 +79,7 @@ class Router implements RouterInterface
     private function needsRedirect($url, $contentFile){
         $default = DIRECTORY_SEPARATOR . 'index' . $this->settings['content_ext'];
 
-        $endsInSlash = $url[strlen($url) - 1] === '/';
+        $endsInSlash = substr($url, -1) === '/';
         $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
 
         return !$endsInSlash && $isDefaultFile;
