@@ -10,6 +10,7 @@ use Phile\ServiceLocator\ErrorHandlerInterface;
 use Phile\ServiceLocator\MetaParserInterface;
 use Phile\ServiceLocator\ParserInterface;
 use Phile\ServiceLocator\PersistenceInterface;
+use Phile\ServiceLocator\RouterInterface;
 use Phile\ServiceLocator\TemplateInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -38,7 +39,8 @@ class ServiceLocator
     'Phile_Data_Persistence' => PersistenceInterface::class,
     'Phile_Parser_Meta'      => MetaParserInterface::class,
     'Phile_ErrorHandler'     => ErrorHandlerInterface::class,
-    'Phile_EventDispatcher'  => EventDispatcherInterface::class
+    'Phile_EventDispatcher'  => EventDispatcherInterface::class,
+    'Phile_Router'           => RouterInterface::class
     );
 
     /**

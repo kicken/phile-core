@@ -64,6 +64,7 @@ class Core
         $this->dispatcher = new EventDispatcher();
         $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
 
+        ServiceLocator::registerService('Phile_Router', $this->router);
         ServiceLocator::registerService('Phile_EventDispatcher', $this->dispatcher);
         Registry::set('Phile_Settings', $this->settings);
     }

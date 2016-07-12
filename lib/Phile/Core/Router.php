@@ -6,6 +6,7 @@
 namespace Phile\Core;
 
 use Phile\Event\RoutingEvent;
+use Phile\ServiceLocator\RouterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -16,7 +17,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Core
  */
-class Router
+class Router implements RouterInterface
 {
 
     /** @var array Phile global settings */
@@ -100,8 +101,13 @@ class Router
      * @param  bool   $absolute   return a full or root-relative URL
      * @return string URL
      */
-    public function urlForPage($path, $absolute = true)
+    public function urlForPath($path, $absolute = true)
     {
+        if (strpos($path, $this->settings['content_dir']) === 0){
+            $path = substr($path, strlen($this->settings['content_dir']));
+            $path = ltrim($path, DIRECTORY_SEPARATOR);
+        }
+
         $contentExt = $this->settings['content_ext'];
         $path = $this->resolvePath($path);
         $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);

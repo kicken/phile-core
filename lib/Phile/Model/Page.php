@@ -4,11 +4,13 @@
  */
 namespace Phile\Model;
 
+use Phile\Core\ServiceLocator;
 use Phile\Event\LoadPageContentEvent;
 use Phile\Event\ParsePageContentEvent;
 use Phile\Event\ParsePageMetaEvent;
 use Phile\ServiceLocator\MetaParserInterface;
 use Phile\ServiceLocator\ParserInterface;
+use Phile\ServiceLocator\RouterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -116,5 +118,11 @@ class Page
 
     public function getContentFile(){
         return $this->contentFile;
+    }
+    
+    public function getUrl(){
+        /** @var RouterInterface $router */
+        $router = ServiceLocator::getService('Phile_Router');
+        return $router->urlForPath($this->contentFile);
     }
 }
