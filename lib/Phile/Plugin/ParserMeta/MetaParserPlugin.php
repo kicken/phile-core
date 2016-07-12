@@ -6,6 +6,7 @@ namespace Phile\Plugin\ParserMeta;
 
 use Phile\Core\ServiceLocator;
 use Phile\Plugin\AbstractPlugin;
+use Phile\ServiceLocator\MetaParserInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -17,7 +18,7 @@ use Symfony\Component\Yaml\Yaml;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Plugin\Phile\ParserMeta
  */
-class MetaParserPlugin extends AbstractPlugin
+class MetaParserPlugin extends AbstractPlugin implements MetaParserInterface
 {
     public function initialize()
     {

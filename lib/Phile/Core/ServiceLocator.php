@@ -5,6 +5,12 @@
 namespace Phile\Core;
 
 use Phile\Exception\ServiceLocatorException;
+use Phile\Model\Meta;
+use Phile\ServiceLocator\CacheInterface;
+use Phile\ServiceLocator\ParserInterface;
+use Phile\ServiceLocator\PersistenceInterface;
+use Phile\ServiceLocator\TemplateInterface;
+use Predis\Response\ErrorInterface;
 
 /**
  * the Service Locator class
@@ -25,12 +31,12 @@ class ServiceLocator
      * @var array $serviceMap for mapping speaking names/keys to the interfaces
      */
     protected static $serviceMap = array(
-    'Phile_Cache'            => 'Phile\ServiceLocator\CacheInterface',
-    'Phile_Template'         => 'Phile\ServiceLocator\TemplateInterface',
-    'Phile_Parser'           => 'Phile\ServiceLocator\ParserInterface',
-    'Phile_Data_Persistence' => 'Phile\ServiceLocator\PersistenceInterface',
-    'Phile_Parser_Meta'      => 'Phile\ServiceLocator\MetaInterface',
-    'Phile_ErrorHandler'     => 'Phile\ServiceLocator\ErrorHandlerInterface',
+    'Phile_Cache'            => CacheInterface::class,
+    'Phile_Template'         => TemplateInterface::class,
+    'Phile_Parser'           => ParserInterface::class,
+    'Phile_Data_Persistence' => PersistenceInterface::class,
+    'Phile_Parser_Meta'      => Meta::class,
+    'Phile_ErrorHandler'     => ErrorInterface::class,
     );
 
     /**
