@@ -31,13 +31,13 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
     public function render(Page $page)
     {
         $engine = $this->getEngine();
-        
+
         $vars = $this->getTemplateVars($page);
         $template = $this->getTemplateFileName($page);
 
         return $engine->render($template, $vars);
     }
-    
+
     protected function getEngine()
     {
         $options = isset($this->config['options'])?$this->config['options']:[];
@@ -48,7 +48,7 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
         if (!empty($options['debug'])) {
             $twig->addExtension(new \Twig_Extension_Debug());
         }
-        
+
         return $twig;
     }
 
@@ -59,16 +59,16 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
         if (empty($template)) {
             $template = 'index';
         }
-        
+
         if (!empty($this->config['template_extension'])) {
             $template .= '.' . $this->config['template_extension'];
         }
-        
+
         $templatePath = $this->getTemplatePath($template);
         if (!file_exists($templatePath)) {
             throw new \RuntimeException("Template file '{$templatePath}' not found.");
         }
-        
+
         return $template;
     }
 
@@ -88,15 +88,15 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
             'content' => $page->getContent(),
             'meta' => $page->getMeta(),
             'current_page' => $page,
-            'base_dir' => rtrim($this->config['root_dir'], '/'),
-            'base_url' => $this->config['base_url'],
-            'config' => $this->config,
-            'content_dir' => $this->config['content_dir'],
-            'content_url' => $this->config['base_url'] . '/' . basename($this->config['content_dir']),
+            'base_dir' => rtrim($this->phileConfig['root_dir'], '/'),
+            'base_url' => $this->phileConfig['base_url'],
+            'config' => $this->phileConfig,
+            'content_dir' => $this->phileConfig['content_dir'],
+            'content_url' => $this->phileConfig['base_url'] . '/' . basename($this->phileConfig['content_dir']),
             'pages' => $repository->findAll(),
-            'site_title' => $this->config['site_title'],
+            'site_title' => $this->phileConfig['site_title'],
             'theme_dir' => $this->config['themes_dir'] . $this->config['theme'],
-            'theme_url' => $this->config['base_url'] . '/' . basename($this->config['themes_dir']) . '/' . $this->config['theme'],
+            'theme_url' => $this->phileConfig['base_url'] . '/' . basename($this->config['themes_dir']) . '/' . $this->config['theme'],
         ];
 
         /**
