@@ -96,6 +96,7 @@ class Core
             'timezone' => date_default_timezone_get(),
             'charset' => 'utf-8',
             'display_errors' => 0,
+            'root_dir' => $root,
             'content_dir' => $root . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR,
             'content_ext' => '.md',
             'themes_dir' => $root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR,
