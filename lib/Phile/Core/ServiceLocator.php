@@ -5,9 +5,9 @@
 namespace Phile\Core;
 
 use Phile\Exception\ServiceLocatorException;
-use Phile\Model\Meta;
 use Phile\ServiceLocator\CacheInterface;
 use Phile\ServiceLocator\ErrorHandlerInterface;
+use Phile\ServiceLocator\MetaParserInterface;
 use Phile\ServiceLocator\ParserInterface;
 use Phile\ServiceLocator\PersistenceInterface;
 use Phile\ServiceLocator\TemplateInterface;
@@ -35,7 +35,7 @@ class ServiceLocator
     'Phile_Template'         => TemplateInterface::class,
     'Phile_Parser'           => ParserInterface::class,
     'Phile_Data_Persistence' => PersistenceInterface::class,
-    'Phile_Parser_Meta'      => Meta::class,
+    'Phile_Parser_Meta'      => MetaParserInterface::class,
     'Phile_ErrorHandler'     => ErrorHandlerInterface::class,
     );
 
