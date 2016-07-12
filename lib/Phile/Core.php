@@ -158,7 +158,7 @@ class Core
 
         $https = isset($_SERVER['HTTPS']) && $_SERVER['https'] !== 'off';
         $protocol = $https?'https':'http';
-        $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_POST']:null;
+        $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:null;
 
         if ($protocol && $host) {
             $url = sprintf('%s://%s/%s', $protocol, $host, ltrim($url, '/'));
