@@ -76,7 +76,7 @@ class Router implements RouterInterface
     }
 
     private function needsRedirect($url, $contentFile){
-        $default = '/index' . $this->settings['content_ext'];
+        $default = DIRECTORY_SEPARATOR . 'index' . $this->settings['content_ext'];
 
         $endsInSlash = $url[strlen($url) - 1] === '/';
         $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
