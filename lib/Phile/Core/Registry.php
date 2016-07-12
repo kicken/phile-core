@@ -48,7 +48,7 @@ class Registry extends \ArrayObject
     public static function setInstance(Registry $registry)
     {
         if (self::$registry !== null) {
-            throw new \Exception('Registry is already initialized', 1398536572);
+            throw new \RuntimeException('Registry is already initialized', 1398536572);
         }
         self::$registry = $registry;
     }
@@ -79,7 +79,7 @@ class Registry extends \ArrayObject
     {
         $instance = self::getInstance();
         if (!$instance->offsetExists($index)) {
-            throw new \Exception("No entry is registered for key '$index'", 1398536594);
+            throw new \RuntimeException("No entry is registered for key '$index'", 1398536594);
         }
 
         return $instance->offsetGet($index);
