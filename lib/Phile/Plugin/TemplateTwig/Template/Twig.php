@@ -4,7 +4,6 @@
  */
 namespace Phile\Plugin\TemplateTwig\Template;
 
-use Phile\Core\Event;
 use Phile\Core\Registry;
 use Phile\Model\Page;
 use Phile\Repository\Page as Repository;
@@ -20,68 +19,44 @@ use Phile\ServiceLocator\TemplateInterface;
  */
 class Twig implements TemplateInterface
 {
-    /**
-     * @var array the complete phile config
-     */
-    protected $settings;
+    /** @var array Plugin specific config */
+    protected $config;
 
-    /**
-     * @var Page the page model
-     */
-    protected $page;
+    /** @var array Phile global config */
+    private $phileConfig;
 
     /**
      * the constructor
      *
-     * @param array $settings
+     * @param array $config
+     * @param array $phileConfig
      */
-    public function __construct($settings = [])
+    public function __construct(array $config, array $phileConfig)
     {
-        $global = Registry::get('Phile_Settings');
-        $this->settings = array_merge($global, $settings);
+        $this->config = $config;
+        $this->phileConfig = $phileConfig;
     }
 
-    /**
-     * method to set the current page
-     *
-     * @param Page $page the page model
-     *
-     * @return mixed|void
-     */
-    public function setCurrentPage(Page $page)
-    {
-        $this->page = $page;
-    }
-
-    /**
-     * method to render the page/template
-     *
-     * @return mixed|string
-     */
-    public function render()
+    public function render(Page $page)
     {
         $engine = $this->getEngine();
-        $vars = $this->getTemplateVars();
+        $vars = $this->getTemplateVars($page);
 
-        Event::triggerEvent(
-            'template_engine_registered',
-            ['engine' => &$engine, 'data' => &$vars]
-        );
-
-        return $this->doRender($engine, $vars);
+        return $this->doRender($page, $engine, $vars);
     }
 
     /**
      * wrapper to call the render engine
      *
+     * @param Page $page
      * @param  \Twig_Environment $engine
      * @param  array $vars
      * @return mixed
      */
-    protected function doRender($engine, $vars)
+    protected function doRender(Page $page, $engine, $vars)
     {
         try {
-            $template = $this->getTemplateFileName();
+            $template = $this->getTemplateFileName($page);
         } catch (\RuntimeException $e) {
             return $e->getMessage();
         }
@@ -95,7 +70,7 @@ class Twig implements TemplateInterface
      */
     protected function getEngine()
     {
-        $options = isset($this->settings['options'])?$this->settings['options']:[];
+        $options = isset($this->config['options'])?$this->config['options']:[];
         $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
         $twig = new \Twig_Environment($loader, $options);
 
@@ -109,17 +84,18 @@ class Twig implements TemplateInterface
     /**
      * get template file name
      *
+     * @param Page $page
      * @return string
-     * @throws \RuntimeException
      */
-    protected function getTemplateFileName()
+    protected function getTemplateFileName(Page $page)
     {
-        $template = $this->page->getMeta()->get('template');
+        $meta = $page->getMeta();
+        $template = $meta['template'];
         if (empty($template)) {
             $template = 'index';
         }
-        if (!empty($this->settings['template_extension'])) {
-            $template .= '.' . $this->settings['template_extension'];
+        if (!empty($this->config['template_extension'])) {
+            $template .= '.' . $this->config['template_extension'];
         }
         $templatePath = $this->getTemplatePath($template);
         if (!file_exists($templatePath)) {
@@ -139,9 +115,9 @@ class Twig implements TemplateInterface
      */
     protected function getTemplatePath($sub = '')
     {
-        $themePath = $this->settings['themes_dir'] . $this->settings['theme'];
+        $themePath = $this->config['themes_dir'] . $this->config['theme'];
         if (!empty($sub)) {
-            $themePath .= '/' . ltrim($sub, DIRECTORY_SEPARATOR);
+            $themePath .= DIRECTORY_SEPARATOR . ltrim($sub, DIRECTORY_SEPARATOR);
         }
         return $themePath;
     }
@@ -149,25 +125,26 @@ class Twig implements TemplateInterface
     /**
      * get template vars
      *
+     * @param Page $page
      * @return array|mixed
      * @throws \Exception
      */
-    protected function getTemplateVars()
+    protected function getTemplateVars(Page $page)
     {
-        $repository = new Repository($this->settings);
+        $repository = new Repository($this->config);
         $defaults = [
-        'content' => $this->page->getContent(),
-        'meta' => $this->page->getMeta(),
-        'current_page' => $this->page,
-        'base_dir' => rtrim($this->settings['root_dir'], '/'),
-        'base_url' => $this->settings['base_url'],
-        'config' => $this->settings,
-        'content_dir' => $this->settings['content_dir'],
-        'content_url' => $this->settings['base_url'] . '/' . basename($this->settings['content_dir']),
-        'pages' => $repository->findAll(),
-        'site_title' => $this->settings['site_title'],
-        'theme_dir' => $this->settings['themes_dir'] . $this->settings['theme'],
-        'theme_url' => $this->settings['base_url'] . '/' . basename($this->settings['themes_dir']) . '/' . $this->settings['theme'],
+            'content' => $page->getContent(),
+            'meta' => $page->getMeta(),
+            'current_page' => $page,
+            'base_dir' => rtrim($this->config['root_dir'], '/'),
+            'base_url' => $this->config['base_url'],
+            'config' => $this->config,
+            'content_dir' => $this->config['content_dir'],
+            'content_url' => $this->config['base_url'] . '/' . basename($this->config['content_dir']),
+            'pages' => $repository->findAll(),
+            'site_title' => $this->config['site_title'],
+            'theme_dir' => $this->config['themes_dir'] . $this->config['theme'],
+            'theme_url' => $this->config['base_url'] . '/' . basename($this->config['themes_dir']) . '/' . $this->config['theme'],
         ];
 
         /**

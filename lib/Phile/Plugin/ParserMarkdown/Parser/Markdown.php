@@ -17,21 +17,17 @@ use Phile\ServiceLocator\ParserInterface;
  */
 class Markdown implements ParserInterface
 {
-    /**
- * @var mixed the configuration
-*/
+    /** @var array */
     private $config;
 
     /**
      * the constructor
      *
-     * @param null $config
+     * @param array $config
      */
-    public function __construct($config = null)
+    public function __construct(array $config)
     {
-        if (!is_null($config)) {
-            $this->config = $config;
-        }
+        $this->config = $config;
     }
 
     /**

@@ -18,21 +18,15 @@ use Phile\Plugin\AbstractPlugin;
  */
 class FastCachePlugin extends AbstractPlugin
 {
-
-    protected $events = ['plugins_loaded' => 'onPluginsLoaded'];
-
-    /**
-     * onPluginsLoaded method
-     */
-    public function onPluginsLoaded()
+    public function initialize()
     {
         // phpFastCache not working in CLI mode...
-        if (PHILE_CLI_MODE) {
+        if (php_sapi_name() === 'cli') {
             return;
         }
-        unset($this->settings['active']);
-        $config = $this->settings + \phpFastCache::$config;
-        $driver = $this->settings['driver'];
+        
+        $config = $this->config + \phpFastCache::$config;
+        $driver = $this->config['driver'];
         $cache = phpFastCache($driver, $config);
         ServiceLocator::registerService('Phile_Cache', new PhpFastCache($cache));
     }

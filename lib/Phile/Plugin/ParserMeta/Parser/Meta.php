@@ -17,9 +17,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class MetaParser implements MetaParserInterface
 {
-    /**
- * @var array $config the configuration for this parser
-*/
+    /** @var array */
     private $config;
 
     /**

@@ -19,20 +19,11 @@ use Phile\Plugin\TemplateTwig\Template\Twig;
  */
 class TwigTemplatePlugin extends AbstractPlugin
 {
-    protected $events = ['plugins_loaded' => 'onPluginsLoaded'];
-
-    /**
-     * onPluginsLoaded method
-     *
-     * @param null $data
-     *
-     * @return mixed|void
-     */
-    public function onPluginsLoaded($data = null)
+    public function initialize()
     {
         ServiceLocator::registerService(
             'Phile_Template',
-            new Twig($this->settings)
+            new Twig($this->config, $this->phileConfig)
         );
     }
 }

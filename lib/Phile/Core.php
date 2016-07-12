@@ -107,7 +107,6 @@ class Core
                 'active' => true,
                 'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
             ],
-            SetupCheckPlugin::class => ['active' => true],
             MarkdownPlugin::class => ['active' => true],
             MetaParserPlugin::class => [
                 'active' => true,
@@ -173,11 +172,16 @@ class Core
     {
         $plugins = [];
         foreach ($config['plugins'] as $class => $pluginSpecificConfig) {
+            if (isset($pluginSpecificConfig['active']) && !$pluginSpecificConfig['active']) {
+                continue;
+            }
+            
             if (!class_exists($class)) {
                 throw new PluginNotFoundException($class);
             }
 
             try {
+                unset($pluginSpecificConfig['active']);
                 $plugins[] = new $class($pluginSpecificConfig, $config);
             } catch (\Exception $ex){
                 throw new PluginInitializationException('Exception caught while trying to instantiate plugin', $ex);

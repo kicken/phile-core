@@ -6,7 +6,7 @@ namespace Phile\Plugin\ParserMeta;
 
 use Phile\Core\ServiceLocator;
 use Phile\Plugin\AbstractPlugin;
-use Phile\Plugin\ParserMeta\Parser\Meta;
+use Phile\Plugin\ParserMeta\Parser\MetaParser;
 
 /**
  * Class Plugin
@@ -19,21 +19,11 @@ use Phile\Plugin\ParserMeta\Parser\Meta;
  */
 class MetaParserPlugin extends AbstractPlugin
 {
-
-    protected $events = ['plugins_loaded' => 'onPluginsLoaded'];
-
-    /**
-     * onPluginsLoaded method
-     *
-     * @param null $data
-     *
-     * @return mixed|void
-     */
-    public function onPluginsLoaded($data = null)
+    public function initialize()
     {
         ServiceLocator::registerService(
             'Phile_Parser_Meta',
-            new Meta($this->settings)
+            new MetaParser($this->config)
         );
     }
 }

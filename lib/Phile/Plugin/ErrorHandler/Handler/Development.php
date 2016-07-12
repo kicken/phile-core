@@ -5,9 +5,7 @@
 
 namespace Phile\Plugin\ErrorHandler\Handler;
 
-use Phile\Core\Registry;
 use Phile\ServiceLocator\ErrorHandlerInterface;
-use Phile\Core\Utility;
 
 /**
  * Class Development
@@ -25,14 +23,20 @@ class Development implements ErrorHandlerInterface
      */
     protected $settings;
 
+    /** @var array Phile global settings */
+    protected $phileConfig;
+
+
     /**
      * constructor
      *
      * @param array $settings
+     * @param array $phileConfig
      */
-    public function __construct(array $settings = [])
+    public function __construct(array $settings = [], $phileConfig = [])
     {
         $this->settings = $settings;
+        $this->phileConfig = $phileConfig;
     }
 
     /**
@@ -124,18 +128,17 @@ class Development implements ErrorHandlerInterface
             5,
             5
         );
-
-        $global = Registry::get('Phile_Settings');
+        
         $marker = [
-        'base_url' => $global['base_url'],
-        'type' => $exception ? 'Exception' : 'Error',
-        'exception_message' => htmlspecialchars($message),
-        'exception_code' => htmlspecialchars($code),
-        'exception_file' => htmlspecialchars($file),
-        'exception_line' => htmlspecialchars($line),
-        'exception_fragment' => $fragment,
-        'exception_class' => '',
-        'wiki_link' => ''
+            'base_url' => $this->phileConfig['base_url'],
+            'type' => $exception ? 'Exception' : 'Error',
+            'exception_message' => htmlspecialchars($message),
+            'exception_code' => htmlspecialchars($code),
+            'exception_file' => htmlspecialchars($file),
+            'exception_line' => htmlspecialchars($line),
+            'exception_fragment' => $fragment,
+            'exception_class' => '',
+            'wiki_link' => ''
         ];
 
         if ($exception) {
@@ -310,12 +313,11 @@ class Development implements ErrorHandlerInterface
         }
 
         $filename = 'docs/classes/' . str_replace('\\', '.', $class) . '.html';
-        if (file_exists(Utility::resolveFilePath($filename))) {
+        if (file_exists($filename)) {
             return $title;
         }
-
-        $global = Registry::get('Phile_Settings');
-        $href = $global['base_url'] . '/' . $filename;
+        
+        $href = $this->phileConfig['base_url'] . '/' . $filename;
         if ($method) {
             $href .= '#method_' . $method;
         }

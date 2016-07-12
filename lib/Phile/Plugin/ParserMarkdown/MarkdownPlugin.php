@@ -19,18 +19,8 @@ use Phile\Plugin\ParserMarkdown\Parser\Markdown;
  */
 class MarkdownPlugin extends AbstractPlugin
 {
-
-    protected $events = ['plugins_loaded' => 'onPluginsLoaded'];
-
-    /**
-     * onPluginsLoaded method
-     *
-     * @param null $data
-     *
-     * @return mixed|void
-     */
-    public function onPluginsLoaded($data = null)
+    public function initialize()
     {
-        ServiceLocator::registerService('Phile_Parser', new Markdown($this->settings));
+        ServiceLocator::registerService('Phile_Parser', new Markdown($this->config));
     }
 }

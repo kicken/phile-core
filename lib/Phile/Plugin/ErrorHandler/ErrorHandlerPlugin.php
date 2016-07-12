@@ -23,27 +23,20 @@ class ErrorHandlerPlugin extends AbstractPlugin
     const HANDLER_ERROR_LOG      = 'error_log';
     const HANDLER_DEVELOPMENT    = 'development';
 
-    protected $events = ['plugins_loaded' => 'onPluginsLoaded'];
-
-    /**
-     * called on 'plugins_loaded' event
-     *
-     * @param  null $data
-     * @throws \Phile\Exception\ServiceLocatorException
-     */
-    public function onPluginsLoaded($data = null)
+    
+    public function initialize()
     {
-        switch ($this->settings['handler']) {
+        switch ($this->config['handler']) {
             case ErrorHandlerPlugin::HANDLER_ERROR_LOG:
                 ServiceLocator::registerService(
                     'Phile_ErrorHandler',
-                    new ErrorLog($this->settings)
+                    new ErrorLog($this->config, $this->phileConfig)
                 );
                 break;
             case ErrorHandlerPlugin::HANDLER_DEVELOPMENT:
                 ServiceLocator::registerService(
                     'Phile_ErrorHandler',
-                    new Development($this->settings)
+                    new Development($this->config, $this->phileConfig)
                 );
                 break;
         }

@@ -19,21 +19,11 @@ use Phile\Plugin\SimpleFileDataPersistence\Persistence\SimpleFileDataPersistence
  */
 class FileDataPersistencePlugin extends AbstractPlugin
 {
-
-    protected $events = ['plugins_loaded' => 'onPluginsLoaded'];
-
-    /**
-     * onPluginsLoaded method
-     *
-     * @param null $data
-     *
-     * @return mixed|void
-     */
-    public function onPluginsLoaded($data = null)
+    public function initialize()
     {
         ServiceLocator::registerService(
             'Phile_Data_Persistence',
-            new SimpleFileDataPersistence($this->settings['storage_dir'])
+            new SimpleFileDataPersistence($this->config['storage_dir'])
         );
     }
 }
