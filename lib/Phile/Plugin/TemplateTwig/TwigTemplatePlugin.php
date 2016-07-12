@@ -85,7 +85,7 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
     {
         $repository = new PageRepository($this->phileConfig);
         $defaults = [
-            'content' => $page->getContent(),
+            'content' => $page->getParsedContent(),
             'meta' => $page->getMeta(),
             'current_page' => $page,
             'base_dir' => rtrim($this->phileConfig['root_dir'], '/'),
