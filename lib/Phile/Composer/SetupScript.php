@@ -10,7 +10,6 @@ namespace Phile\Composer;
 
 use Composer\IO\IOInterface;
 use Composer\Script\Event;
-use Phile\Core\Utility;
 
 class SetupScript {
     private $io;
@@ -32,7 +31,6 @@ class SetupScript {
 
         $config = [
             'site_title' => $this->askSiteTitle()
-            , 'encryptionKey' => $this->askEncryptionKey()
         ];
 
         $this->writeConfiguration($config);
@@ -44,17 +42,6 @@ class SetupScript {
         $question = sprintf('<question>Site Title [%s]:</question> ', $title);
 
         return $this->io->ask($question, $title);
-    }
-
-    private function askEncryptionKey(){
-        $key = $this->generateRandomKey();
-        $question = sprintf('<question>Encryption Key [%s]:</question>', '<random>');
-
-        return $this->io->ask($question, $key);
-    }
-
-    private function generateRandomKey(){
-        return Utility::generateSecureToken(64);
     }
 
     private function getPath($sub){
