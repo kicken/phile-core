@@ -12,6 +12,6 @@ class PluginNotFoundException extends PluginException
 {
     public function __construct($class)
     {
-        parent::__construct(sprintf("Plugin '%s' not found."));
+        parent::__construct(sprintf("Plugin '%s' not found.", $class));
     }
 }
