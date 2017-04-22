@@ -22,15 +22,18 @@ use Phile\Repository\Page as PageRepository;
  */
 class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
 {
+    /** @var \Twig_Environment */
+    private $twig;
+
     public function initialize()
     {
+        $this->twig = $this->createTwigEngine();
         ServiceLocator::registerService('Phile_Template', $this);
     }
 
-
     public function render(Page $page)
     {
-        $engine = $this->getEngine();
+        $engine = $this->getTwig();
 
         $vars = $this->getTemplateVars($page);
         $template = $this->getTemplateFileName($page);
@@ -38,7 +41,11 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface
         return $engine->render($template, $vars);
     }
 
-    protected function getEngine()
+    public function getTwig(){
+        return $this->twig;
+    }
+
+    protected function createTwigEngine()
     {
         $options = isset($this->config['options'])?$this->config['options']:[];
         $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
