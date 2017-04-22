@@ -8,6 +8,7 @@ use Phile\Core\Registry;
 use Phile\Core\Response;
 use Phile\Core\Router;
 use Phile\Core\ServiceLocator;
+use Phile\Event\CoreEvent;
 use Phile\Event\NotFoundEvent;
 use Phile\Event\RenderingEvent;
 use Phile\Exception\PluginInitializationException;
@@ -72,6 +73,9 @@ class Core
 
         ServiceLocator::registerService('Phile_Router', $this->router);
         Registry::set('Phile_Settings', $this->settings);
+
+        $event = new CoreEvent();
+        $this->dispatcher->dispatch(CoreEvent::LOADED, $event);
     }
 
     /**
