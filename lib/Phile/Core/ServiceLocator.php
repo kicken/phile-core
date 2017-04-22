@@ -98,7 +98,7 @@ class ServiceLocator
 
     private static function dispatchEvent($name, Event $event){
         /** @var EventDispatcher $dispatcher */
-        $dispatcher = self::$serviceMap['Phile_EventDispatcher'];
+        $dispatcher = self::$services['Phile_EventDispatcher'];
         if ($dispatcher){
             $dispatcher->dispatch($name, $event);
         }
