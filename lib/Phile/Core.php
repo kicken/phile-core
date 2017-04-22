@@ -70,8 +70,8 @@ class Core
             $this->dispatcher->addSubscriber($plugin);
         }
 
-        ServiceLocator::registerService('Phile_Router', $this->router);
         ServiceLocator::registerService('Phile_EventDispatcher', $this->dispatcher);
+        ServiceLocator::registerService('Phile_Router', $this->router);
         Registry::set('Phile_Settings', $this->settings);
     }
 
