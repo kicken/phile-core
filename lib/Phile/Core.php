@@ -62,7 +62,7 @@ class Core
     {
         $this->settings = $config;
         $this->plugins = $plugins;
-        $this->dispatcher = new EventDispatcher();
+        $this->dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
         $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
 
         /** @var AbstractPlugin $plugin */
@@ -70,7 +70,6 @@ class Core
             $this->dispatcher->addSubscriber($plugin);
         }
 
-        ServiceLocator::registerService('Phile_EventDispatcher', $this->dispatcher);
         ServiceLocator::registerService('Phile_Router', $this->router);
         Registry::set('Phile_Settings', $this->settings);
     }
@@ -81,6 +80,7 @@ class Core
      */
     public static function bootstrap($config = [])
     {
+        ServiceLocator::registerService('Phile_EventDispatcher', new EventDispatcher());
         $rootDirectory = isset($config['root_dir'])?$config['root_dir']:self::findRootDirectory();
         $baseUrl = isset($config['base_url'])?$config['base_url']:self::findBaseUrl();
 
