@@ -24,7 +24,9 @@ class SetupScript {
     }
 
     private function execute(){
-        if ($this->isAlreadySetup()) return;
+        if ($this->isAlreadySetup()){
+            return;
+        }
 
         $this->io->write('Welcome to PhileCMS');
         $this->io->write('To continue we first need to get a few configuration details out of the way.');
@@ -47,7 +49,7 @@ class SetupScript {
     private function getPath($sub){
         $rootDir = getcwd();
 
-        return str_replace('/', DIRECTORY_SEPARATOR, $rootDir . '/'. $sub);
+        return str_replace('/', DIRECTORY_SEPARATOR, $rootDir . '/' . $sub);
     }
 
     private function writeConfiguration(array $config){
@@ -91,15 +93,17 @@ class SetupScript {
     }
 
     private function isConfigured(){
+        $config = null;
         $configFile = $this->getPath('config.php');
-        $config = file_exists($configFile)?include $configFile:[];
+        if (file_exists($configFile)){
+            $config = include $configFile;
+        }
 
-        return !empty($config['encryptionKey']);
+        return is_array($config);
     }
 
     private function isVarCreated(){
         return file_exists($this->getPath('var/cache'))
-            && file_exists($this->getPath('var/datastorage'))
-        ;
+            && file_exists($this->getPath('var/datastorage'));
     }
 }
