@@ -23,6 +23,7 @@ abstract class AbstractPlugin implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
+        return [];
     }
 
     /**
@@ -40,7 +41,7 @@ abstract class AbstractPlugin implements EventSubscriberInterface
     public function initialize()
     {
     }
-    
+
     /**
      * Get a path relative to the plugin's source directory.
      *
@@ -53,7 +54,7 @@ abstract class AbstractPlugin implements EventSubscriberInterface
             $rf = new \ReflectionObject($this);
             $dir = dirname($rf->getFileName()) . DIRECTORY_SEPARATOR;
         }
-        
+
         return $dir . ltrim($sub, DIRECTORY_SEPARATOR);
     }
 }
