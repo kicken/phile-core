@@ -13,6 +13,7 @@ use Phile\Event\RenderingEvent;
 use Phile\Exception\PluginInitializationException;
 use Phile\Exception\PluginNotFoundException;
 use Phile\Model\Page;
+use Phile\Plugin\AbstractPlugin;
 use Phile\Plugin\ErrorHandler\ErrorHandlerPlugin;
 use Phile\Plugin\ParserMarkdown\MarkdownPlugin;
 use Phile\Plugin\ParserMeta\MetaParserPlugin;
@@ -63,6 +64,11 @@ class Core
         $this->plugins = $plugins;
         $this->dispatcher = new EventDispatcher();
         $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
+
+        /** @var AbstractPlugin $plugin */
+        foreach ($plugins as $plugin){
+            $this->dispatcher->addSubscriber($plugin);
+        }
 
         ServiceLocator::registerService('Phile_Router', $this->router);
         ServiceLocator::registerService('Phile_EventDispatcher', $this->dispatcher);

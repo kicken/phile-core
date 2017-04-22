@@ -4,6 +4,8 @@
  */
 namespace Phile\Core;
 
+use Composer\EventDispatcher\EventDispatcher;
+use Phile\Event\ServiceEvent;
 use Phile\Exception\ServiceLocatorException;
 use Phile\ServiceLocator\CacheInterface;
 use Phile\ServiceLocator\ErrorHandlerInterface;
@@ -12,6 +14,7 @@ use Phile\ServiceLocator\ParserInterface;
 use Phile\ServiceLocator\PersistenceInterface;
 use Phile\ServiceLocator\RouterInterface;
 use Phile\ServiceLocator\TemplateInterface;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -53,6 +56,10 @@ class ServiceLocator
      */
     public static function registerService($serviceKey, $object)
     {
+        $event = new ServiceEvent($serviceKey, $object);
+        self::dispatchEvent(ServiceEvent::REGISTERED, $event);
+        $object = $event->getService();
+
         $interface  = self::$serviceMap[$serviceKey];
         if (!($object instanceof $interface)) {
             throw new ServiceLocatorException("the object must implement the interface: '{$interface}'", 1398536617);
@@ -87,5 +94,13 @@ class ServiceLocator
         }
 
         return self::$services[$serviceKey];
+    }
+
+    private static function dispatchEvent($name, Event $event){
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = self::$serviceMap['Phile_EventDispatcher'];
+        if ($dispatcher){
+            $dispatcher->dispatch($name, $event);
+        }
     }
 }
