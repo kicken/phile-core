@@ -77,7 +77,7 @@ class Core
         $errorHandler = ServiceLocator::getService('Phile_ErrorHandler');
         if ($errorHandler){
             set_error_handler([$errorHandler, 'handleError']);
-            set_exception_handler([$errorHandler, 'handleError']);
+            set_exception_handler([$errorHandler, 'handleException']);
         }
 
         $event = new CoreEvent();
