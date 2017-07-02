@@ -168,7 +168,7 @@ class Core
             $url = preg_replace('/index\.php(.*)?$/', '', $_SERVER['PHP_SELF']);
         }
 
-        $https = isset($_SERVER['HTTPS']) && $_SERVER['https'] !== 'off';
+        $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
         $protocol = $https?'https':'http';
         $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:null;
 
