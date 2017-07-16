@@ -18,20 +18,18 @@ interface ErrorHandlerInterface
      *
      * @param int    $errno
      * @param string $errstr
-     * @param string $errfile
-     * @param int    $errline
-     * @param array  $errcontext
+     * @param string $errFile
+     * @param int    $errLine
+     * @param array  $errContext
      *
      * @return boolean
      */
-    public function handleError($errno, $errstr, $errfile, $errline, array $errcontext);
+    public function handleError($errno, $errstr, $errFile, $errLine, array $errContext);
 
     /**
      * handle all exceptions
      *
-     * @param \Exception $exception
-     *
-     * @return mixed
+     * @param \Throwable|\Exception $exception
      */
-    public function handleException(\Exception $exception);
+    public function handleException($exception);
 }

@@ -25,19 +25,18 @@ class ErrorHandlerPlugin extends AbstractPlugin
 
     public function initialize()
     {
-        switch ($this->config['handler']) {
+        $handler = null;
+        switch ($this->config['handler']){
             case ErrorHandlerPlugin::HANDLER_ERROR_LOG:
-                ServiceLocator::registerService(
-                    'Phile_ErrorHandler',
-                    new ErrorLog($this->config, $this->phileConfig)
-                );
+                $handler = new ErrorLog($this->config, $this->phileConfig);
                 break;
             case ErrorHandlerPlugin::HANDLER_DEVELOPMENT:
-                ServiceLocator::registerService(
-                    'Phile_ErrorHandler',
-                    new Development($this->config, $this->phileConfig)
-                );
+                $handler = new Development($this->config, $this->phileConfig);
                 break;
+        }
+
+        if ($handler){
+            ServiceLocator::registerService('Phile_ErrorHandler', $handler);
         }
     }
 }
