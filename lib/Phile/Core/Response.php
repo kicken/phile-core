@@ -29,11 +29,6 @@ class Response
     protected $body = '';
 
     /**
-     * @var string charset
-     */
-    protected $charset = 'utf-8';
-
-    /**
      * @var array HTTP-headers
      */
     protected $headers = [];
@@ -42,11 +37,6 @@ class Response
      * @var int HTTP status code
      */
     protected $statusCode = 200;
-
-    public function __construct()
-    {
-        $this->setHeader('Content-Type', 'text/html; charset=' . $this->charset);
-    }
 
     /**
      * redirect to another URL
@@ -71,18 +61,6 @@ class Response
     public function setBody($body)
     {
         $this->body = $body;
-        return $this;
-    }
-
-    /**
-     * set the response character-set
-     *
-     * @param  $charset
-     * @return $this
-     */
-    public function setCharset($charset)
-    {
-        $this->charset = $charset;
         return $this;
     }
 
@@ -121,14 +99,6 @@ class Response
     public function getBody()
     {
         return $this->body;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCharset()
-    {
-        return $this->charset;
     }
 
     /**

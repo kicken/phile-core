@@ -217,7 +217,7 @@ class Core
                 $response->redirect($redirect);
             }
         } else {
-            $response = $this->handleContentFile($contentFile);
+            $response = $this->createResponse($contentFile);
         }
 
         $this->outputResponse($response);
@@ -232,16 +232,79 @@ class Core
         if ($contentFile === null) {
             $response = new Response();
             $response
-                ->setCharset('utf-8')
                 ->setStatusCode(404)
+                ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
                 ->setBody('Not found')
             ;
         } else {
-            $response = $this->handleContentFile($contentFile);
-            $response->setStatusCode(404);
+            $response = $this->createResponse($contentFile)
+                ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
+                ->setStatusCode(404)
+            ;
         }
 
         return $response;
+    }
+
+    private function createResponse($contentFile){
+        $response = new Response();
+
+        $extension = pathinfo($contentFile, PATHINFO_EXTENSION);
+        if ($this->isContentExtension($extension)){
+            $response
+                ->setBody($this->handleContentFile($contentFile))
+                ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
+                ->setStatusCode(200)
+            ;
+        } else {
+            $response
+                ->setBody(file_get_contents($contentFile))
+                ->setHeader('Content-type', $this->guessMimeType($contentFile))
+                ->setStatusCode(200)
+            ;
+        }
+
+        return $response;
+    }
+
+    private function isContentExtension($extension){
+        return $this->normalizeExtension($extension) === $this->normalizeExtension($this->settings['content_ext']);
+    }
+
+    private function normalizeExtension($extension){
+        $extension = strtolower($extension);
+        $extension = trim($extension, '.');
+
+        return $extension;
+    }
+
+    private function guessMimeType($file){
+        $type = null;
+        if (function_exists('mime_content_type')){
+            $type = mime_content_type($file);
+        }
+
+        if (!$type && class_exists('\finfo')){
+            $info = new \finfo(FILEINFO_MIME);
+            $info = $info->file($file);
+            if ($info){
+                $type = $info;
+            }
+        }
+
+        //Try image types
+        if (!$type){
+            $info = getimagesize($file);
+            if (isset($info['mime'])){
+                $type = $info['mime'];
+            }
+        }
+
+        if (!$type){
+            $type = 'application/octet-stream';
+        }
+
+        return $type;
     }
 
     private function handleContentFile($contentFile)
@@ -259,14 +322,7 @@ class Core
         $this->dispatcher->dispatch(RenderingEvent::AFTER, $event);
         $output = $event->getContent();
 
-        $response = new Response();
-        $response
-            ->setStatusCode(200)
-            ->setCharset($this->settings['charset'])
-            ->setBody($output)
-        ;
-
-        return $response;
+        return $output;
     }
 
     private function createPageModel($contentFile)

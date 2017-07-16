@@ -21,11 +21,6 @@ abstract class AbstractPlugin implements EventSubscriberInterface
     /** @var array Phile's global configuration */
     protected $phileConfig;
 
-    public static function getSubscribedEvents()
-    {
-        return [];
-    }
-
     /**
      * AbstractPlugin constructor.
      *
@@ -36,6 +31,10 @@ abstract class AbstractPlugin implements EventSubscriberInterface
         $this->config = $pluginConfig;
         $this->phileConfig = $phileConfig;
         $this->initialize();
+    }
+
+    public static function getSubscribedEvents(){
+        return [];
     }
 
     public function initialize()
