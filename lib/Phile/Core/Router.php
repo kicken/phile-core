@@ -108,14 +108,15 @@ class Router implements RouterInterface
         $path = trim($path, DIRECTORY_SEPARATOR);
         $base = $contentDir . $path;
 
-        $path = $base . $contentExt;
-        if (file_exists($path) && is_file($path)){
-            return $path;
+        $file = $base . $contentExt;
+        if (file_exists($file) && is_file($file)){
+            return $file;
         }
 
-        $path = $base . 'index' . $contentExt;
-        if (file_exists($path) && is_file($path)){
-            return $path;
+        $base = $contentDir . $path . DIRECTORY_SEPARATOR;
+        $file = $base . 'index' . $contentExt;
+        if (file_exists($file) && is_file($file)){
+            return $file;
         }
 
         return null;
