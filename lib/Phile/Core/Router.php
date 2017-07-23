@@ -101,15 +101,19 @@ class Router implements RouterInterface
     private function resolvePath($path){
         $contentDir = $this->settings['content_dir'];
         $contentExt = $this->settings['content_ext'];
-        $base = $contentDir . str_replace('/', DIRECTORY_SEPARATOR, $path);
-        $base = rtrim($base, DIRECTORY_SEPARATOR);
+
+        $contentDir = rtrim($contentDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+        $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $path = trim($path, DIRECTORY_SEPARATOR);
+        $base = $contentDir . $path;
 
         $path = $base . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
         }
 
-        $path = $base . DIRECTORY_SEPARATOR . 'index' . $contentExt;
+        $path = $base . 'index' . $contentExt;
         if (file_exists($path) && is_file($path)){
             return $path;
         }
