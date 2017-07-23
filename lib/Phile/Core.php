@@ -97,6 +97,7 @@ class Core
         $defaultConfiguration = self::defaultConfiguration($rootDirectory, $baseUrl);
         $config = array_replace_recursive($defaultConfiguration, $config);
 
+        $config = self::defaultPluginsConfiguration($config);
         $plugins = static::loadPlugins($config);
 
         return new static($config, $plugins);
@@ -122,7 +123,11 @@ class Core
             'storage_dir' => $root . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'datastorage' . DIRECTORY_SEPARATOR
         ];
 
-        $defaults['plugins'] = [
+        return $defaults;
+    }
+
+    private static function defaultPluginsConfiguration($config){
+        $plugins = [
             ErrorHandlerPlugin::class => [
                 'active' => true,
                 'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
@@ -133,8 +138,8 @@ class Core
             ],
             TwigTemplatePlugin::class => [
                 'active' => true,
-                'theme' => $defaults['theme'],
-                'themes_dir' => $defaults['themes_dir'],
+                'theme' => $config['theme'],
+                'themes_dir' => $config['themes_dir'],
                 'template_extension' => 'html',
                 'options' => [
                     'cache' => false,
@@ -144,15 +149,21 @@ class Core
             FastCachePlugin::class => [
                 'active' => true,
                 'driver' => 'auto',
-                'path' => $defaults['cache_dir']
+                'path' => $config['cache_dir']
             ],
             FileDataPersistencePlugin::class => [
                 'active' => true,
-                'storage_dir' => $defaults['storage_dir']
+                'storage_dir' => $config['storage_dir']
             ]
         ];
 
-        return $defaults;
+        if (isset($config['plugins'])){
+            $plugins = array_replace_recursive($plugins, $config['plugins']);
+        }
+
+        $config['plugins'] = $plugins;
+
+        return $config;
     }
 
     /**
