@@ -221,9 +221,9 @@ class Core
         return $plugins;
     }
 
-    public function handleRequest()
+    public function handleRequest($url)
     {
-        $url = $_SERVER['REQUEST_URI'];
+        $url = $this->normalizeRequestUrl($url);
         $contentFile = $this->router->match($url);
         if ($contentFile === null){
             $redirect = $this->router->matchRedirect($url);
@@ -373,5 +373,20 @@ class Core
             register_shutdown_function([$errorHandler, 'handleShutdown']);
             ini_set('display_errors', $this->settings['display_errors']);
         }
+    }
+
+    private function normalizeRequestUrl($url){
+        $baseUrl = $this->settings['base_url'];
+        $url = ltrim($url, '/');
+
+        $basePath = parse_url($baseUrl, PHP_URL_PATH);
+        $basePath = ltrim($basePath, '/');
+
+        if (stripos($url, $basePath) === 0){
+            $url = substr($url, strlen($basePath));
+            $url = ltrim($url, '/');
+        }
+
+        return $url;
     }
 }
