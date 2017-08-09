@@ -280,9 +280,13 @@ class Core
             } else {
                 $response
                     ->setBody($stream)
-                    ->setHeader('Content-type', $this->guessMimeType($contentFile))
                     ->setStatusCode(200)
                 ;
+
+                $mimeType = $this->guessMimeType($contentFile);
+                if ($mimeType){
+                    $response->setHeader('Content-type', $mimeType);
+                }
             }
         }
 
@@ -320,10 +324,6 @@ class Core
             if (isset($info['mime'])){
                 $type = $info['mime'];
             }
-        }
-
-        if (!$type){
-            $type = 'application/octet-stream';
         }
 
         return $type;
