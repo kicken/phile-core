@@ -356,6 +356,9 @@ class Core
     }
 
     private function outputResponse(Response $response){
+        $this->closeSession();
+        $this->disableOutputBuffering();
+
         http_response_code($response->getStatusCode());
         $this->outputHeaders($response->getHeaders());
 
@@ -370,6 +373,16 @@ class Core
     private function outputHeaders($headers){
         foreach ($headers as $name=>$value){
             header(sprintf("%s: %s", $name, $value));
+        }
+    }
+
+    private function closeSession(){
+        session_write_close();
+    }
+
+    private function disableOutputBuffering(){
+        while (ob_get_level()){
+            ob_end_flush();
         }
     }
 
