@@ -24,9 +24,9 @@ class Response
 {
 
     /**
-     * @var string HTTP body
+     * @var string|resource HTTP body
      */
-    protected $body = '';
+    protected $body = null;
 
     /**
      * @var array HTTP-headers
@@ -55,7 +55,7 @@ class Response
     /**
      * set the response body
      *
-     * @param  $body
+     * @param  string|resource $body
      * @return $this
      */
     public function setBody($body)
@@ -94,7 +94,7 @@ class Response
     }
 
     /**
-     * @return string
+     * @return string|resource
      */
     public function getBody()
     {

@@ -228,7 +228,7 @@ class Core
         if ($contentFile === null){
             $redirect = $this->router->matchRedirect($url);
             if (!$redirect) {
-                $response = $this->handleNotFound();
+                $response = $this->handleHttpStatus(404);
             } else {
                 $response = new Response();
                 $response->redirect($redirect);
@@ -240,12 +240,12 @@ class Core
         $this->outputResponse($response);
     }
 
-    private function handleNotFound()
+    private function handleHttpStatus($status)
     {
         $event = new NotFoundEvent($_SERVER['REQUEST_URI']);
         $this->dispatcher->dispatch(NotFoundEvent::AFTER, $event);
 
-        $contentFile = $this->router->match('/404');
+        $contentFile = $this->router->match('/' . $status);
         if ($contentFile === null) {
             $response = new Response();
             $response
@@ -256,7 +256,7 @@ class Core
         } else {
             $response = $this->createResponse($contentFile)
                 ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
-                ->setStatusCode(404)
+                ->setStatusCode($status)
             ;
         }
 
@@ -274,11 +274,16 @@ class Core
                 ->setStatusCode(200)
             ;
         } else {
-            $response
-                ->setBody(file_get_contents($contentFile))
-                ->setHeader('Content-type', $this->guessMimeType($contentFile))
-                ->setStatusCode(200)
-            ;
+            $stream = fopen($contentFile, 'r');
+            if (!$stream){
+                $response = $this->handleHttpStatus(403);
+            } else {
+                $response
+                    ->setBody($stream)
+                    ->setHeader('Content-type', $this->guessMimeType($contentFile))
+                    ->setStatusCode(200)
+                ;
+            }
         }
 
         return $response;
@@ -353,7 +358,13 @@ class Core
     private function outputResponse(Response $response){
         http_response_code($response->getStatusCode());
         $this->outputHeaders($response->getHeaders());
-        echo $response->getBody();
+
+        $body = $response->getBody();
+        if (is_resource($body)){
+            fpassthru($body);
+        } else {
+            echo $body;
+        }
     }
 
     private function outputHeaders($headers){
