@@ -1,7 +1,7 @@
 {
-  "name": "phile-cms/phile-core",
+  "name": "kicken/phile-core",
   "type": "library",
-  "description": "A file-based CMS with a swappable parser, template engine, cache and storage services, error handler, and meta parser.",
+  "description": "A markdown file based CMS",
   "keywords": [
     "cms",
     "markdown",
@@ -14,21 +14,9 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Frank Nägler",
-      "email": "mail@naegler.net",
-      "homepage": "https://naegler.hamburg",
-      "role": "Developer"
-    },
-    {
-      "name": "James Doyle",
-      "email": "james2doyle@gmail.com",
-      "homepage": "http://ohdoylerules.com/",
-      "role": "Developer"
-    },
-    {
-      "name": "Schlaefer",
-      "email": "openmail+sourcecode@siezi.com",
-      "homepage": "http://siezi.com/",
+      "name": "Keith M",
+      "email": "keithm@kickenscripts.us",
+      "homepage": "https://kickenscripts.us",
       "role": "Developer"
     }
   ],
@@ -38,18 +26,13 @@
     }
   },
   "require": {
-    "php": ">=5.5.0",
-    "twig/twig": "^1.15.0",
-    "michelf/php-markdown": ">=1.4",
-    "phpfastcache/phpfastcache": "~3.0",
-    "symfony/yaml": "^2.7",
-    "symfony/event-dispatcher": "^2.1"
+    "php": ">=7.0",
+    "twig/twig": "^2.4",
+    "league/commonmark": "^0.15",
+    "symfony/yaml": "^3.3",
+    "symfony/event-dispatcher": "^3.3"
   },
   "require-dev": {
-    "phpdocumentor/phpdocumentor": "^2.8",
-    "phing/phing": "^2.14",
-    "phpunit/phpunit": "^5.2",
-    "squizlabs/php_codesniffer": "^2.3",
     "composer/composer": "^1.1"
   }
 }
