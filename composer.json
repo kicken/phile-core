@@ -1,6 +1,6 @@
 {
-  "name": "kicken/phile-core",
-  "type": "library",
+  "name": "kicken/phile-cms",
+  "type": "project",
   "description": "A markdown file based CMS",
   "keywords": [
     "cms",
@@ -10,7 +10,6 @@
     "twig",
     "plugins"
   ],
-  "homepage": "http://philecms.com",
   "license": "MIT",
   "authors": [
     {
@@ -22,7 +21,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Phile\\": "lib/Phile"
+      "Phile\\": "src/Phile"
     }
   },
   "require": {
