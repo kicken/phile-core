@@ -2,6 +2,7 @@
 /**
  * test plugin used in Phile's unit tests
  */
+
 namespace PhileTest\Plugin;
 
 use Phile\Core\Event;
@@ -16,15 +17,13 @@ use Phile\Plugin\Phile\TestPlugin\Plugin;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class AbstractPluginTest extends \PHPUnit_Framework_TestCase
-{
+class AbstractPluginTest extends \PHPUnit_Framework_TestCase {
 
     protected $config;
 
     protected $pluginKey = 'phile\testPlugin';
 
-    protected function setUp()
-    {
+    protected function setUp(){
         $settings = $this->config = Registry::get('Phile_Settings');
         $settings['plugins'][$this->pluginKey] = [
             'active' => false,
@@ -33,13 +32,11 @@ class AbstractPluginTest extends \PHPUnit_Framework_TestCase
         Registry::set('Phile_Settings', $settings);
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown(){
         Registry::set('Phile_Settings', $this->config);
     }
 
-    protected function mockPlugin(array $methods = [])
-    {
+    protected function mockPlugin(array $methods = []){
         /** @var Plugin $plugin */
         $plugin = $this->getMockForAbstractClass(
             '\Phile\Plugin\Phile\TestPlugin\Plugin',
@@ -51,11 +48,11 @@ class AbstractPluginTest extends \PHPUnit_Framework_TestCase
             $methods
         );
         $plugin->initializePlugin($this->pluginKey);
+
         return $plugin;
     }
 
-    public function testInitializePluginSettings()
-    {
+    public function testInitializePluginSettings(){
         $plugin = $this->mockPlugin();
 
         // class:    ['A' => 'X', 'B' => 'X', 'C' => 'C'];
@@ -70,23 +67,21 @@ class AbstractPluginTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeSame($expected, 'settings', $plugin);
     }
 
-    public function testInitializePluginEvents()
-    {
+    public function testInitializePluginEvents(){
         $plugin = $this->mockPlugin(['onTestEvent']);
         $plugin->expects($this->once())
-            ->method('onTestEvent');
+            ->method('onTestEvent')
+        ;
         Event::triggerEvent('phile\testPlugin.testEvent');
     }
 
-    public function testInitializePluginEventsNotCallable()
-    {
+    public function testInitializePluginEventsNotCallable(){
         $plugin = $this->mockPlugin();
         $this->setExpectedException('\RuntimeException', null, 1428564865);
         Event::triggerEvent('phile\testPlugin.testEvent-missingMethod');
     }
 
-    public function testGetPluginPath()
-    {
+    public function testGetPluginPath(){
         $plugin = $this->mockPlugin(['onTextEvent']);
 
         $result = $plugin->getPluginPath();

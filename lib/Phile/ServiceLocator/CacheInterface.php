@@ -2,6 +2,7 @@
 /**
  * Interface for a service locator
  */
+
 namespace Phile\ServiceLocator;
 
 /**
@@ -11,8 +12,7 @@ namespace Phile\ServiceLocator;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\ServiceLocator
  */
-interface CacheInterface
-{
+interface CacheInterface {
     /**
      * check if an entry with this key exists
      *
@@ -36,7 +36,7 @@ interface CacheInterface
      *
      * @param $key
      * @param $value
-     * @param int   $time
+     * @param int $time
      * @param array $options
      *
      * @return mixed

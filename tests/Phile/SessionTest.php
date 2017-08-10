@@ -16,13 +16,11 @@ namespace PhileTest;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class SessionTest extends \PHPUnit_Framework_TestCase
-{
+class SessionTest extends \PHPUnit_Framework_TestCase {
     /**
      * @runInSeparateProcess
      */
-    public function testSessionCanBeStarted()
-    {
+    public function testSessionCanBeStarted(){
         $this->assertEquals(false, \Phile\Core\Session::$isStarted);
         \Phile\Core\Session::start();
         $this->assertEquals(true, \Phile\Core\Session::$isStarted);
@@ -31,8 +29,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSessionCanStoreString()
-    {
+    public function testSessionCanStoreString(){
         \Phile\Core\Session::set('myTestString', 'myTestString');
         $this->assertEquals(
             'myTestString',
@@ -43,8 +40,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSessionCanStoreInteger()
-    {
+    public function testSessionCanStoreInteger(){
         \Phile\Core\Session::set('myTestInteger', 123);
         $this->assertEquals(123, \Phile\Core\Session::get('myTestInteger'));
     }
@@ -52,8 +48,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSessionCanStoreBoolean()
-    {
+    public function testSessionCanStoreBoolean(){
         \Phile\Core\Session::set('myTestBoolean', true);
         $this->assertEquals(true, \Phile\Core\Session::get('myTestBoolean'));
     }
@@ -61,8 +56,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSessionCanStoreFloat()
-    {
+    public function testSessionCanStoreFloat(){
         \Phile\Core\Session::set('myTestFloat', 1.123);
         $this->assertEquals(1.123, \Phile\Core\Session::get('myTestFloat'));
     }
@@ -70,8 +64,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSessionCanStoreStdClass()
-    {
+    public function testSessionCanStoreStdClass(){
         \Phile\Core\Session::set('myTestStdClass', new \stdClass());
         $this->assertInstanceOf(
             '\stdClass',
@@ -82,8 +75,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSessionHasSessionId()
-    {
+    public function testSessionHasSessionId(){
         $this->assertEquals(0, strlen(\Phile\Core\Session::$sessionId));
         \Phile\Core\Session::start();
         $this->assertGreaterThan(0, strlen(\Phile\Core\Session::$sessionId));

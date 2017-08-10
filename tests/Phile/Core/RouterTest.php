@@ -13,8 +13,7 @@ use Phile\Core\Router;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class RouterTest extends \PHPUnit_Framework_TestCase
-{
+class RouterTest extends \PHPUnit_Framework_TestCase {
 
     protected $settings;
 
@@ -23,21 +22,18 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     protected $router;
 
-    protected function setUp()
-    {
+    protected function setUp(){
         $this->router = new Router();
         $this->settings = Registry::get('Phile_Settings');
         parent::setup();
     }
 
-    protected function tearDown()
-    {
+    protected function tearDown(){
         Registry::set('Phile_Settings', $this->settings);
         unset($this->router, $this->settings);
     }
 
-    public function testUrlForPageFull()
-    {
+    public function testUrlForPageFull(){
         $this->mockBaseUrl('http://barbaz');
         $page = 'index/foo';
         $expected = 'http://barbaz/index/foo';
@@ -45,24 +41,21 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testUrlForPageRelative()
-    {
+    public function testUrlForPageRelative(){
         $page = 'index/foo';
         $expected = 'index/foo';
         $result = $this->router->urlForPage($page, false);
         $this->assertEquals($expected, $result);
     }
 
-    public function testUrl()
-    {
+    public function testUrl(){
         $this->mockBaseUrl('http://barbaz');
         $expected = 'http://barbaz/sub/page';
         $result = $this->router->url('sub/page');
         $this->assertEquals($expected, $result);
     }
 
-    public function testGetBaseUrl()
-    {
+    public function testGetBaseUrl(){
         $this->mockBaseUrl();
 
         $server = ['PHP_SELF' => '/bar/index.php', 'HTTP_HOST' => 'foo'];
@@ -73,8 +66,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     /**
      * test baseUrl on `php -S localhost` server
      */
-    public function testGetBaseUrlPhpBuildInServer()
-    {
+    public function testGetBaseUrlPhpBuildInServer(){
         $this->mockBaseUrl();
 
         $server = ['PHP_SELF' => '/foo/index.php', 'HTTP_HOST' => 'host'];
@@ -89,8 +81,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://host/foo', $router->getBaseUrl());
     }
 
-    public function testGetBaseUrlPreset()
-    {
+    public function testGetBaseUrlPreset(){
         $this->mockBaseUrl('https://barbaz');
         $this->assertEquals('https://barbaz', $this->router->getBaseUrl());
     }
@@ -98,8 +89,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     /**
      * test that URL is UTF8-decoded
      */
-    public function testGetUrlUrlDecoded()
-    {
+    public function testGetUrlUrlDecoded(){
         $router = new Router(['REQUEST_URI' => '/bar/b%C3%A4z%20page?q=a']);
         $this->assertEquals('bar/bäz page', $router->getCurrentUrl());
     }
@@ -107,8 +97,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     /**
      * test that + is not decoded to space
      */
-    public function testPlusNotSpace()
-    {
+    public function testPlusNotSpace(){
         $router = new Router(['REQUEST_URI' => '/foo+bar/foobar']);
         $this->assertEquals('foo+bar/foobar', $router->getCurrentUrl());
     }
@@ -116,8 +105,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     /**
      * test that base-URL is removed
      */
-    public function testGetUrlRemoveUrlPath()
-    {
+    public function testGetUrlRemoveUrlPath(){
         $pathFragment = 'sub';
         // assume installation in http://localhost/sub
         $this->mockBaseUrl('http://localhost/' . $pathFragment);
@@ -129,8 +117,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('sub/page', $router->getCurrentUrl());
     }
 
-    public function testGetProtocol()
-    {
+    public function testGetProtocol(){
         $this->assertEquals(null, $this->router->getProtocol());
 
         $router = new Router(['HTTP_HOST' => 'foo']);
@@ -140,8 +127,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('https', $router->getProtocol());
     }
 
-    public function mockBaseUrl($url = '')
-    {
+    public function mockBaseUrl($url = ''){
         Registry::set(
             'Phile_Settings',
             ['base_url' => $url] + $this->settings

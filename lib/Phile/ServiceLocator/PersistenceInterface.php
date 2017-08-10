@@ -2,6 +2,7 @@
 /**
  * The Persistence ServiceLocator interface
  */
+
 namespace Phile\ServiceLocator;
 
 /**
@@ -11,8 +12,7 @@ namespace Phile\ServiceLocator;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\ServiceLocator
  */
-interface PersistenceInterface
-{
+interface PersistenceInterface {
     /**
      * check if an entry exists for given key
      *

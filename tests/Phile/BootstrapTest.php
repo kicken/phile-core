@@ -12,19 +12,17 @@ use Phile\Bootstrap;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class BootstrapTest extends \PHPUnit_Framework_TestCase
-{
+class BootstrapTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * test creation of files and folders
      */
-    public function testInitializeFilesAndFolders()
-    {
+    public function testInitializeFilesAndFolders(){
         $paths = [CACHE_DIR, STORAGE_DIR];
 
         //setup: delete files and folders
-        foreach ($paths as $path) {
-            if (empty($path) || strpos($path, ROOT_DIR) !== 0) {
+        foreach ($paths as $path){
+            if (empty($path) || strpos($path, ROOT_DIR) !== 0){
                 $this->markTestSkipped(
                     "Path $path is not in Phile installation directory."
                 );
@@ -35,7 +33,7 @@ class BootstrapTest extends \PHPUnit_Framework_TestCase
 
         Bootstrap::getInstance()->initializeBasics();
 
-        foreach ($paths as $path) {
+        foreach ($paths as $path){
             $this->assertTrue(is_dir($path));
             $this->assertTrue(is_file($path . '.htaccess'));
         }
@@ -46,9 +44,8 @@ class BootstrapTest extends \PHPUnit_Framework_TestCase
      *
      * @param string $path
      */
-    protected function deleteDirectory($path)
-    {
-        if (!is_dir($path)) {
+    protected function deleteDirectory($path){
+        if (!is_dir($path)){
             return;
         }
 
@@ -56,16 +53,16 @@ class BootstrapTest extends \PHPUnit_Framework_TestCase
 
         // find .htaccess
         $invisibleFiles = glob($path . '.*');
-        foreach ($invisibleFiles as $key => $file) {
+        foreach ($invisibleFiles as $key => $file){
             $basename = basename($file);
-            if ($basename === '..' || $basename === '.') {
+            if ($basename === '..' || $basename === '.'){
                 unset($invisibleFiles[$key]);
             }
         }
         $files = array_merge($files, $invisibleFiles);
 
-        foreach ($files as $file) {
-            if (is_dir($file)) {
+        foreach ($files as $file){
+            if (is_dir($file)){
                 $this->deleteDirectory($file);
             } else {
                 unlink($file);

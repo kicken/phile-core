@@ -16,8 +16,7 @@ namespace PhileTest\Model;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class MetaTest extends \PHPUnit_Framework_TestCase
-{
+class MetaTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var string meta data test string
      */
@@ -53,8 +52,7 @@ Title: Welcome
     /**
      *
      */
-    public function testCanGetMetaProperty()
-    {
+    public function testCanGetMetaProperty(){
         $meta = new \Phile\Model\Meta($this->metaTestData1);
         $this->assertEquals('Welcome', $meta->get('title'));
         $this->assertEquals(
@@ -69,16 +67,14 @@ Title: Welcome
         );
     }
 
-    public function testCanGetFormatedDate()
-    {
+    public function testCanGetFormatedDate(){
         $meta = new \Phile\Model\Meta($this->metaTestData1);
         $this->assertEquals('1st Aug 2014', $meta->getFormattedDate());
         $meta2 = new \Phile\Model\Meta($this->metaTestData2);
         $this->assertEquals('1st Aug 2014', $meta2->getFormattedDate());
     }
 
-    public function testGetIfNoMetaDataOnPage()
-    {
+    public function testGetIfNoMetaDataOnPage(){
         $meta = new \Phile\Model\Meta("Welcome\n…");
         $this->assertEquals([], $meta->getAll());
         $this->assertNull($meta->get('title'));
@@ -87,8 +83,7 @@ Title: Welcome
         $this->assertEquals([], $meta->getAll());
     }
 
-    public function testSpacedKey()
-    {
+    public function testSpacedKey(){
         $meta = new \Phile\Model\Meta($this->metaTestData1);
         $this->assertEquals(
             'Should become underscored',
@@ -96,8 +91,7 @@ Title: Welcome
         );
     }
 
-    public function testYamlFrontMatterFormat()
-    {
+    public function testYamlFrontMatterFormat(){
         $meta = new \Phile\Model\Meta($this->metaTestData3);
         $this->assertEquals('Welcome', $meta['title']);
     }

@@ -11,8 +11,7 @@ namespace Phile\Event;
 
 use Symfony\Component\EventDispatcher\Event;
 
-class RoutingEvent extends Event
-{
+class RoutingEvent extends Event {
     const BEFORE = 'route_before';
     const AFTER = 'route_after';
 
@@ -23,23 +22,19 @@ class RoutingEvent extends Event
         $this->requestUrl = $requestUrl;
     }
 
-    public function getRequestUrl()
-    {
+    public function getRequestUrl(){
         return $this->requestUrl;
     }
 
-    public function setRequestUrl($requestUrl)
-    {
+    public function setRequestUrl($requestUrl){
         $this->requestUrl = $requestUrl;
     }
 
-    public function getContentPath()
-    {
+    public function getContentPath(){
         return $this->contentPath;
     }
 
-    public function setContentPath($contentPath)
-    {
+    public function setContentPath($contentPath){
         $this->contentPath = $contentPath;
     }
 }

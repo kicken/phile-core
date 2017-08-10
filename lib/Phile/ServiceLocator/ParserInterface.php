@@ -2,6 +2,7 @@
 /**
  * The ServiceLocator interface
  */
+
 namespace Phile\ServiceLocator;
 
 /**
@@ -11,8 +12,7 @@ namespace Phile\ServiceLocator;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\ServiceLocator
  */
-interface ParserInterface
-{
+interface ParserInterface {
     /**
      * parse data
      *

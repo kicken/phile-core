@@ -12,11 +12,9 @@ use Phile\Plugin\PluginRepository;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class PluginRepositoryTest extends \PHPUnit_Framework_TestCase
-{
+class PluginRepositoryTest extends \PHPUnit_Framework_TestCase {
 
-    public function testLoadAllSuccess()
-    {
+    public function testLoadAllSuccess(){
         $toLoad = 'phile\testPlugin';
         $plugins = new PluginRepository();
 
@@ -31,8 +29,7 @@ class PluginRepositoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, count($plugins->getLoadErrors()));
     }
 
-    public function testLoadAllFailure()
-    {
+    public function testLoadAllFailure(){
         $plugins = new PluginRepository();
 
         $plugins->loadAll(['foo\\bar' => ['active' => false]]);

@@ -13,39 +13,33 @@ use Phile\Model\Page;
 use Phile\ServiceLocator\TemplateInterface;
 use Symfony\Component\EventDispatcher\Event;
 
-class RenderingEvent extends Event
-{
+class RenderingEvent extends Event {
     const BEFORE = 'rendering_before';
     const AFTER = 'rendering_after';
-    
+
     private $page;
     private $template;
     private $content;
-    
-    public function __construct(Page $page, TemplateInterface $template, $content)
-    {
+
+    public function __construct(Page $page, TemplateInterface $template, $content){
         $this->page = $page;
         $this->template = $template;
         $this->content = $content;
     }
 
-    public function getPage()
-    {
+    public function getPage(){
         return $this->page;
     }
 
-    public function getTemplate()
-    {
+    public function getTemplate(){
         return $this->template;
     }
-    
-    public function getContent()
-    {
+
+    public function getContent(){
         return $this->content;
     }
 
-    public function setContent($content)
-    {
+    public function setContent($content){
         $this->content = $content;
     }
 }

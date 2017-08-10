@@ -16,8 +16,7 @@ namespace PhileTest\Repository;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class PageTest extends \PHPUnit_Framework_TestCase
-{
+class PageTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var \Phile\Repository\Page
      */
@@ -26,8 +25,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    protected function setUp()
-    {
+    protected function setUp(){
         parent::setUp();
         $this->pageRepository = new \Phile\Repository\Page();
     }
@@ -35,8 +33,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testFindByPathSuccess()
-    {
+    public function testFindByPathSuccess(){
         $DS = DIRECTORY_SEPARATOR;
 
         // official page-Id format
@@ -55,7 +52,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
             '/sub/page' => 'sub' . $DS . 'page.md',
         ];
 
-        foreach ($tests as $pageId => $file) {
+        foreach ($tests as $pageId => $file){
             $page = $this->pageRepository->findByPath($pageId);
             $this->assertInstanceOf(
                 '\Phile\Model\Page',
@@ -72,8 +69,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testFindByPathPageDoesNotExist()
-    {
+    public function testFindByPathPageDoesNotExist(){
         $page = $this->pageRepository->findByPath('foo');
         $this->assertNull($page);
     }
@@ -81,14 +77,13 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testOrderingFindByMeta()
-    {
+    public function testOrderingFindByMeta(){
         // setup
         $titles = ['Sub Page', 'Sub Page Index', 'Welcome'];
-        $test = function ($titles, $order) {
+        $test = function ($titles, $order){
             $options = ['pages_order' => $order];
             $pages = $this->pageRepository->findAll($options);
-            for ($i = 0; $i < count($pages); $i++) {
+            for ($i = 0; $i < count($pages); $i++){
                 $this->assertEquals($pages[$i]->getTitle(), $titles[$i]);
             }
         };
@@ -106,14 +101,14 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testOrderingInvalidSearchType()
-    {
+    public function testOrderingInvalidSearchType(){
         $this->setExpectedException(
             'PHPUnit_Framework_Error_Warning',
             'Page order \'meta:title\' was ignored. Type \'\' not recognized.'
         );
         $this->pageRepository
             ->findAll(['pages_order' => 'meta:title'])
-            ->toArray();
+            ->toArray()
+        ;
     }
 }

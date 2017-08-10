@@ -11,11 +11,9 @@ namespace PhileTest;
  * @package PhileTest
  * @deprecated since 2015-05-01, will be removed together with generator.php
  */
-class GeneratorTest extends \PHPUnit_Framework_TestCase
-{
+class GeneratorTest extends \PHPUnit_Framework_TestCase {
 
-    public function testGenerator()
-    {
+    public function testGenerator(){
         // output length should be exactly 64 chars
         $string = preg_quote('<br><br><br>');
         $this->expectOutputRegex('/^.{64}' . $string . '.*$/');

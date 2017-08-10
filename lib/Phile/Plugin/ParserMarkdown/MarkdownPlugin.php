@@ -2,6 +2,7 @@
 /**
  * Plugin class
  */
+
 namespace Phile\Plugin\ParserMarkdown;
 
 use Michelf\MarkdownExtra;
@@ -18,10 +19,8 @@ use Phile\ServiceLocator\ParserInterface;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Plugin\Phile\ParserMarkdown
  */
-class MarkdownPlugin extends AbstractPlugin implements ParserInterface
-{
-    public function initialize()
-    {
+class MarkdownPlugin extends AbstractPlugin implements ParserInterface {
+    public function initialize(){
         ServiceLocator::registerService('Phile_Parser', $this);
     }
 
@@ -32,10 +31,9 @@ class MarkdownPlugin extends AbstractPlugin implements ParserInterface
      *
      * @return string
      */
-    public function parse($data)
-    {
+    public function parse($data){
         $parser = new MarkdownExtra;
-        foreach ($this->config as $key => $value) {
+        foreach ($this->config as $key => $value){
             $parser->{$key} = $value;
         }
 

@@ -12,11 +12,10 @@ namespace Phile\Event;
 use Phile\Model\Page;
 use Symfony\Component\EventDispatcher\Event;
 
-class ParsePageMetaEvent extends Event
-{
+class ParsePageMetaEvent extends Event {
     const BEFORE = 'parse_page_meta_before';
     const AFTER = 'parse_page_meta_after';
-    
+
     /** @var Page */
     private $page;
     /** @var string */
@@ -24,34 +23,28 @@ class ParsePageMetaEvent extends Event
     /** @var array */
     private $meta = [];
 
-    public function __construct(Page $page, $content)
-    {
+    public function __construct(Page $page, $content){
         $this->page = $page;
         $this->content = $content;
     }
 
-    public function getPage()
-    {
+    public function getPage(){
         return $this->page;
     }
 
-    public function getMeta()
-    {
+    public function getMeta(){
         return $this->meta;
     }
 
-    public function setMeta($meta)
-    {
+    public function setMeta($meta){
         $this->meta = $meta;
     }
 
-    public function getContent()
-    {
+    public function getContent(){
         return $this->content;
     }
 
-    public function setContent($content)
-    {
+    public function setContent($content){
         $this->content = $content;
     }
 }

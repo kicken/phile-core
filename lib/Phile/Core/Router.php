@@ -17,8 +17,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Core
  */
-class Router implements RouterInterface
-{
+class Router implements RouterInterface {
 
     /** @var array Phile global settings */
     private $settings;
@@ -38,8 +37,7 @@ class Router implements RouterInterface
      * @param EventDispatcherInterface $dispatcher
      * @param array $server $_SERVER environment
      */
-    public function __construct(array $settings, EventDispatcherInterface $dispatcher, array $server)
-    {
+    public function __construct(array $settings, EventDispatcherInterface $dispatcher, array $server){
         $this->settings = $settings;
         $this->server = $server;
         $this->dispatcher = $dispatcher;
@@ -54,7 +52,7 @@ class Router implements RouterInterface
         if ($event->getContentPath() === null){
             $url = $event->getRequestUrl();
             $contentPath = $this->resolvePath($url);
-            if (!$this->needsRedirect($url, $contentPath)) {
+            if (!$this->needsRedirect($url, $contentPath)){
                 $event->setContentPath($contentPath);
             }
         }
@@ -64,12 +62,11 @@ class Router implements RouterInterface
         return $event->getContentPath();
     }
 
-    public function matchRedirect($url)
-    {
+    public function matchRedirect($url){
         $url = $this->normalizeUrl($url);
         $redirect = null;
         $contentFile = $this->resolvePath($url);
-        if ($contentFile && $this->needsRedirect($url, $contentFile)) {
+        if ($contentFile && $this->needsRedirect($url, $contentFile)){
             $redirect = $this->urlForPath($contentFile);
         }
 
@@ -128,11 +125,10 @@ class Router implements RouterInterface
      * e.g. `sub/index.md` --> `http://host/phile-root/sub`
      *
      * @param  string $path
-     * @param  bool   $absolute   return a full or root-relative URL
+     * @param  bool $absolute return a full or root-relative URL
      * @return string URL
      */
-    public function urlForPath($path, $absolute = true)
-    {
+    public function urlForPath($path, $absolute = true){
         if (strpos($path, $this->settings['content_dir']) === 0){
             $path = substr($path, strlen($this->settings['content_dir']));
             $path = ltrim($path, DIRECTORY_SEPARATOR);

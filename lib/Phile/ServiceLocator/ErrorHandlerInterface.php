@@ -2,6 +2,7 @@
 /**
  * The ErrorHandlerInterface
  */
+
 namespace Phile\ServiceLocator;
 
 /**
@@ -11,16 +12,15 @@ namespace Phile\ServiceLocator;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\ServiceLocator
  */
-interface ErrorHandlerInterface
-{
+interface ErrorHandlerInterface {
     /**
      * handle the error
      *
-     * @param int    $errno
+     * @param int $errno
      * @param string $errstr
      * @param string $errFile
-     * @param int    $errLine
-     * @param array  $errContext
+     * @param int $errLine
+     * @param array $errContext
      *
      * @return boolean
      */

@@ -10,8 +10,7 @@ namespace Phile\Repository;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Repository
  */
-class PageCollection implements \ArrayAccess, \IteratorAggregate, \Countable
-{
+class PageCollection implements \ArrayAccess, \IteratorAggregate, \Countable {
     /**
      * @var callback A function to be used for loading the pages.
      */
@@ -27,8 +26,7 @@ class PageCollection implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @param callable $loader pages loader
      */
-    public function __construct(callable $loader)
-    {
+    public function __construct(callable $loader){
         $this->loader = $loader;
     }
 
@@ -37,9 +35,8 @@ class PageCollection implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return void
      */
-    private function load()
-    {
-        if ($this->pages === null) {
+    private function load(){
+        if ($this->pages === null){
             $this->pages = call_user_func($this->loader);
         }
     }
@@ -49,45 +46,43 @@ class PageCollection implements \ArrayAccess, \IteratorAggregate, \Countable
      *
      * @return array of \Phile\Model\Page
      */
-    public function toArray()
-    {
+    public function toArray(){
         $this->load();
+
         return $this->pages;
     }
 
-    public function getIterator()
-    {
+    public function getIterator(){
         $this->load();
+
         return new \ArrayIterator($this->pages);
     }
 
-    public function offsetExists($offset)
-    {
+    public function offsetExists($offset){
         $this->load();
+
         return isset($this->pages[$offset]);
     }
 
-    public function offsetGet($offset)
-    {
+    public function offsetGet($offset){
         $this->load();
+
         return $this->pages[$offset];
     }
 
-    public function offsetSet($offset, $value)
-    {
+    public function offsetSet($offset, $value){
         $this->load();
-        $this->pages[$offset] =    $value;
+        $this->pages[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
-    {
+    public function offsetUnset($offset){
         $this->load();
         unset($this->pages[$offset]);
     }
 
-    public function count()
-    {
+    public function count(){
         $this->load();
+
         return count($this->pages);
     }
 }

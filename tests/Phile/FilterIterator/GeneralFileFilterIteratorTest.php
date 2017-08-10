@@ -11,15 +11,13 @@ use Phile\FilterIterator\GeneralFileFilterIterator;
  * @link    https://philecms.com
  * @license http://opensource.org/licenses/MIT
  */
-class GeneralFileFilterIteratorTest extends \PHPUnit_Framework_TestCase
-{
+class GeneralFileFilterIteratorTest extends \PHPUnit_Framework_TestCase {
 
-    public function testGeneralFileFilterIterator()
-    {
+    public function testGeneralFileFilterIterator(){
         $folder = PLUGINS_DIR . 'phile/testPlugin/content';
         $files = new GeneralFileFilterIterator(new \DirectoryIterator($folder));
         $result = [];
-        foreach ($files as $file) {
+        foreach ($files as $file){
             $result[] = $file->getFilename();
         }
         sort($result);

@@ -10,8 +10,7 @@ namespace PhileTest\Model;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class PageTest extends \PHPUnit_Framework_TestCase
-{
+class PageTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var \Phile\Repository\Page
      */
@@ -20,8 +19,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    protected function setUp()
-    {
+    protected function setUp(){
         parent::setUp();
         $this->pageRepository = new \Phile\Repository\Page();
     }
@@ -29,8 +27,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasMetaInformation()
-    {
+    public function testPageHasMetaInformation(){
         $this->assertInstanceOf(
             '\Phile\Model\Meta',
             $this->pageRepository->findByPath('/')->getMeta()
@@ -40,8 +37,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasTitle()
-    {
+    public function testPageHasTitle(){
         $this->assertEquals(
             'Welcome',
             $this->pageRepository->findByPath('/')->getTitle()
@@ -51,8 +47,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasContent()
-    {
+    public function testPageHasContent(){
         $this->assertGreaterThan(
             0,
             strlen(
@@ -65,8 +60,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasUrl()
-    {
+    public function testPageHasUrl(){
         // check if '/index' is stripped correctly
         $result = $this->pageRepository->findByPath('index')->getUrl();
         $this->assertEquals('', $result);
@@ -87,8 +81,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageCanSetContent()
-    {
+    public function testPageCanSetContent(){
         $page = $this->pageRepository->findByPath('/');
         $page->setContent("testContent");
         $this->assertEquals("<p>testContent</p>\n", $page->getContent());
@@ -97,8 +90,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageGetRawContent()
-    {
+    public function testPageGetRawContent(){
         $page = $this->pageRepository->findByPath('/');
         $page->setContent('*test*');
         $this->assertEquals('*test*', $page->getRawContent());
@@ -107,8 +99,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasMetaObject()
-    {
+    public function testPageHasMetaObject(){
         $page = $this->pageRepository->findByPath('/');
         $this->assertInstanceOf('\Phile\Model\Meta', $page->getMeta());
     }
@@ -116,8 +107,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasPreviousPage()
-    {
+    public function testPageHasPreviousPage(){
         $page = $this->pageRepository->findByPath('sub/page');
         $this->assertInstanceOf('\Phile\Model\Page', $page->getPreviousPage());
         $this->assertEquals(
@@ -129,8 +119,7 @@ class PageTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testPageHasNextPage()
-    {
+    public function testPageHasNextPage(){
         $page = $this->pageRepository->findByPath('index');
         $this->assertInstanceOf('\Phile\Model\Page', $page->getNextPage());
         $this->assertEquals('Sub Page Index', $page->getNextPage()->getTitle());

@@ -2,6 +2,7 @@
 /**
  * the page repository class
  */
+
 namespace Phile\Repository;
 
 use Phile\Core\Registry;
@@ -17,8 +18,7 @@ use Phile\Model\Page as PageModel;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Repository
  */
-class Page
-{
+class Page {
     /**
      * @var array the settings array
      */
@@ -40,14 +40,13 @@ class Page
      * @throws \Exception
      * @throws \Phile\Exception\ServiceLocatorException
      */
-    public function __construct($settings = null)
-    {
-        if ($settings === null) {
+    public function __construct($settings = null){
+        if ($settings === null){
             $settings = Registry::get('Phile_Settings');
         }
 
         $this->settings = $settings;
-        if (ServiceLocator::hasService('Phile_Cache')) {
+        if (ServiceLocator::hasService('Phile_Cache')){
             $this->cache = ServiceLocator::getService('Phile_Cache');
         }
     }
@@ -60,8 +59,7 @@ class Page
      *
      * @return null|PageModel
      */
-    public function findByPath($pageId, $folder=null)
-    {
+    public function findByPath($pageId, $folder = null){
         if ($folder === null){
             $folder = $this->settings['content_dir'];
         }
@@ -69,13 +67,13 @@ class Page
         // be merciful to lazy third-party-usage and accept a leading slash
         $pageId = ltrim($pageId, '/');
         // 'sub/' should serve page 'sub/index'
-        if ($pageId === '' || substr($pageId, -1) === '/') {
+        if ($pageId === '' || substr($pageId, -1) === '/'){
             $pageId .= 'index';
         }
 
         $file = $folder . $pageId . $this->settings['content_ext'];
-        if (!file_exists($file)) {
-            if (substr($pageId, -6) === '/index') {
+        if (!file_exists($file)){
+            if (substr($pageId, -6) === '/index'){
                 // try to resolve sub-directory 'sub/' to page 'sub'
                 $pageId = substr($pageId, 0, strlen($pageId) - 6);
             } else {
@@ -84,38 +82,38 @@ class Page
             }
             $file = $folder . $pageId . $this->settings['content_ext'];
         }
-        if (!file_exists($file)) {
+        if (!file_exists($file)){
             return null;
         }
+
         return $this->getPage($file);
     }
 
     /**
      * find all pages (*.md) files and returns an array of Page models
      *
-     * @param array  $options
+     * @param array $options
      * @param string $folder
      *
      * @return PageCollection of \Phile\Model\Page objects
      */
-    public function findAll(array $options = array(), $folder = null)
-    {
+    public function findAll(array $options = array(), $folder = null){
         if ($folder === null){
             $folder = $this->settings['content_dir'];
         }
 
         return new PageCollection(
-            function () use ($options, $folder) {
+            function () use ($options, $folder){
                 $options += $this->settings;
                 // ignore files with a leading '.' in its filename
                 $files = $this->getFiles($folder);
                 $pages = [];
 
-                foreach ($files as $file) {
+                foreach ($files as $file){
                     $pages[] = $this->getPage($file);
                 }
 
-                if ($options['pages_order']) {
+                if ($options['pages_order']){
                     $pages = $this->sortPages($pages, $options['pages_order']);
                 }
 
@@ -131,15 +129,14 @@ class Page
      *
      * @return mixed|PageModel
      */
-    protected function getPage($filePath)
-    {
+    protected function getPage($filePath){
         $key = 'Phile_Model_Page_' . md5($filePath);
-        if (isset($this->storage[$key])) {
+        if (isset($this->storage[$key])){
             return $this->storage[$key];
         }
 
-        if ($this->cache !== null) {
-            if ($this->cache->has($key)) {
+        if ($this->cache !== null){
+            if ($this->cache->has($key)){
                 $page = $this->cache->get($key);
             } else {
                 $page = $this->createPageModel($filePath);
@@ -174,19 +171,18 @@ class Page
         return $result;
     }
 
-    private function parseSortCriteria($criteria)
-    {
+    private function parseSortCriteria($criteria){
         $terms = preg_split('/\s+/', $criteria, -1, PREG_SPLIT_NO_EMPTY);
         $sorting = [];
-        foreach ($terms as $term) {
+        foreach ($terms as $term){
             $sub = explode('.', $term);
-            if (count($sub) > 1) {
+            if (count($sub) > 1){
                 $type = array_shift($sub);
             } else {
                 $type = null;
             }
             $sub = explode(':', $sub[0]);
-            if (count($sub) === 1) {
+            if (count($sub) === 1){
                 $sub[1] = 'asc';
             }
             $sorting[] = array('type' => $type, 'key' => $sub[0], 'order' => $sub[1], 'string' => $term);
@@ -195,18 +191,17 @@ class Page
         return $sorting;
     }
 
-    private function sortPages($pages, $criteria)
-    {
+    private function sortPages($pages, $criteria){
         // parse search	criteria
         $sorting = $this->parseSortCriteria($criteria);
 
         // prepare search criteria for array_multisort
-        foreach ($sorting as $sort) {
+        foreach ($sorting as $sort){
             $key = $sort['key'];
             $column = array();
 
             /** @var PageModel $page */
-            foreach ($pages as $page) {
+            foreach ($pages as $page){
                 $meta = $page->getMeta();
                 $value = $meta[$key];
                 $column[] = $value;

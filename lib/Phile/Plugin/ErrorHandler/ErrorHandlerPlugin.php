@@ -2,6 +2,7 @@
 /**
  * Plugin class
  */
+
 namespace Phile\Plugin\ErrorHandler;
 
 use Phile\Core\ServiceLocator;
@@ -18,13 +19,11 @@ use Phile\Plugin\ErrorHandler\Handler\ErrorLog;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Plugin\Phile\ParserMarkdown
  */
-class ErrorHandlerPlugin extends AbstractPlugin
-{
-    const HANDLER_ERROR_LOG      = 'error_log';
-    const HANDLER_DEVELOPMENT    = 'development';
+class ErrorHandlerPlugin extends AbstractPlugin {
+    const HANDLER_ERROR_LOG = 'error_log';
+    const HANDLER_DEVELOPMENT = 'development';
 
-    public function initialize()
-    {
+    public function initialize(){
         $handler = null;
         switch ($this->config['handler']){
             case ErrorHandlerPlugin::HANDLER_ERROR_LOG:

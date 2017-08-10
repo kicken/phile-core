@@ -16,13 +16,11 @@ namespace PhileTest;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
-{
+class ServiceLocatorTest extends \PHPUnit_Framework_TestCase {
     /**
      *
      */
-    public function testServicePhileCacheExists()
-    {
+    public function testServicePhileCacheExists(){
         $this->assertEquals(
             false,
             \Phile\Core\ServiceLocator::hasService(
@@ -34,8 +32,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileTemplateExists()
-    {
+    public function testServicePhileTemplateExists(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -47,8 +44,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileParserExists()
-    {
+    public function testServicePhileParserExists(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -60,8 +56,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileDatePersistenceExists()
-    {
+    public function testServicePhileDatePersistenceExists(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -73,8 +68,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileParserMetaExists()
-    {
+    public function testServicePhileParserMetaExists(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -86,8 +80,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileErrorHandlerExists()
-    {
+    public function testServicePhileErrorHandlerExists(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -99,8 +92,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileTemplateExistsAndHasCorrectInstance()
-    {
+    public function testServicePhileTemplateExistsAndHasCorrectInstance(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -118,8 +110,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileParserExistsAndHasCorrectInstance()
-    {
+    public function testServicePhileParserExistsAndHasCorrectInstance(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -137,8 +128,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileDatePersistenceExistsAndHasCorrectInstance()
-    {
+    public function testServicePhileDatePersistenceExistsAndHasCorrectInstance(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -156,8 +146,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileParserMetaExistsAndHasCorrectInstance()
-    {
+    public function testServicePhileParserMetaExistsAndHasCorrectInstance(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(
@@ -175,8 +164,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testServicePhileErrorHandlerExistsAndHasCorrectInstance()
-    {
+    public function testServicePhileErrorHandlerExistsAndHasCorrectInstance(){
         $this->assertEquals(
             true,
             \Phile\Core\ServiceLocator::hasService(

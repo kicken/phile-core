@@ -15,14 +15,12 @@ use Phile\Core\Router;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class CoreTest extends \PHPUnit_Framework_TestCase
-{
+class CoreTest extends \PHPUnit_Framework_TestCase {
 
     /**
      *
      */
-    public function testInitializeCurrentPageTidyUrlRedirect()
-    {
+    public function testInitializeCurrentPageTidyUrlRedirect(){
         $baseUrl = 'http://foo';
 
         $settings = Registry::get('Phile_Settings');
@@ -33,7 +31,7 @@ class CoreTest extends \PHPUnit_Framework_TestCase
             'sub/page/' => 'sub/page'
         ];
 
-        foreach ($redirects as $current => $expected) {
+        foreach ($redirects as $current => $expected){
             $Core = $this->getMockBuilder('Phile\Core')
                 ->setMethods(
                     [
@@ -43,7 +41,8 @@ class CoreTest extends \PHPUnit_Framework_TestCase
                     ]
                 )
                 ->disableOriginalConstructor()
-                ->getMock();
+                ->getMock()
+            ;
 
             $response = $this->getMock(
                 '\Phile\Core\Response',
@@ -53,7 +52,8 @@ class CoreTest extends \PHPUnit_Framework_TestCase
 
             $response->expects($this->once())
                 ->method('redirect')
-                ->with($baseUrl . '/' . $expected, 301);
+                ->with($baseUrl . '/' . $expected, 301)
+            ;
 
             $Core->__construct($router, $response);
         }
@@ -62,8 +62,7 @@ class CoreTest extends \PHPUnit_Framework_TestCase
     /**
      * tests show setup page if setup is unfinished
      */
-    public function testCheckSetupRedirectToSetupPage()
-    {
+    public function testCheckSetupRedirectToSetupPage(){
         $settings = Registry::get('Phile_Settings');
         Registry::set('Phile_Settings', ['encryptionKey' => ''] + $settings);
 

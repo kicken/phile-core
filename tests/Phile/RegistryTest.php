@@ -16,8 +16,7 @@ namespace PhileTest;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class RegistryTest extends \PHPUnit_Framework_TestCase
-{
+class RegistryTest extends \PHPUnit_Framework_TestCase {
     /**
      * @var \Phile\Core\Registry
      */
@@ -26,8 +25,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    protected function setUp()
-    {
+    protected function setUp(){
         parent::setUp();
         $this->registry = \Phile\Core\Registry::getInstance();
     }
@@ -35,8 +33,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testValueCanSetToRegistry()
-    {
+    public function testValueCanSetToRegistry(){
         $this->registry->set('test', 'testvalue');
         $this->assertEquals('testvalue', $this->registry->get('test'));
     }
@@ -44,8 +41,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testGettingInstance()
-    {
+    public function testGettingInstance(){
         $this->registry = \Phile\Core\Registry::getInstance();
         $this->assertInstanceOf('\Phile\Core\Registry', $this->registry);
     }
@@ -53,8 +49,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testValueIsRegistered()
-    {
+    public function testValueIsRegistered(){
         $this->registry->set('testValueIsRegistered', 'testValueIsRegistered');
         $this->assertEquals(
             true,
@@ -67,8 +62,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testValueIsNotRegistered()
-    {
+    public function testValueIsNotRegistered(){
         $this->assertEquals(
             false,
             $this->registry->isRegistered(
