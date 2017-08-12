@@ -1,6 +1,6 @@
 {
   "name": "kicken/phile-cms",
-  "type": "project",
+  "type": "library",
   "description": "A markdown file based CMS",
   "keywords": [
     "cms",
@@ -15,7 +15,7 @@
     {
       "name": "Keith M",
       "email": "keithm@kickenscripts.us",
-      "homepage": "https://kickenscripts.us"
+      "homepage": "https://www.kickenscripts.us"
     }
   ],
   "autoload": {
