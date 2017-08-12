@@ -15,8 +15,7 @@
     {
       "name": "Keith M",
       "email": "keithm@kickenscripts.us",
-      "homepage": "https://kickenscripts.us",
-      "role": "Developer"
+      "homepage": "https://kickenscripts.us"
     }
   ],
   "autoload": {
@@ -29,7 +28,8 @@
     "twig/twig": "^2.4",
     "league/commonmark": "^0.15",
     "symfony/yaml": "^3.3",
-    "symfony/event-dispatcher": "^3.3"
+    "symfony/event-dispatcher": "^3.3",
+    "pimple/pimple": "^3.2"
   },
   "require-dev": {
     "composer/composer": "^1.1"

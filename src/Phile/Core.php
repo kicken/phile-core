@@ -5,24 +5,15 @@
 
 namespace Phile;
 
-use Phile\Core\Registry;
 use Phile\Core\Response;
 use Phile\Core\Router;
-use Phile\Core\ServiceLocator;
 use Phile\Event\CoreEvent;
 use Phile\Event\NotFoundEvent;
 use Phile\Event\RenderingEvent;
 use Phile\Exception\PluginInitializationException;
 use Phile\Exception\PluginNotFoundException;
 use Phile\Model\Page;
-use Phile\Plugin\AbstractPlugin;
-use Phile\Plugin\ErrorHandler\ErrorHandlerPlugin;
-use Phile\Plugin\ParserMarkdown\MarkdownPlugin;
-use Phile\Plugin\ParserMeta\MetaParserPlugin;
-use Phile\Plugin\PhpFastCache\FastCachePlugin;
-use Phile\Plugin\SimpleFileDataPersistence\FileDataPersistencePlugin;
-use Phile\Plugin\TemplateTwig\TwigTemplatePlugin;
-use Phile\ServiceLocator\TemplateInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -35,14 +26,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  */
 class Core {
     /**
-     * @var array the settings array
+     * @var ContainerInterface
      */
-    protected $settings;
-
-    /**
-     * @var array the loaded plugins
-     */
-    protected $plugins;
+    protected $container;
 
     /**
      * @var Router
@@ -55,14 +41,10 @@ class Core {
     protected $dispatcher;
 
     /**
-     * @param array $config
-     * @param array $plugins
+     * @param $container
      * @throws \Exception
      */
-    public function __construct(array $config, array $plugins){
-        $this->settings = $config;
-        $this->plugins = $plugins;
-        $this->dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
+    public function __construct(ContainerInterface $container){
         $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
 
         /** @var AbstractPlugin $plugin */
@@ -106,61 +88,13 @@ class Core {
             'base_url' => $baseUrl,
             'site_title' => 'PhileCMS',
             'theme' => 'default',
-            'date_format' => 'jS M Y',
             'pages_order' => 'meta.title:desc',
-            'timezone' => date_default_timezone_get(),
             'charset' => 'utf-8',
-            'display_errors' => 0,
-            'root_dir' => $root,
             'content_dir' => $root . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR,
             'content_ext' => '.md',
-            'themes_dir' => $root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR,
-            'cache_dir' => $root . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
-            'public_dir' => $root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR,
-            'storage_dir' => $root . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'datastorage' . DIRECTORY_SEPARATOR
         ];
 
         return $defaults;
-    }
-
-    private static function defaultPluginsConfiguration($config){
-        $plugins = [
-            ErrorHandlerPlugin::class => [
-                'active' => true,
-                'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
-            ],
-            MarkdownPlugin::class => ['active' => true],
-            MetaParserPlugin::class => [
-                'active' => true
-            ],
-            TwigTemplatePlugin::class => [
-                'active' => true,
-                'theme' => $config['theme'],
-                'themes_dir' => $config['themes_dir'],
-                'template_extension' => 'html',
-                'options' => [
-                    'cache' => false,
-                    'autoescape' => false
-                ]
-            ],
-            FastCachePlugin::class => [
-                'active' => true,
-                'driver' => 'auto',
-                'path' => $config['cache_dir']
-            ],
-            FileDataPersistencePlugin::class => [
-                'active' => true,
-                'storage_dir' => $config['storage_dir']
-            ]
-        ];
-
-        if (isset($config['plugins'])){
-            $plugins = array_replace_recursive($plugins, $config['plugins']);
-        }
-
-        $config['plugins'] = $plugins;
-
-        return $config;
     }
 
     /**
