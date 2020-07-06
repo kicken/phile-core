@@ -30,7 +30,7 @@ class ServiceLocator
     /**
      * @var array of services
      */
-    protected static $services;
+    protected static $services = [];
 
     /**
      * @var array $serviceMap for mapping speaking names/keys to the interfaces
@@ -98,7 +98,7 @@ class ServiceLocator
 
     private static function dispatchEvent($name, Event $event){
         /** @var EventDispatcher $dispatcher */
-        $dispatcher = self::$services['Phile_EventDispatcher'];
+        $dispatcher = self::$services['Phile_EventDispatcher'] ?? null;
         if ($dispatcher){
             $dispatcher->dispatch($name, $event);
         }
