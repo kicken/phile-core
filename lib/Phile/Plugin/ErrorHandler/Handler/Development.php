@@ -15,8 +15,7 @@ use Phile\ServiceLocator\ErrorHandlerInterface;
  * due to incompatibility of the two licenses (GPL and MIT) we have written
  * the entire code again. we thank the core team of TYPO3 for the great idea.
  */
-class Development implements ErrorHandlerInterface
-{
+class Development implements ErrorHandlerInterface {
 
     /**
      * @var array settings
@@ -33,8 +32,7 @@ class Development implements ErrorHandlerInterface
      * @param array $settings
      * @param array $phileConfig
      */
-    public function __construct(array $settings = [], $phileConfig = [])
-    {
+    public function __construct(array $settings = [], array $phileConfig = []){
         $this->settings = $settings;
         $this->phileConfig = $phileConfig;
     }
@@ -42,20 +40,18 @@ class Development implements ErrorHandlerInterface
     /**
      * handle the error
      *
-     * @param int    $errno
+     * @param int $errno
      * @param string $errstr
      * @param string $errFile
-     * @param int    $errLine
-     * @param array  $errContext
+     * @param int $errLine
      *
      * @return boolean
      */
-    public function handleError($errno, $errstr, $errFile, $errLine, array $errContext)
-    {
+    public function handleError(int $errno, string $errstr, string $errFile, int $errLine) : bool{
         if ((error_reporting() & $errno) == 0){
             return false;
         }
-        
+
         $backtrace = debug_backtrace();
         $backtrace = array_slice($backtrace, 2);
         $this->displayDeveloperOutput(
@@ -72,10 +68,9 @@ class Development implements ErrorHandlerInterface
     /**
      * handle PHP errors which can't be caught by error-handler
      */
-    public function handleShutdown()
-    {
+    public function handleShutdown(){
         $error = error_get_last();
-        if ($error === null) {
+        if ($error === null){
             return;
         }
         $this->displayDeveloperOutput(
@@ -91,8 +86,7 @@ class Development implements ErrorHandlerInterface
      *
      * @param \Throwable|\Exception $exception
      */
-    public function handleException($exception)
-    {
+    public function handleException($exception){
         $this->displayDeveloperOutput(
             $exception->getCode(),
             $exception->getMessage(),
@@ -104,14 +98,14 @@ class Development implements ErrorHandlerInterface
     }
 
     /**
-     * show a nice looking and human readable developer output
+     * show a nice looking and human-readable developer output
      *
      * @param $code
      * @param $message
      * @param $file
      * @param $line
      * @param array $backtrace
-     * @param \Exception $exception
+     * @param \Throwable $exception
      */
     protected function displayDeveloperOutput(
         $code,
@@ -119,8 +113,8 @@ class Development implements ErrorHandlerInterface
         $file,
         $line,
         array $backtrace = null,
-        \Exception $exception = null
-    ) {
+        \Throwable $exception = null
+    ){
         header('HTTP/1.1 500 Internal Server Error');
         $fragment = $this->receiveCodeFragment(
             $file,
@@ -128,7 +122,7 @@ class Development implements ErrorHandlerInterface
             5,
             5
         );
-        
+
         $marker = [
             'base_url' => $this->phileConfig['base_url'],
             'type' => $exception ? 'Exception' : 'Error',
@@ -141,9 +135,9 @@ class Development implements ErrorHandlerInterface
             'wiki_link' => ''
         ];
 
-        if ($exception) {
+        if ($exception){
             $marker['exception_class'] = $this->linkClass(get_class($exception));
-            if ($code > 0) {
+            if ($code > 0){
                 $marker['wiki_link'] = $this->tag(
                     'a',
                     'Exception-Wiki',
@@ -158,7 +152,7 @@ class Development implements ErrorHandlerInterface
             $backtrace = $exception->getTrace();
         }
 
-        if ($backtrace) {
+        if ($backtrace){
             $marker['exception_backtrace'] = $this->createBacktrace($backtrace);
         }
 
@@ -174,36 +168,36 @@ class Development implements ErrorHandlerInterface
     }
 
     /**
-     * creates a human readable backtrace
+     * creates a human-readable backtrace
      *
-     * @param  array $traces
+     * @param array $traces
+     *
      * @return string
      */
-    protected function createBacktrace(array $traces)
-    {
-        if (!count($traces)) {
+    protected function createBacktrace(array $traces) : string{
+        if (!count($traces)){
             return '';
         }
         $backtraceCodes = [];
 
-        foreach ($traces as $index => $step) {
+        foreach ($traces as $index => $step){
             $backtrace = $this->tag('span', count($traces) - $index, ['class' => 'index']);
             $backtrace .= ' ';
 
-            if (isset($step['class'])) {
+            if (isset($step['class'])){
                 $class = $this->linkClass($step['class']) . '<span class="divider">::</span>';
                 $backtrace .= $class . $this->linkClass($step['class'], $step['function']);
-            } elseif (isset($step['function'])) {
+            } else if (isset($step['function'])){
                 $backtrace .= $this->tag('span', $step['function'], ['class' => 'function']);
             }
 
             $arguments = $this->getBacktraceStepArguments($step);
-            if ($arguments) {
+            if ($arguments){
                 $backtrace .= $this->tag('span', "($arguments)", ['class' => 'funcArguments']);
             }
 
-            if (isset($step['file'])) {
-                $backtrace .= $this->receiveCodeFragment($step['file'], $step['line'], 3, 3);
+            if (isset($step['file'])){
+                $backtrace .= $this->receiveCodeFragment($step['file'], $step['line']);
             }
 
             $backtraceCodes[] = $this->tag('pre', $backtrace, ['class' => 'entry']);
@@ -217,17 +211,17 @@ class Development implements ErrorHandlerInterface
      * render arguments for backtrace step
      *
      * @param  $step
+     *
      * @return string
      */
-    protected function getBacktraceStepArguments($step)
-    {
-        if (empty($step['args'])) {
+    protected function getBacktraceStepArguments($step) : string{
+        if (empty($step['args'])){
             return '';
         }
         $arguments = '';
-        foreach ($step['args'] as $argument) {
+        foreach ($step['args'] as $argument){
             $arguments .= strlen($arguments) === 0 ? '' : $this->tag('span', ', ', ['class' => 'separator']);
-            if (is_object($argument)) {
+            if (is_object($argument)){
                 $class = 'class';
                 $content = $this->linkClass(get_class($argument));
             } else {
@@ -238,11 +232,12 @@ class Development implements ErrorHandlerInterface
                 'span',
                 $content,
                 [
-                'class' => $class,
-                'title' => print_r($argument, true)
+                    'class' => $class,
+                    'title' => print_r($argument, true)
                 ]
             );
         }
+
         return $arguments;
     }
 
@@ -251,14 +246,13 @@ class Development implements ErrorHandlerInterface
      *
      * @param $filename
      * @param $lineNumber
-     * @param $linesBefore
-     * @param $linesAfter
+     * @param int $linesBefore
+     * @param int $linesAfter
      *
      * @return string
      */
-    protected function receiveCodeFragment($filename, $lineNumber, $linesBefore = 3, $linesAfter = 3)
-    {
-        if (!file_exists($filename)) {
+    protected function receiveCodeFragment($filename, $lineNumber, int $linesBefore = 3, int $linesAfter = 3) : string{
+        if (!file_exists($filename)){
             return '';
         }
         $html = $this->tag('span', $filename . ':<br/>', ['class' => 'filename']);
@@ -267,18 +261,18 @@ class Development implements ErrorHandlerInterface
         $lines = explode("\n", $code);
 
         $firstLine = $lineNumber - $linesBefore - 1;
-        if ($firstLine < 0) {
+        if ($firstLine < 0){
             $firstLine = 0;
         }
 
         $lastLine = $lineNumber + $linesAfter;
-        if ($lastLine > count($lines)) {
+        if ($lastLine > count($lines)){
             $lastLine = count($lines);
         }
 
         $line = $firstLine;
         $fragment = '';
-        while ($line < $lastLine) {
+        while ($line < $lastLine){
             $line++;
 
             $lineText = htmlspecialchars($lines[$line - 1]);
@@ -286,7 +280,7 @@ class Development implements ErrorHandlerInterface
             $tmp = sprintf('%05d: %s <br/>', $line, $lineText);
 
             $class = 'row';
-            if ($line === $lineNumber) {
+            if ($line === $lineNumber){
                 $class .= ' currentRow';
             }
             $fragment .= $this->tag('span', $tmp, ['class' => $class]);
@@ -294,51 +288,53 @@ class Development implements ErrorHandlerInterface
 
 
         $html .= $fragment;
+
         return $this->tag('pre', $html);
     }
 
     /**
      * link the class or method to the API or return the method name
-  *
+     *
      * @param $class
      * @param $method
      *
      * @return string
      */
-    protected function linkClass($class, $method = null)
-    {
-        $title = $method ? $method : $class;
-        if (strpos($class, 'Phile\\') === 0) {
+    protected function linkClass($class, $method = null) : string{
+        $title = $method ?: $class;
+        if (strpos($class, 'Phile\\') === 0){
             return $title;
         }
 
         $filename = 'docs/classes/' . str_replace('\\', '.', $class) . '.html';
-        if (file_exists($filename)) {
+        if (file_exists($filename)){
             return $title;
         }
-        
+
         $href = $this->phileConfig['base_url'] . '/' . $filename;
-        if ($method) {
+        if ($method){
             $href .= '#method_' . $method;
         }
-        return $this->tag('a', $title, ['href' =>  $href, 'target' => '_blank']);
+
+        return $this->tag('a', $title, ['href' => $href, 'target' => '_blank']);
     }
 
     /**
      * create HTML-tag
      *
-     * @param  string $tag
-     * @param  string $content
-     * @param  array  $attributes
+     * @param string $tag
+     * @param string $content
+     * @param array $attributes
+     *
      * @return string
      */
-    protected function tag($tag, $content = '', array $attributes = [])
-    {
+    protected function tag(string $tag, string $content = '', array $attributes = []) : string{
         $html = '<' . $tag;
-        foreach ($attributes as $key => $value) {
+        foreach ($attributes as $key => $value){
             $html .= ' ' . $key . '="' . htmlspecialchars($value) . '"';
         }
         $html .= '>' . $content . '</' . $tag . '>';
+
         return $html;
     }
 }

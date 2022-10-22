@@ -28,7 +28,7 @@ class ErrorHandlerPlugin extends AbstractPlugin
         $handler = null;
         switch ($this->config['handler']){
             case ErrorHandlerPlugin::HANDLER_ERROR_LOG:
-                $handler = new ErrorLog($this->config, $this->phileConfig);
+                $handler = new ErrorLog();
                 break;
             case ErrorHandlerPlugin::HANDLER_DEVELOPMENT:
                 $handler = new Development($this->config, $this->phileConfig);

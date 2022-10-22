@@ -16,15 +16,14 @@ interface ErrorHandlerInterface
     /**
      * handle the error
      *
-     * @param int    $errno
+     * @param int $errno
      * @param string $errstr
      * @param string $errFile
-     * @param int    $errLine
-     * @param array  $errContext
+     * @param int $errLine
      *
      * @return boolean
      */
-    public function handleError($errno, $errstr, $errFile, $errLine, array $errContext);
+    public function handleError(int $errno, string $errstr, string $errFile, int $errLine) : bool;
 
     /**
      * handle all exceptions

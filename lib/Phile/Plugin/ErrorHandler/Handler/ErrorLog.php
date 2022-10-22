@@ -10,21 +10,18 @@ use Phile\ServiceLocator\ErrorHandlerInterface;
 /**
  * Class ErrorLog
  */
-class ErrorLog implements ErrorHandlerInterface
-{
+class ErrorLog implements ErrorHandlerInterface {
     /**
      * handle the error
      *
-     * @param int    $errno
+     * @param int $errno
      * @param string $errstr
      * @param string $errFile
-     * @param int    $errLine
-     * @param array  $errContext
+     * @param int $errLine
      *
      * @return boolean
      */
-    public function handleError($errno, $errstr, $errFile, $errLine, array $errContext)
-    {
+    public function handleError(int $errno, string $errstr, string $errFile, int $errLine) : bool{
         error_log("[{$errno}] {$errstr} in {$errFile} on line {$errLine}");
 
         return true;
@@ -35,8 +32,7 @@ class ErrorLog implements ErrorHandlerInterface
      *
      * @param \Throwable|\Exception $exception
      */
-    public function handleException($exception)
-    {
+    public function handleException($exception){
         $code = $exception->getCode();
         $message = $exception->getMessage();
         $file = $exception->getFile();
