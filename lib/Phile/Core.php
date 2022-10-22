@@ -148,7 +148,7 @@ class Core
             ],
             FastCachePlugin::class => [
                 'active' => true,
-                'driver' => 'auto',
+                'driver' => 'files',
                 'path' => $config['cache_dir']
             ],
             FileDataPersistencePlugin::class => [
