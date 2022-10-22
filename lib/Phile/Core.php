@@ -2,6 +2,7 @@
 /**
  * the core of Phile
  */
+
 namespace Phile;
 
 use Phile\Core\Registry;
@@ -32,8 +33,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @license http://opensource.org/licenses/MIT
  * @package Phile
  */
-class Core
-{
+class Core {
     /**
      * @var array the settings array
      */
@@ -57,10 +57,10 @@ class Core
     /**
      * @param array $config
      * @param array $plugins
+     *
      * @throws \Exception
      */
-    public function __construct(array $config, array $plugins)
-    {
+    public function __construct(array $config, array $plugins){
         $this->settings = $config;
         $this->plugins = $plugins;
         $this->dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
@@ -86,13 +86,14 @@ class Core
 
     /**
      * @param array $config
+     *
      * @return Core
+     * @throws \Exception
      */
-    public static function bootstrap($config = [])
-    {
+    public static function bootstrap(array $config = []) : Core{
         ServiceLocator::registerService('Phile_EventDispatcher', new EventDispatcher());
-        $rootDirectory = isset($config['root_dir'])?$config['root_dir']:self::findRootDirectory();
-        $baseUrl = isset($config['base_url'])?$config['base_url']:self::findBaseUrl();
+        $rootDirectory = $config['root_dir'] ?? self::findRootDirectory();
+        $baseUrl = $config['base_url'] ?? self::findBaseUrl();
 
         $defaultConfiguration = self::defaultConfiguration($rootDirectory, $baseUrl);
         $config = array_replace_recursive($defaultConfiguration, $config);
@@ -103,8 +104,7 @@ class Core
         return new static($config, $plugins);
     }
 
-    protected static function defaultConfiguration($root, $baseUrl)
-    {
+    protected static function defaultConfiguration($root, $baseUrl){
         $defaults = [
             'base_url' => $baseUrl,
             'site_title' => 'PhileCMS',
@@ -169,8 +169,7 @@ class Core
     /**
      * @return string
      */
-    protected static function findRootDirectory()
-    {
+    protected static function findRootDirectory() : string{
         //Attempt to determine the root directory location automatically.
         $rootDirectory = dirname($_SERVER['SCRIPT_FILENAME']) . DIRECTORY_SEPARATOR . '..';
         $rootDirectory = (string)realpath($rootDirectory);
@@ -178,18 +177,17 @@ class Core
         return $rootDirectory;
     }
 
-    protected static function findBaseUrl()
-    {
+    protected static function findBaseUrl() : string{
         $url = '';
-        if (isset($_SERVER['PHP_SELF'])) {
+        if (isset($_SERVER['PHP_SELF'])){
             $url = preg_replace('/index\.php(.*)?$/', '', $_SERVER['PHP_SELF']);
         }
 
         $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-        $protocol = $https?'https':'http';
-        $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:null;
+        $protocol = $https ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? null;
 
-        if ($protocol && $host) {
+        if ($host){
             $url = sprintf('%s://%s/%s', $protocol, $host, ltrim($url, '/'));
         }
 
@@ -198,15 +196,14 @@ class Core
         return $url;
     }
 
-    protected static function loadPlugins($config)
-    {
+    protected static function loadPlugins($config) : array{
         $plugins = [];
-        foreach ($config['plugins'] as $class => $pluginSpecificConfig) {
-            if (isset($pluginSpecificConfig['active']) && !$pluginSpecificConfig['active']) {
+        foreach ($config['plugins'] as $class => $pluginSpecificConfig){
+            if (isset($pluginSpecificConfig['active']) && !$pluginSpecificConfig['active']){
                 continue;
             }
 
-            if (!class_exists($class)) {
+            if (!class_exists($class)){
                 throw new PluginNotFoundException($class);
             }
 
@@ -221,13 +218,12 @@ class Core
         return $plugins;
     }
 
-    public function handleRequest($url)
-    {
+    public function handleRequest($url){
         $url = $this->normalizeRequestUrl($url);
         $contentFile = $this->router->match($url);
         if ($contentFile === null){
             $redirect = $this->router->matchRedirect($url);
-            if (!$redirect) {
+            if (!$redirect){
                 $response = $this->handleHttpStatus(404);
             } else {
                 $response = new Response();
@@ -240,39 +236,35 @@ class Core
         $this->outputResponse($response);
     }
 
-    private function handleHttpStatus($status)
-    {
+    private function handleHttpStatus($status) : Response{
         $event = new NotFoundEvent($_SERVER['REQUEST_URI']);
         $this->dispatcher->dispatch(NotFoundEvent::AFTER, $event);
 
         $contentFile = $this->router->match('/' . $status);
-        if ($contentFile === null) {
+        if ($contentFile === null){
             $response = new Response();
             $response
                 ->setStatusCode(404)
-                ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
-                ->setBody('Not found')
-            ;
+                ->setHeader('Content-type', 'text/html; charset=' . $this->settings['charset'])
+                ->setBody('Not found');
         } else {
             $response = $this->createResponse($contentFile)
-                ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
-                ->setStatusCode($status)
-            ;
+                ->setHeader('Content-type', 'text/html; charset=' . $this->settings['charset'])
+                ->setStatusCode($status);
         }
 
         return $response;
     }
 
-    private function createResponse($contentFile){
+    private function createResponse($contentFile) : Response{
         $response = new Response();
 
         $extension = pathinfo($contentFile, PATHINFO_EXTENSION);
         if ($this->isContentExtension($extension)){
             $response
                 ->setBody($this->handleContentFile($contentFile))
-                ->setHeader('Content-type', 'text/html; charset='.$this->settings['charset'])
-                ->setStatusCode(200)
-            ;
+                ->setHeader('Content-type', 'text/html; charset=' . $this->settings['charset'])
+                ->setStatusCode(200);
         } else {
             $stream = fopen($contentFile, 'r');
             if (!$stream){
@@ -280,8 +272,7 @@ class Core
             } else {
                 $response
                     ->setBody($stream)
-                    ->setStatusCode(200)
-                ;
+                    ->setStatusCode(200);
 
                 $mimeType = $this->guessMimeType($contentFile);
                 if ($mimeType){
@@ -293,11 +284,11 @@ class Core
         return $response;
     }
 
-    private function isContentExtension($extension){
+    private function isContentExtension($extension) : bool{
         return $this->normalizeExtension($extension) === $this->normalizeExtension($this->settings['content_ext']);
     }
 
-    private function normalizeExtension($extension){
+    private function normalizeExtension($extension) : string{
         $extension = strtolower($extension);
         $extension = trim($extension, '.');
 
@@ -329,8 +320,7 @@ class Core
         return $type;
     }
 
-    private function handleContentFile($contentFile)
-    {
+    private function handleContentFile($contentFile){
         /** @var TemplateInterface $template */
         $template = ServiceLocator::getService('Phile_Template');
         $page = $this->createPageModel($contentFile);
@@ -347,8 +337,7 @@ class Core
         return $output;
     }
 
-    private function createPageModel($contentFile)
-    {
+    private function createPageModel($contentFile) : Page{
         $parser = ServiceLocator::getService('Phile_Parser');
         $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
 
@@ -371,7 +360,7 @@ class Core
     }
 
     private function outputHeaders($headers){
-        foreach ($headers as $name=>$value){
+        foreach ($headers as $name => $value){
             header(sprintf("%s: %s", $name, $value));
         }
     }
@@ -386,24 +375,11 @@ class Core
         }
     }
 
-    /**
-     * initialize error handling
-     */
-    protected function initializeErrorHandling()
-    {
-        if (ServiceLocator::hasService('Phile_ErrorHandler')) {
-            $errorHandler = ServiceLocator::getService('Phile_ErrorHandler');
-            set_error_handler([$errorHandler, 'handleError']);
-            register_shutdown_function([$errorHandler, 'handleShutdown']);
-            ini_set('display_errors', $this->settings['display_errors']);
-        }
-    }
-
-    private function normalizeRequestUrl($url){
+    private function normalizeRequestUrl(string $url) : string{
         $baseUrl = $this->settings['base_url'];
         $url = ltrim($url, '/');
 
-        $basePath = parse_url($baseUrl, PHP_URL_PATH);
+        $basePath = parse_url($baseUrl, PHP_URL_PATH) ?? '/';
         $basePath = ltrim($basePath, '/');
 
         if (stripos($url, $basePath) === 0){

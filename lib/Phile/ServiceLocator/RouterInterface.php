@@ -9,31 +9,33 @@
 namespace Phile\ServiceLocator;
 
 
-interface RouterInterface
-{
+interface RouterInterface {
     /**
      * Try to resolve a URL to a content path.
-     * 
+     *
      * @param string $url
+     *
      * @return string|null  Path to the content file if found, otherwise null.
      */
-    public function match($url);
+    public function match(string $url) : ?string;
 
     /**
      * See if the URL resolves to a redirect.
-     * 
+     *
      * @param string $url
+     *
      * @return string|null New URL if found, otherwise null.
      */
-    public function matchRedirect($url);
-    
+    public function matchRedirect(string $url) : ?string;
+
     /**
      * Generate a URL for a given path.
-     * 
+     *
      * @param string $path
      * @param bool $absolute
+     *
      * @return string
      */
-    public function urlForPath($path, $absolute=true);
-    
+    public function urlForPath(string $path, bool $absolute = true) : string;
+
 }
