@@ -2,6 +2,7 @@
 /**
  * Registry class
  */
+
 namespace Phile\Core;
 
 /**
@@ -12,8 +13,7 @@ namespace Phile\Core;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Core
  */
-class Registry extends \ArrayObject
-{
+class Registry extends \ArrayObject {
     /**
      * Registry object provides storage for shared objects.
      *
@@ -26,9 +26,8 @@ class Registry extends \ArrayObject
      *
      * @return Registry
      */
-    public static function getInstance()
-    {
-        if (self::$registry === null) {
+    public static function getInstance(){
+        if (self::$registry === null){
             self::init();
         }
 
@@ -45,9 +44,8 @@ class Registry extends \ArrayObject
      *
      * @throws \Exception
      */
-    public static function setInstance(Registry $registry)
-    {
-        if (self::$registry !== null) {
+    public static function setInstance(Registry $registry){
+        if (self::$registry !== null){
             throw new \RuntimeException('Registry is already initialized', 1398536572);
         }
         self::$registry = $registry;
@@ -58,8 +56,7 @@ class Registry extends \ArrayObject
      *
      * @return void
      */
-    protected static function init()
-    {
+    protected static function init(){
         self::setInstance(new Registry());
     }
 
@@ -75,10 +72,9 @@ class Registry extends \ArrayObject
      * @return mixed
      * @throws \Exception if no entry is registered for $index.
      */
-    public static function get($index)
-    {
+    public static function get($index){
         $instance = self::getInstance();
-        if (!$instance->offsetExists($index)) {
+        if (!$instance->offsetExists($index)){
             throw new \RuntimeException("No entry is registered for key '$index'", 1398536594);
         }
 
@@ -94,12 +90,11 @@ class Registry extends \ArrayObject
      *
      * @param string $index The location in the ArrayObject in which to store
      *                      the value.
-     * @param mixed  $value The object to store in the ArrayObject.
+     * @param mixed $value The object to store in the ArrayObject.
      *
      * @return void
      */
-    public static function set($index, $value)
-    {
+    public static function set($index, $value){
         $instance = self::getInstance();
         $instance->offsetSet($index, $value);
     }
@@ -112,9 +107,8 @@ class Registry extends \ArrayObject
      *
      * @return boolean
      */
-    public static function isRegistered($index)
-    {
-        if (self::$registry === null) {
+    public static function isRegistered($index){
+        if (self::$registry === null){
             return false;
         }
 
@@ -124,11 +118,10 @@ class Registry extends \ArrayObject
     /**
      * the constructor
      *
-     * @param array   $array data array
+     * @param array $array data array
      * @param integer $flags ArrayObject flags
      */
-    public function __construct($array = array(), $flags = parent::ARRAY_AS_PROPS)
-    {
+    public function __construct($array = [], $flags = parent::ARRAY_AS_PROPS){
         parent::__construct($array, $flags);
     }
 }

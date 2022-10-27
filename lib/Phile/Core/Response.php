@@ -20,8 +20,7 @@ namespace Phile\Core;
  * @license http://opensource.org/licenses/MIT
  * @package Phile
  */
-class Response
-{
+class Response {
 
     /**
      * @var string|resource HTTP body
@@ -41,43 +40,43 @@ class Response
     /**
      * redirect to another URL
      *
-     * @param string $url        URL
-     * @param int    $statusCode
+     * @param string $url URL
+     * @param int $statusCode
      */
-    public function redirect($url, $statusCode = 302)
-    {
+    public function redirect($url, $statusCode = 302){
         $this->setStatusCode($statusCode)
             ->setHeader('Location', $url, true)
-            ->setBody('<a href="'.$url.'">'.$url.'</a>')
-        ;
+            ->setBody('<a href="' . $url . '">' . $url . '</a>');
     }
 
     /**
      * set the response body
      *
-     * @param  string|resource $body
+     * @param string|resource $body
+     *
      * @return $this
      */
-    public function setBody($body)
-    {
+    public function setBody($body){
         $this->body = $body;
+
         return $this;
     }
 
     /**
      * set a response HTTP-header
      *
-     * @param  string $key
-     * @param  string $value
-     * @param  bool   $clear clear out any existing headers
+     * @param string $key
+     * @param string $value
+     * @param bool $clear clear out any existing headers
+     *
      * @return $this
      */
-    public function setHeader($key, $value, $clear = false)
-    {
-        if ($clear) {
+    public function setHeader($key, $value, $clear = false){
+        if ($clear){
             $this->headers = [];
         }
         $this->headers[$key] = $value;
+
         return $this;
     }
 
@@ -85,35 +84,33 @@ class Response
      * set the response HTTP status code
      *
      * @param  $code
+     *
      * @return $this
      */
-    public function setStatusCode($code)
-    {
+    public function setStatusCode($code){
         $this->statusCode = $code;
+
         return $this;
     }
 
     /**
      * @return string|resource
      */
-    public function getBody()
-    {
+    public function getBody(){
         return $this->body;
     }
 
     /**
      * @return array
      */
-    public function getHeaders()
-    {
+    public function getHeaders(){
         return $this->headers;
     }
 
     /**
      * @return int
      */
-    public function getStatusCode()
-    {
+    public function getStatusCode(){
         return $this->statusCode;
     }
 }

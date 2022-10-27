@@ -2,6 +2,7 @@
 /**
  * Plugin class
  */
+
 namespace Phile\Plugin;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -14,8 +15,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Plugin
  */
-abstract class AbstractPlugin implements EventSubscriberInterface
-{
+abstract class AbstractPlugin implements EventSubscriberInterface {
     /** @var array Plugin specific configuration */
     protected $config;
     /** @var array Phile's global configuration */
@@ -37,17 +37,17 @@ abstract class AbstractPlugin implements EventSubscriberInterface
         return [];
     }
 
-    public function initialize()
-    {
+    public function initialize(){
     }
 
     /**
      * Get a path relative to the plugin's source directory.
      *
      * @param string $sub
+     *
      * @return string
      */
-    public function getPluginPath($sub=''){
+    public function getPluginPath($sub = ''){
         static $dir = null;
         if ($dir === null){
             $rf = new \ReflectionObject($this);

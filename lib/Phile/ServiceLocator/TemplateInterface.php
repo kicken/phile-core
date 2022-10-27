@@ -2,6 +2,7 @@
 /**
  * The TemplateInterface
  */
+
 namespace Phile\ServiceLocator;
 
 use Phile\Model\Page;
@@ -13,12 +14,12 @@ use Phile\Model\Page;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\ServiceLocator
  */
-interface TemplateInterface
-{
+interface TemplateInterface {
     /**
      * render the template
      *
      * @param Page $page
+     *
      * @return mixed
      */
     public function render(Page $page);

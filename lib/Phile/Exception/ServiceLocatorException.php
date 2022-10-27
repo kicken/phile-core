@@ -13,6 +13,5 @@ namespace Phile\Exception;
  * @license http://opensource.org/licenses/MIT
  * @package Phile
  */
-class ServiceLocatorException extends \RuntimeException
-{
+class ServiceLocatorException extends \RuntimeException {
 }

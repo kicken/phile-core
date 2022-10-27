@@ -2,6 +2,7 @@
 /**
  * the filter class for all files
  */
+
 namespace Phile\FilterIterator;
 
 /**
@@ -9,14 +10,13 @@ namespace Phile\FilterIterator;
  *
  * @package Phile\FilterIterator
  */
-class GeneralFileFilterIterator extends \FilterIterator
-{
+class GeneralFileFilterIterator extends \FilterIterator {
     /**
      * method to decide if file is filtered or not
+     *
      * @return bool
      */
-    public function accept()
-    {
+    public function accept(){
         // accept all kind of files, no filter
         return true;
     }

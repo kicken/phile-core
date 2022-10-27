@@ -2,6 +2,7 @@
 /**
  * The page model
  */
+
 namespace Phile\Model;
 
 use Phile\Core\ServiceLocator;
@@ -21,8 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @license http://opensource.org/licenses/MIT
  * @package Phile\Model
  */
-class Page
-{
+class Page {
     /** @var array Phile global settings */
     private $settings;
     /** @var EventDispatcherInterface Event dispatcher */
@@ -31,18 +31,17 @@ class Page
     private $contentFile;
     /** @var ParserInterface Content parser to use */
     private $parser;
-    /** @var MetaParserInterface Meta parser to use  */
+    /** @var MetaParserInterface Meta parser to use */
     private $metaParser;
 
     /** @var string Loaded file content cache */
     private $content;
     /** @var string Parsed page content cache */
     private $parsedContent;
-    /** @var array Page meta data cache*/
+    /** @var array Page meta data cache */
     private $meta;
 
-    public function __construct(array $settings, EventDispatcherInterface $dispatcher, ParserInterface $parser, MetaParserInterface $metaParser, $contentFile)
-    {
+    public function __construct(array $settings, EventDispatcherInterface $dispatcher, ParserInterface $parser, MetaParserInterface $metaParser, $contentFile){
         $this->settings = $settings;
         $this->dispatcher = $dispatcher;
         $this->contentFile = $contentFile;
@@ -50,14 +49,13 @@ class Page
         $this->metaParser = $metaParser;
     }
 
-    public function getContent()
-    {
-        if (!$this->content) {
+    public function getContent(){
+        if (!$this->content){
             $event = new LoadPageContentEvent($this);
             $this->dispatcher->dispatch(LoadPageContentEvent::BEFORE, $event);
 
             $content = $event->getContent();
-            if ($content === null) {
+            if ($content === null){
                 $content = file_get_contents($this->contentFile);
                 $event->setContent($content);
             }
@@ -87,8 +85,7 @@ class Page
         return $this->parsedContent;
     }
 
-    public function getMeta()
-    {
+    public function getMeta(){
         if (!$this->meta){
             $content = $this->getContent();
 
@@ -111,18 +108,18 @@ class Page
      *
      * @return string|null
      */
-    public function getTitle()
-    {
+    public function getTitle(){
         return $this->meta['title'];
     }
 
     public function getContentFile(){
         return $this->contentFile;
     }
-    
+
     public function getUrl(){
         /** @var RouterInterface $router */
         $router = ServiceLocator::getService('Phile_Router');
+
         return $router->urlForPath($this->contentFile);
     }
 }

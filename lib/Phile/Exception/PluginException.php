@@ -13,6 +13,5 @@ namespace Phile\Exception;
  * @license http://opensource.org/licenses/MIT
  * @package Phile
  */
-class PluginException extends \RuntimeException
-{
+class PluginException extends \RuntimeException {
 }
