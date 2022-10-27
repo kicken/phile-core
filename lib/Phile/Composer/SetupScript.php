@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Keith
- * Date: 7/6/2016
- * Time: 9:52 AM
- */
+/** @noinspection PhpUnused */
 
 namespace Phile\Composer;
 

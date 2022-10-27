@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpMultipleClassDeclarationsInspection, PhpUnused */
 
 namespace Phile\Composer;
 

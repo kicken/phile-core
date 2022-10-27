@@ -45,8 +45,7 @@
     "michelf/php-markdown": ">=1.4",
     "phpfastcache/phpfastcache": "~9.0",
     "symfony/yaml": "^2.7",
-    "symfony/event-dispatcher": "^2.1",
-    "composer-runtime-api": "^2.0"
+    "symfony/event-dispatcher": "^2.1"
   },
   "require-dev": {
     "phpdocumentor/phpdocumentor": "^2.8",
