@@ -20,7 +20,7 @@ interface TemplateInterface {
      *
      * @param Page $page
      *
-     * @return mixed
+     * @return string
      */
-    public function render(Page $page);
+    public function render(Page $page) : string;
 }

@@ -20,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
  * @package Phile\Plugin\Phile\ParserMeta
  */
 class MetaParserPlugin extends AbstractPlugin implements MetaParserInterface {
-    public function initialize(){
+    public function initialize() : void{
         ServiceLocator::registerService('Phile_Parser_Meta', $this);
         $defaults = [
             'fences' => [
@@ -40,7 +40,7 @@ class MetaParserPlugin extends AbstractPlugin implements MetaParserInterface {
      *
      * @return array with key/value store
      */
-    public function parse($rawData){
+    public function parse(string $rawData) : array{
         $rawData = trim($rawData);
         $fences = $this->config['fences'];
 
@@ -66,7 +66,7 @@ class MetaParserPlugin extends AbstractPlugin implements MetaParserInterface {
     }
 
     /**
-     * convert meta data keys
+     * convert metadata keys
      *
      * Creates "compatible" keys allowing easy access e.g. as template var.
      *
@@ -79,7 +79,7 @@ class MetaParserPlugin extends AbstractPlugin implements MetaParserInterface {
      *
      * @return array
      */
-    protected function convertKeys(array $meta){
+    protected function convertKeys(array $meta) : array{
         $return = [];
         foreach ($meta as $key => $value){
             if (is_array($value)){

@@ -16,9 +16,9 @@ interface ParserInterface {
     /**
      * parse data
      *
-     * @param $data
+     * @param string $data
      *
      * @return mixed
      */
-    public function parse($data);
+    public function parse(string $data);
 }

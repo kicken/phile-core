@@ -25,12 +25,12 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
     /** @var \Twig_Environment */
     private $twig;
 
-    public function initialize(){
+    public function initialize() : void{
         $this->twig = $this->createTwigEngine();
         ServiceLocator::registerService('Phile_Template', $this);
     }
 
-    public function render(Page $page){
+    public function render(Page $page) : string{
         $engine = $this->getTwig();
 
         $vars = $this->getTemplateVars($page);
@@ -39,12 +39,12 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
         return $engine->render($template, $vars);
     }
 
-    public function getTwig(){
+    public function getTwig() : \Twig_Environment{
         return $this->twig;
     }
 
-    protected function createTwigEngine(){
-        $options = isset($this->config['options']) ? $this->config['options'] : [];
+    protected function createTwigEngine() : \Twig_Environment{
+        $options = $this->config['options'] ?? [];
         $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
         $twig = new \Twig_Environment($loader, $options);
 
@@ -75,7 +75,7 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
         return $template;
     }
 
-    protected function getTemplatePath($sub = ''){
+    protected function getTemplatePath($sub = '') : string{
         $themePath = $this->config['themes_dir'] . $this->config['theme'];
         if (!empty($sub)){
             $themePath .= DIRECTORY_SEPARATOR . ltrim($sub, DIRECTORY_SEPARATOR);

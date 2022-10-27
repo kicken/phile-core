@@ -1,7 +1,4 @@
 <?php
-/**
- * Plugin Exception
- */
 
 namespace Phile\Exception;
 

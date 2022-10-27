@@ -64,7 +64,7 @@ class Core {
         $this->settings = $config;
         $this->plugins = $plugins;
         $this->dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
-        $this->router = new Router($this->settings, $this->dispatcher, $_SERVER);
+        $this->router = new Router($this->settings, $this->dispatcher);
 
         /** @var AbstractPlugin $plugin */
         foreach ($plugins as $plugin){
@@ -104,7 +104,7 @@ class Core {
         return new static($config, $plugins);
     }
 
-    protected static function defaultConfiguration($root, $baseUrl){
+    protected static function defaultConfiguration(string $root, string $baseUrl) : array{
         $defaults = [
             'base_url' => $baseUrl,
             'site_title' => 'PhileCMS',
@@ -126,7 +126,7 @@ class Core {
         return $defaults;
     }
 
-    private static function defaultPluginsConfiguration($config){
+    private static function defaultPluginsConfiguration(array $config) : array{
         $plugins = [
             ErrorHandlerPlugin::class => [
                 'active' => true,
@@ -196,7 +196,7 @@ class Core {
         return $url;
     }
 
-    protected static function loadPlugins($config) : array{
+    protected static function loadPlugins(array $config) : array{
         $plugins = [];
         foreach ($config['plugins'] as $class => $pluginSpecificConfig){
             if (isset($pluginSpecificConfig['active']) && !$pluginSpecificConfig['active']){
@@ -218,7 +218,7 @@ class Core {
         return $plugins;
     }
 
-    public function handleRequest($url){
+    public function handleRequest(string $url) : void{
         $url = $this->normalizeRequestUrl($url);
         $contentFile = $this->router->match($url);
         if ($contentFile === null){
@@ -236,7 +236,7 @@ class Core {
         $this->outputResponse($response);
     }
 
-    private function handleHttpStatus($status) : Response{
+    private function handleHttpStatus(int $status) : Response{
         $event = new NotFoundEvent($_SERVER['REQUEST_URI']);
         $this->dispatcher->dispatch(NotFoundEvent::AFTER, $event);
 
@@ -256,7 +256,7 @@ class Core {
         return $response;
     }
 
-    private function createResponse($contentFile) : Response{
+    private function createResponse(string $contentFile) : Response{
         $response = new Response();
 
         $extension = pathinfo($contentFile, PATHINFO_EXTENSION);
@@ -284,18 +284,18 @@ class Core {
         return $response;
     }
 
-    private function isContentExtension($extension) : bool{
+    private function isContentExtension(string $extension) : bool{
         return $this->normalizeExtension($extension) === $this->normalizeExtension($this->settings['content_ext']);
     }
 
-    private function normalizeExtension($extension) : string{
+    private function normalizeExtension(string $extension) : string{
         $extension = strtolower($extension);
         $extension = trim($extension, '.');
 
         return $extension;
     }
 
-    private function guessMimeType($file){
+    private function guessMimeType(string $file) : string{
         $type = null;
         if (function_exists('mime_content_type')){
             $type = mime_content_type($file);
@@ -320,7 +320,7 @@ class Core {
         return $type;
     }
 
-    private function handleContentFile($contentFile){
+    private function handleContentFile(string $contentFile) : string{
         /** @var TemplateInterface $template */
         $template = ServiceLocator::getService('Phile_Template');
         $page = $this->createPageModel($contentFile);
@@ -337,14 +337,14 @@ class Core {
         return $output;
     }
 
-    private function createPageModel($contentFile) : Page{
+    private function createPageModel(string $contentFile) : Page{
         $parser = ServiceLocator::getService('Phile_Parser');
         $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
 
-        return new Page($this->settings, $this->dispatcher, $parser, $metaParser, $contentFile);
+        return new Page($this->dispatcher, $parser, $metaParser, $contentFile);
     }
 
-    private function outputResponse(Response $response){
+    private function outputResponse(Response $response) : void{
         $this->closeSession();
         $this->disableOutputBuffering();
 
@@ -359,17 +359,17 @@ class Core {
         }
     }
 
-    private function outputHeaders($headers){
+    private function outputHeaders(array $headers) : void{
         foreach ($headers as $name => $value){
             header(sprintf("%s: %s", $name, $value));
         }
     }
 
-    private function closeSession(){
+    private function closeSession() : void{
         session_write_close();
     }
 
-    private function disableOutputBuffering(){
+    private function disableOutputBuffering() : void{
         while (ob_get_level()){
             ob_end_flush();
         }

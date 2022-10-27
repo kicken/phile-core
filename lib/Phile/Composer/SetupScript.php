@@ -34,14 +34,14 @@ class SetupScript {
         $this->createVarDirectory();
     }
 
-    private function askSiteTitle(){
+    private function askSiteTitle() : ?string{
         $title = 'PhileCMS';
         $question = sprintf('<question>Site Title [%s]:</question> ', $title);
 
         return $this->io->ask($question, $title);
     }
 
-    private function getPath($sub){
+    private function getPath(string $sub){
         $rootDir = getcwd();
 
         return str_replace('/', DIRECTORY_SEPARATOR, $rootDir . '/' . $sub);
@@ -83,11 +83,11 @@ class SetupScript {
         }
     }
 
-    private function isAlreadySetup(){
+    private function isAlreadySetup() : bool{
         return $this->isConfigured() && $this->isVarCreated();
     }
 
-    private function isConfigured(){
+    private function isConfigured() : bool{
         $config = null;
         $configFile = $this->getPath('config.php');
         if (file_exists($configFile)){
@@ -97,7 +97,7 @@ class SetupScript {
         return is_array($config);
     }
 
-    private function isVarCreated(){
+    private function isVarCreated() : bool{
         return file_exists($this->getPath('var/cache'))
             && file_exists($this->getPath('var/datastorage'));
     }

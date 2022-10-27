@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Keith
- * Date: 7/11/2016
- * Time: 8:50 PM
- */
 
 namespace Phile\Event;
 
@@ -16,11 +10,11 @@ class NotFoundEvent extends Event {
 
     private $requestUrl;
 
-    public function __construct($requestUrl){
-        $this->requestUrl;
+    public function __construct(string $requestUrl){
+        $this->requestUrl = $requestUrl;
     }
 
-    public function getRequestUrl(){
+    public function getRequestUrl() : string{
         return $this->requestUrl;
     }
 }

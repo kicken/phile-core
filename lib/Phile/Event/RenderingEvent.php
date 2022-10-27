@@ -21,25 +21,25 @@ class RenderingEvent extends Event {
     private $template;
     private $content;
 
-    public function __construct(Page $page, TemplateInterface $template, $content){
+    public function __construct(Page $page, TemplateInterface $template, string $content){
         $this->page = $page;
         $this->template = $template;
         $this->content = $content;
     }
 
-    public function getPage(){
+    public function getPage() : Page{
         return $this->page;
     }
 
-    public function getTemplate(){
+    public function getTemplate() : TemplateInterface{
         return $this->template;
     }
 
-    public function getContent(){
+    public function getContent() : string{
         return $this->content;
     }
 
-    public function setContent($content){
+    public function setContent($content) : void{
         $this->content = $content;
     }
 }

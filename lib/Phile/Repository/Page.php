@@ -41,12 +41,12 @@ class Page {
     /**
      * the constructor
      *
-     * @param null $settings
+     * @param ?array $settings
      *
      * @throws \Exception
      * @throws ServiceLocatorException
      */
-    public function __construct($settings = null){
+    public function __construct(array $settings = null){
         if ($settings === null){
             $settings = Registry::get('Phile_Settings');
         }
@@ -61,12 +61,12 @@ class Page {
      * find a page by path
      *
      * @param string $pageId
-     * @param string $folder
+     * @param ?string $folder
      *
-     * @return null|PageModel
+     * @return ?PageModel
      * @throws InvalidArgumentException
      */
-    public function findByPath(string $pageId, string $folder = null){
+    public function findByPath(string $pageId, string $folder = null) : ?PageModel{
         if ($folder === null){
             $folder = $this->settings['content_dir'];
         }
@@ -100,7 +100,7 @@ class Page {
      * find all pages (*.md) files and returns an array of Page models
      *
      * @param array $options
-     * @param string $folder
+     * @param ?string $folder
      *
      * @return PageCollection of \Phile\Model\Page objects
      */
@@ -132,12 +132,12 @@ class Page {
     /**
      * get page from cache or file path
      *
-     * @param $filePath
+     * @param string $filePath
      *
      * @return mixed|PageModel
      * @throws InvalidArgumentException
      */
-    protected function getPage($filePath){
+    protected function getPage(string $filePath) : ?PageModel{
         $key = 'Phile_Model_Page_' . md5($filePath);
         if (isset($this->storage[$key])){
             return $this->storage[$key];
@@ -158,15 +158,15 @@ class Page {
         return $page;
     }
 
-    private function createPageModel($filePath) : PageModel{
+    private function createPageModel(string $filePath) : PageModel{
         $dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
         $parser = ServiceLocator::getService('Phile_Parser');
         $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
 
-        return new PageModel($this->settings, $dispatcher, $parser, $metaParser, $filePath);
+        return new PageModel($dispatcher, $parser, $metaParser, $filePath);
     }
 
-    private function getFiles($folder) : array{
+    private function getFiles(string $folder) : array{
         $directoryIterator = new \RecursiveDirectoryIterator($folder, FilesystemIterator::FOLLOW_SYMLINKS);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
         $filterIterator = new ContentFileFilterIterator($recursiveIterator, $this->settings['content_ext']);
@@ -179,7 +179,7 @@ class Page {
         return $result;
     }
 
-    private function parseSortCriteria($criteria) : array{
+    private function parseSortCriteria(string $criteria) : array{
         $terms = preg_split('/\s+/', $criteria, -1, PREG_SPLIT_NO_EMPTY);
         $sorting = [];
         foreach ($terms as $term){
@@ -199,7 +199,7 @@ class Page {
         return $sorting;
     }
 
-    private function sortPages($pages, $criteria){
+    private function sortPages(array $pages, string $criteria) : array{
         // parse search	criteria
         $sorting = $this->parseSortCriteria($criteria);
 

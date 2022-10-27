@@ -25,22 +25,22 @@ class ContentFileFilterIterator extends \FilterIterator {
      *
      * @return bool
      */
-    public function accept(){
+    public function accept() : bool{
         /** @var \SplFileInfo $file */
         $file = $this->current();
 
         return !$this->isHidden($file) && !$this->is404($file) && $this->isCorrectExtension($file);
     }
 
-    private function isHidden(\SplFileInfo $file){
+    private function isHidden(\SplFileInfo $file) : bool{
         return substr($file->getFilename(), 0, 1) === '.';
     }
 
-    private function is404(\SplFileInfo $file){
+    private function is404(\SplFileInfo $file) : bool{
         return $file->getFilename() === '404' . $this->contentExtension;
     }
 
-    private function isCorrectExtension(\SplFileInfo $file){
+    private function isCorrectExtension(\SplFileInfo $file) : bool{
         return substr($file->getPathname(), -strlen($this->contentExtension)) === $this->contentExtension;
     }
 }

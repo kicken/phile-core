@@ -1,9 +1,5 @@
 <?php
 
-/**
- * the Response class
- */
-
 namespace Phile\Core;
 
 /**
@@ -43,7 +39,7 @@ class Response {
      * @param string $url URL
      * @param int $statusCode
      */
-    public function redirect($url, $statusCode = 302){
+    public function redirect(string $url, int $statusCode = 302) : void{
         $this->setStatusCode($statusCode)
             ->setHeader('Location', $url, true)
             ->setBody('<a href="' . $url . '">' . $url . '</a>');
@@ -52,11 +48,11 @@ class Response {
     /**
      * set the response body
      *
-     * @param string|resource $body
+     * @param string $body
      *
      * @return $this
      */
-    public function setBody($body){
+    public function setBody(string $body) : self{
         $this->body = $body;
 
         return $this;
@@ -71,7 +67,7 @@ class Response {
      *
      * @return $this
      */
-    public function setHeader($key, $value, $clear = false){
+    public function setHeader(string $key, string $value, bool $clear = false) : self{
         if ($clear){
             $this->headers = [];
         }
@@ -87,7 +83,7 @@ class Response {
      *
      * @return $this
      */
-    public function setStatusCode($code){
+    public function setStatusCode($code) : self{
         $this->statusCode = $code;
 
         return $this;
@@ -96,21 +92,21 @@ class Response {
     /**
      * @return string|resource
      */
-    public function getBody(){
+    public function getBody() : ?string{
         return $this->body;
     }
 
     /**
      * @return array
      */
-    public function getHeaders(){
+    public function getHeaders() : array{
         return $this->headers;
     }
 
     /**
      * @return int
      */
-    public function getStatusCode(){
+    public function getStatusCode() : int{
         return $this->statusCode;
     }
 }

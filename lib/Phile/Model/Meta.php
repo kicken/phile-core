@@ -26,7 +26,7 @@ class Meta implements \ArrayAccess {
         $this->data = $data;
     }
 
-    public function offsetExists($offset){
+    public function offsetExists($offset) : bool{
         return array_key_exists($offset, $this->data);
     }
 
@@ -34,11 +34,11 @@ class Meta implements \ArrayAccess {
         return $this->offsetExists($offset) ? $this->data[$offset] : null;
     }
 
-    public function offsetSet($offset, $value){
+    public function offsetSet($offset, $value) : void{
         $this->data[$offset] = $value;
     }
 
-    public function offsetUnset($offset){
+    public function offsetUnset($offset) : void{
         unset($this->data[$offset]);
     }
 }

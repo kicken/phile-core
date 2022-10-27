@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Keith
- * Date: 7/11/2016
- * Time: 9:24 PM
- */
 
 namespace Phile\Event;
 
@@ -23,28 +17,28 @@ class ParsePageMetaEvent extends Event {
     /** @var array */
     private $meta = [];
 
-    public function __construct(Page $page, $content){
+    public function __construct(Page $page, string $content){
         $this->page = $page;
         $this->content = $content;
     }
 
-    public function getPage(){
+    public function getPage() : Page{
         return $this->page;
     }
 
-    public function getMeta(){
+    public function getMeta() : array{
         return $this->meta;
     }
 
-    public function setMeta($meta){
+    public function setMeta($meta):void{
         $this->meta = $meta;
     }
 
-    public function getContent(){
+    public function getContent() : string{
         return $this->content;
     }
 
-    public function setContent($content){
+    public function setContent($content):void{
         $this->content = $content;
     }
 }

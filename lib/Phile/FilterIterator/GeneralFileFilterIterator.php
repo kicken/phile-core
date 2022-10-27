@@ -16,7 +16,7 @@ class GeneralFileFilterIterator extends \FilterIterator {
      *
      * @return bool
      */
-    public function accept(){
+    public function accept() : bool{
         // accept all kind of files, no filter
         return true;
     }

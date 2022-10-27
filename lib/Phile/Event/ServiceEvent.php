@@ -17,20 +17,20 @@ class ServiceEvent extends Event {
     private $name;
     private $service;
 
-    public function __construct($name, $service){
+    public function __construct(string $name, object $service){
         $this->name = $name;
         $this->service = $service;
     }
 
-    public function getName(){
+    public function getName() : string{
         return $this->name;
     }
 
-    public function getService(){
+    public function getService() : object{
         return $this->service;
     }
 
-    public function setService($service){
+    public function setService(object $service) : void{
         $this->service = $service;
     }
 }

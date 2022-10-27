@@ -2,6 +2,8 @@
 
 namespace Phile\Repository;
 
+use Phile\Model\Page as PageModel;
+
 /**
  * Page collection which delays searching for and loading pages until necessary.
  *
@@ -46,41 +48,41 @@ class PageCollection implements \ArrayAccess, \IteratorAggregate, \Countable {
      *
      * @return array of \Phile\Model\Page
      */
-    public function toArray(){
+    public function toArray() : array{
         $this->load();
 
         return $this->pages;
     }
 
-    public function getIterator(){
+    public function getIterator() : \ArrayIterator{
         $this->load();
 
         return new \ArrayIterator($this->pages);
     }
 
-    public function offsetExists($offset){
+    public function offsetExists($offset) : bool{
         $this->load();
 
         return isset($this->pages[$offset]);
     }
 
-    public function offsetGet($offset){
+    public function offsetGet($offset) : PageModel{
         $this->load();
 
         return $this->pages[$offset];
     }
 
-    public function offsetSet($offset, $value){
+    public function offsetSet($offset, $value) : void{
         $this->load();
         $this->pages[$offset] = $value;
     }
 
-    public function offsetUnset($offset){
+    public function offsetUnset($offset) : void{
         $this->load();
         unset($this->pages[$offset]);
     }
 
-    public function count(){
+    public function count() : int{
         $this->load();
 
         return count($this->pages);

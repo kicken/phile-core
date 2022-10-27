@@ -1,7 +1,4 @@
 <?php
-/**
- * The ServiceLocator class
- */
 
 namespace Phile\Core;
 

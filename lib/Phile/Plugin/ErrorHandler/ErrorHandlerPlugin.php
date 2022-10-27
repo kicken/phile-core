@@ -23,7 +23,7 @@ class ErrorHandlerPlugin extends AbstractPlugin {
     const HANDLER_ERROR_LOG = 'error_log';
     const HANDLER_DEVELOPMENT = 'development';
 
-    public function initialize(){
+    public function initialize() : void{
         $handler = null;
         switch ($this->config['handler']){
             case ErrorHandlerPlugin::HANDLER_ERROR_LOG:

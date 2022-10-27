@@ -28,7 +28,7 @@ interface ErrorHandlerInterface {
     /**
      * handle all exceptions
      *
-     * @param \Throwable|\Exception $exception
+     * @param \Throwable $exception
      */
-    public function handleException($exception);
+    public function handleException(\Throwable $exception);
 }

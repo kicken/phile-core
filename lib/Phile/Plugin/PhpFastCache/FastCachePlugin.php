@@ -35,7 +35,7 @@ class FastCachePlugin extends AbstractPlugin {
      * @throws PhpfastcacheDriverException
      * @throws PhpfastcacheInvalidConfigurationException
      */
-    public function initialize(){
+    public function initialize() : void{
         // phpFastCache not working in CLI mode...
         if (php_sapi_name() === 'cli'){
             return;

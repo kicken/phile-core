@@ -23,8 +23,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @package Phile\Model
  */
 class Page {
-    /** @var array Phile global settings */
-    private $settings;
     /** @var EventDispatcherInterface Event dispatcher */
     private $dispatcher;
     /** @var string Content file path */
@@ -41,15 +39,14 @@ class Page {
     /** @var array Page meta data cache */
     private $meta;
 
-    public function __construct(array $settings, EventDispatcherInterface $dispatcher, ParserInterface $parser, MetaParserInterface $metaParser, $contentFile){
-        $this->settings = $settings;
+    public function __construct(EventDispatcherInterface $dispatcher, ParserInterface $parser, MetaParserInterface $metaParser, string $contentFile){
         $this->dispatcher = $dispatcher;
         $this->contentFile = $contentFile;
         $this->parser = $parser;
         $this->metaParser = $metaParser;
     }
 
-    public function getContent(){
+    public function getContent() : string{
         if (!$this->content){
             $event = new LoadPageContentEvent($this);
             $this->dispatcher->dispatch(LoadPageContentEvent::BEFORE, $event);
@@ -67,7 +64,7 @@ class Page {
         return $this->content;
     }
 
-    public function getParsedContent(){
+    public function getParsedContent() : string{
         if (!$this->parsedContent){
             $content = $this->getContent();
 
@@ -108,15 +105,15 @@ class Page {
      *
      * @return string|null
      */
-    public function getTitle(){
+    public function getTitle() : ?string{
         return $this->meta['title'];
     }
 
-    public function getContentFile(){
+    public function getContentFile() : string{
         return $this->contentFile;
     }
 
-    public function getUrl(){
+    public function getUrl() : string{
         /** @var RouterInterface $router */
         $router = ServiceLocator::getService('Phile_Router');
 

@@ -27,17 +27,17 @@ abstract class AbstractPlugin implements EventSubscriberInterface {
      * @param array $pluginConfig Plugin specific configuration
      * @param array $phileConfig Global Phile configuration
      */
-    final public function __construct($pluginConfig, $phileConfig){
+    final public function __construct(array $pluginConfig, array $phileConfig){
         $this->config = $pluginConfig;
         $this->phileConfig = $phileConfig;
         $this->initialize();
     }
 
-    public static function getSubscribedEvents(){
+    public static function getSubscribedEvents() : array{
         return [];
     }
 
-    public function initialize(){
+    public function initialize() : void{
     }
 
     /**
@@ -47,7 +47,7 @@ abstract class AbstractPlugin implements EventSubscriberInterface {
      *
      * @return string
      */
-    public function getPluginPath($sub = ''){
+    public function getPluginPath(string $sub = '') : string{
         static $dir = null;
         if ($dir === null){
             $rf = new \ReflectionObject($this);

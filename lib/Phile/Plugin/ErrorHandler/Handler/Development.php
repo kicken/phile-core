@@ -84,9 +84,9 @@ class Development implements ErrorHandlerInterface {
     /**
      * handle all exceptions
      *
-     * @param \Throwable|\Exception $exception
+     * @param \Throwable $exception
      */
-    public function handleException($exception){
+    public function handleException(\Throwable $exception){
         $this->displayDeveloperOutput(
             $exception->getCode(),
             $exception->getMessage(),
@@ -104,8 +104,8 @@ class Development implements ErrorHandlerInterface {
      * @param $message
      * @param $file
      * @param $line
-     * @param array $backtrace
-     * @param \Throwable $exception
+     * @param ?array $backtrace
+     * @param ?\Throwable $exception
      */
     protected function displayDeveloperOutput(
         $code,

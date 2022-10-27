@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Keith
- * Date: 7/11/2016
- * Time: 8:59 PM
- */
 
 namespace Phile\Event;
 
@@ -23,15 +17,15 @@ class LoadPageContentEvent extends Event {
         $this->page = $page;
     }
 
-    public function getPage(){
+    public function getPage() : Page{
         return $this->page;
     }
 
-    public function getContent(){
+    public function getContent() : ?string{
         return $this->content;
     }
 
-    public function setContent($content){
+    public function setContent(string $content) : void{
         $this->content = $content;
     }
 }

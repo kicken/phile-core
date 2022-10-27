@@ -1,7 +1,4 @@
 <?php
-/**
- * the Router class
- */
 
 namespace Phile\Core;
 

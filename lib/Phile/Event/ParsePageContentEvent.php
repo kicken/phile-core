@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Keith
- * Date: 7/11/2016
- * Time: 9:09 PM
- */
 
 namespace Phile\Event;
 
@@ -20,28 +14,28 @@ class ParsePageContentEvent extends Event {
     private $content;
     private $parsedContent;
 
-    public function __construct(Page $page, $content){
+    public function __construct(Page $page, string $content){
         $this->page = $page;
         $this->content = $content;
     }
 
-    public function getPage(){
+    public function getPage() : Page{
         return $this->page;
     }
 
-    public function getContent(){
+    public function getContent() : string{
         return $this->content;
     }
 
-    public function setContent($content){
+    public function setContent(string $content){
         $this->content = $content;
     }
 
-    public function getParsedContent(){
+    public function getParsedContent() : string{
         return $this->parsedContent;
     }
 
-    public function setParsedContent($parsedContent){
+    public function setParsedContent($parsedContent) : void{
         $this->parsedContent = $parsedContent;
     }
 }

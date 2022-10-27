@@ -20,18 +20,18 @@ use Phile\ServiceLocator\ParserInterface;
  * @package Phile\Plugin\Phile\ParserMarkdown
  */
 class MarkdownPlugin extends AbstractPlugin implements ParserInterface {
-    public function initialize(){
+    public function initialize() : void{
         ServiceLocator::registerService('Phile_Parser', $this);
     }
 
     /**
      * overload parse with the MarkdownExtra parser
      *
-     * @param $data
+     * @param string $data
      *
      * @return string
      */
-    public function parse($data){
+    public function parse(string $data) : string{
         $parser = new MarkdownExtra;
         foreach ($this->config as $key => $value){
             $parser->{$key} = $value;

@@ -18,23 +18,23 @@ class RoutingEvent extends Event {
     private $requestUrl;
     private $contentPath;
 
-    public function __construct($requestUrl){
+    public function __construct(string $requestUrl){
         $this->requestUrl = $requestUrl;
     }
 
-    public function getRequestUrl(){
+    public function getRequestUrl() : string{
         return $this->requestUrl;
     }
 
-    public function setRequestUrl($requestUrl){
+    public function setRequestUrl(string $requestUrl) : void{
         $this->requestUrl = $requestUrl;
     }
 
-    public function getContentPath(){
+    public function getContentPath() : ?string{
         return $this->contentPath;
     }
 
-    public function setContentPath($contentPath){
+    public function setContentPath(string $contentPath) : void{
         $this->contentPath = $contentPath;
     }
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * Registry class
- */
 
 namespace Phile\Core;
 
@@ -21,43 +18,21 @@ class Registry extends \ArrayObject {
      */
     private static $registry = null;
 
+    private function __construct(){
+        parent::__construct();
+    }
+
     /**
      * Retrieves the default registry instance.
      *
      * @return Registry
      */
-    public static function getInstance(){
+    public static function getInstance() : Registry{
         if (self::$registry === null){
-            self::init();
+            self::$registry = new self;
         }
 
         return self::$registry;
-    }
-
-    /**
-     * Set the default registry instance to a specified instance.
-     *
-     * @param Registry $registry An object instance of type Registry,
-     *                           or a subclass.
-     *
-     * @param Registry $registry
-     *
-     * @throws \Exception
-     */
-    public static function setInstance(Registry $registry){
-        if (self::$registry !== null){
-            throw new \RuntimeException('Registry is already initialized', 1398536572);
-        }
-        self::$registry = $registry;
-    }
-
-    /**
-     * Initialize the default registry instance.
-     *
-     * @return void
-     */
-    protected static function init(){
-        self::setInstance(new Registry());
     }
 
     /**
@@ -72,7 +47,7 @@ class Registry extends \ArrayObject {
      * @return mixed
      * @throws \Exception if no entry is registered for $index.
      */
-    public static function get($index){
+    public static function get(string $index){
         $instance = self::getInstance();
         if (!$instance->offsetExists($index)){
             throw new \RuntimeException("No entry is registered for key '$index'", 1398536594);
@@ -94,7 +69,7 @@ class Registry extends \ArrayObject {
      *
      * @return void
      */
-    public static function set($index, $value){
+    public static function set(string $index, $value){
         $instance = self::getInstance();
         $instance->offsetSet($index, $value);
     }
@@ -107,21 +82,11 @@ class Registry extends \ArrayObject {
      *
      * @return boolean
      */
-    public static function isRegistered($index){
+    public static function isRegistered(string $index) : bool{
         if (self::$registry === null){
             return false;
         }
 
         return self::$registry->offsetExists($index);
-    }
-
-    /**
-     * the constructor
-     *
-     * @param array $array data array
-     * @param integer $flags ArrayObject flags
-     */
-    public function __construct($array = [], $flags = parent::ARRAY_AS_PROPS){
-        parent::__construct($array, $flags);
     }
 }
