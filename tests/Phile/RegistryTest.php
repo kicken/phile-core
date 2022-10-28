@@ -1,12 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: franae
- * Date: 20.08.14
- * Time: 15:57
- */
 
-namespace PhileTest;
+namespace Phile\Test;
+
+use Phile\Core\Registry;
+use PHPUnit\Framework\TestCase;
 
 /**
  * the RegistryTest class
@@ -16,45 +13,26 @@ namespace PhileTest;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class RegistryTest extends \PHPUnit_Framework_TestCase
-{
+class RegistryTest extends TestCase {
     /**
-     * @var \Phile\Core\Registry
+     * @var Registry
      */
     protected $registry;
 
-    /**
-     *
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->registry = \Phile\Core\Registry::getInstance();
+    protected function setUp() : void{
+        $this->registry = Registry::getInstance();
     }
 
-    /**
-     *
-     */
-    public function testValueCanSetToRegistry()
-    {
-        $this->registry->set('test', 'testvalue');
-        $this->assertEquals('testvalue', $this->registry->get('test'));
+    public function testValueCanSetToRegistry(){
+        $this->registry->set('test', 'test-value');
+        $this->assertEquals('test-value', $this->registry->get('test'));
     }
 
-    /**
-     *
-     */
-    public function testGettingInstance()
-    {
-        $this->registry = \Phile\Core\Registry::getInstance();
+    public function testGettingInstance(){
         $this->assertInstanceOf('\Phile\Core\Registry', $this->registry);
     }
 
-    /**
-     *
-     */
-    public function testValueIsRegistered()
-    {
+    public function testValueIsRegistered(){
         $this->registry->set('testValueIsRegistered', 'testValueIsRegistered');
         $this->assertEquals(
             true,
@@ -64,11 +42,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     *
-     */
-    public function testValueIsNotRegistered()
-    {
+    public function testValueIsNotRegistered(){
         $this->assertEquals(
             false,
             $this->registry->isRegistered(

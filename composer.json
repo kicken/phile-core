@@ -37,6 +37,11 @@
       "Phile\\": "lib/Phile"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Phile\\Test\\": "tests/Phile"
+    }
+  },
   "require": {
     "php": ">=7.2",
     "ext-fileinfo": "*",
@@ -50,7 +55,7 @@
   "require-dev": {
     "phpdocumentor/phpdocumentor": "^2.8",
     "phing/phing": "^2.14",
-    "phpunit/phpunit": "^5.2",
+    "phpunit/phpunit": "^8.0",
     "squizlabs/php_codesniffer": "^2.3",
     "composer/composer": "^2.0"
   },

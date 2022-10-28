@@ -1,27 +1,44 @@
 <?php
 
-namespace PhileTest\FilterIterator;
+namespace Phile\Test\FilterIterator;
 
 use Phile\FilterIterator\ContentFileFilterIterator;
+use Phile\Test\TemporaryContentDirectory;
+use PHPUnit\Framework\TestCase;
 
 /**
- * class ContentFileIteratorTest
+ * class ContentFileFilterIteratorTest
  *
  * @author  Phile CMS
  * @link    https://philecms.com
  * @license http://opensource.org/licenses/MIT
  */
-class ContentFileIteratorTest extends \PHPUnit_Framework_TestCase
-{
+class ContentFileFilterIteratorTest extends TestCase {
+    use TemporaryContentDirectory;
 
-    public function testContentFileFilterIterator()
-    {
-        $folder = PLUGINS_DIR . 'phile/testPlugin/content';
-        $files = new ContentFileFilterIterator(new \DirectoryIterator($folder));
+    private static $contentRoot;
+
+    public static function setUpBeforeClass() : void{
+        try {
+            self::$contentRoot = self::buildContentDir();
+        } catch (\RuntimeException $exception){
+            self::markTestSkipped($exception->getMessage());
+        }
+    }
+
+    public static function tearDownAfterClass() : void{
+        self::removeContentDir(self::$contentRoot);
+    }
+
+    public function testContentFileFilterIterator(){
+        $files = new ContentFileFilterIterator(new \DirectoryIterator(self::$contentRoot), 'md');
         $result = [];
-        foreach ($files as $file) {
+        /** @var \SplFileInfo $file */
+        foreach ($files as $file){
             $result[] = $file->getFilename();
         }
-        $this->assertEquals(['a.md'], $result);
+
+        sort($result);
+        $this->assertEquals(['about.md', 'index.md'], $result);
     }
 }
