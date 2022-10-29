@@ -5,9 +5,8 @@
 
 namespace Phile\Plugin\SimpleFileDataPersistence;
 
-use Phile\Core\ServiceLocator;
 use Phile\Plugin\AbstractPlugin;
-use Phile\ServiceLocator\PersistenceInterface;
+use Phile\Service\PersistenceInterface;
 
 /**
  * Class Plugin
@@ -20,7 +19,7 @@ use Phile\ServiceLocator\PersistenceInterface;
  */
 class FileDataPersistencePlugin extends AbstractPlugin implements PersistenceInterface {
     public function initialize() : void{
-        ServiceLocator::registerService('Phile_Data_Persistence', $this);
+        $this->core->registerService(PersistenceInterface::class, $this);
     }
 
     public function has(string $key) : bool{

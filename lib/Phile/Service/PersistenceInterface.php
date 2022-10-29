@@ -3,7 +3,7 @@
  * The Persistence ServiceLocator interface
  */
 
-namespace Phile\ServiceLocator;
+namespace Phile\Service;
 
 /**
  * Interface PersistenceInterface

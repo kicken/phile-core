@@ -34,7 +34,7 @@ class RoutingEvent extends Event {
         return $this->contentPath;
     }
 
-    public function setContentPath(string $contentPath) : void{
+    public function setContentPath(?string $contentPath) : void{
         $this->contentPath = $contentPath;
     }
 }

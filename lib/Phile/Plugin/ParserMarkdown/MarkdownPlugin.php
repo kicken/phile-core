@@ -6,9 +6,8 @@
 namespace Phile\Plugin\ParserMarkdown;
 
 use Michelf\MarkdownExtra;
-use Phile\Core\ServiceLocator;
 use Phile\Plugin\AbstractPlugin;
-use Phile\ServiceLocator\ParserInterface;
+use Phile\Service\ParserInterface;
 
 /**
  * Class Plugin
@@ -21,7 +20,7 @@ use Phile\ServiceLocator\ParserInterface;
  */
 class MarkdownPlugin extends AbstractPlugin implements ParserInterface {
     public function initialize() : void{
-        ServiceLocator::registerService('Phile_Parser', $this);
+        $this->core->registerService(ParserInterface::class, $this);
     }
 
     /**

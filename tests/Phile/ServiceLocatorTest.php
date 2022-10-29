@@ -25,7 +25,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             false,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Cache'
             )
         );
@@ -38,7 +38,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Template'
             )
         );
@@ -51,7 +51,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Parser'
             )
         );
@@ -64,7 +64,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Data_Persistence'
             )
         );
@@ -77,7 +77,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Parser_Meta'
             )
         );
@@ -90,7 +90,7 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_ErrorHandler'
             )
         );
@@ -103,13 +103,13 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Template'
             )
         );
         $this->assertInstanceOf(
             '\Phile\ServiceLocator\TemplateInterface',
-            \Phile\Core\ServiceLocator::getService(
+            \Phile\Core\ServiceRegistry::getService(
                 'Phile_Template'
             )
         );
@@ -122,13 +122,13 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Parser'
             )
         );
         $this->assertInstanceOf(
             '\Phile\ServiceLocator\ParserInterface',
-            \Phile\Core\ServiceLocator::getService(
+            \Phile\Core\ServiceRegistry::getService(
                 'Phile_Parser'
             )
         );
@@ -141,13 +141,13 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Data_Persistence'
             )
         );
         $this->assertInstanceOf(
             '\Phile\ServiceLocator\PersistenceInterface',
-            \Phile\Core\ServiceLocator::getService(
+            \Phile\Core\ServiceRegistry::getService(
                 'Phile_Data_Persistence'
             )
         );
@@ -160,13 +160,13 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_Parser_Meta'
             )
         );
         $this->assertInstanceOf(
             '\Phile\ServiceLocator\MetaInterface',
-            \Phile\Core\ServiceLocator::getService(
+            \Phile\Core\ServiceRegistry::getService(
                 'Phile_Parser_Meta'
             )
         );
@@ -179,13 +179,13 @@ class ServiceLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             true,
-            \Phile\Core\ServiceLocator::hasService(
+            \Phile\Core\ServiceRegistry::hasService(
                 'Phile_ErrorHandler'
             )
         );
         $this->assertInstanceOf(
             '\Phile\ServiceLocator\ErrorHandlerInterface',
-            \Phile\Core\ServiceLocator::getService(
+            \Phile\Core\ServiceRegistry::getService(
                 'Phile_ErrorHandler'
             )
         );

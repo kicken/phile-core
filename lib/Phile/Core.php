@@ -5,15 +5,11 @@
 
 namespace Phile;
 
-use Phile\Core\Registry;
 use Phile\Core\Response;
 use Phile\Core\Router;
-use Phile\Core\ServiceLocator;
 use Phile\Event\CoreEvent;
 use Phile\Event\NotFoundEvent;
 use Phile\Event\RenderingEvent;
-use Phile\Exception\PluginInitializationException;
-use Phile\Exception\PluginNotFoundException;
 use Phile\Model\Page;
 use Phile\Plugin\AbstractPlugin;
 use Phile\Plugin\ErrorHandler\ErrorHandlerPlugin;
@@ -22,8 +18,10 @@ use Phile\Plugin\ParserMeta\MetaParserPlugin;
 use Phile\Plugin\PhpFastCache\FastCachePlugin;
 use Phile\Plugin\SimpleFileDataPersistence\FileDataPersistencePlugin;
 use Phile\Plugin\TemplateTwig\TwigTemplatePlugin;
-use Phile\ServiceLocator\TemplateInterface;
+use Phile\Service\RouterInterface;
+use Phile\Service\TemplateInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Phile Core class
@@ -34,79 +32,35 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @package Phile
  */
 class Core {
-    /**
-     * @var array the settings array
-     */
-    protected $settings;
+    private $settings;
+    private $services;
 
-    /**
-     * @var array the loaded plugins
-     */
-    protected $plugins;
+    public function __construct(array $settings){
+        $this->settings = $this->mergeDefaultConfiguration($settings);
+        $this->createDefaultServices();
 
-    /**
-     * @var Router
-     */
-    protected $router;
+        $pluginList = $this->settings['plugins'] ?? [];
+        uasort($pluginList, function(array $a, array $b){
+            return -1 * (($a['priority'] ?? 1) <=> ($b['priority'] ?? 1));
+        });
+        foreach ($pluginList as $pluginClass => $pluginConfig){
+            if (!($pluginConfig['active'] ?? true)){
+                continue;
+            }
 
-    /**
-     * @var EventDispatcher
-     */
-    protected $dispatcher;
-
-    /**
-     * @param array $config
-     * @param array $plugins
-     *
-     * @throws \Exception
-     */
-    public function __construct(array $config, array $plugins){
-        $this->settings = $config;
-        $this->plugins = $plugins;
-        $this->dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
-        $this->router = new Router($this->settings, $this->dispatcher);
-
-        /** @var AbstractPlugin $plugin */
-        foreach ($plugins as $plugin){
-            $this->dispatcher->addSubscriber($plugin);
-        }
-
-        ServiceLocator::registerService('Phile_Router', $this->router);
-        Registry::set('Phile_Settings', $this->settings);
-
-        $errorHandler = ServiceLocator::getService('Phile_ErrorHandler');
-        if ($errorHandler){
-            set_error_handler([$errorHandler, 'handleError']);
-            set_exception_handler([$errorHandler, 'handleException']);
+            if (class_exists($pluginClass) && is_a($pluginClass, AbstractPlugin::class, true)){
+                new $pluginClass($this, $pluginConfig);
+            }
         }
 
         $event = new CoreEvent();
-        $this->dispatcher->dispatch(CoreEvent::LOADED, $event);
+        $this->getService(EventDispatcherInterface::class)->dispatch(CoreEvent::LOADED, $event);
     }
 
-    /**
-     * @param array $config
-     *
-     * @return Core
-     * @throws \Exception
-     */
-    public static function bootstrap(array $config = []) : Core{
-        ServiceLocator::registerService('Phile_EventDispatcher', new EventDispatcher());
-        $rootDirectory = $config['root_dir'] ?? self::findRootDirectory();
-        $baseUrl = $config['base_url'] ?? self::findBaseUrl();
-
-        $defaultConfiguration = self::defaultConfiguration($rootDirectory, $baseUrl);
-        $config = array_replace_recursive($defaultConfiguration, $config);
-
-        $config = self::defaultPluginsConfiguration($config);
-        $plugins = static::loadPlugins($config);
-
-        return new static($config, $plugins);
-    }
-
-    protected static function defaultConfiguration(string $root, string $baseUrl) : array{
-        $defaults = [
-            'base_url' => $baseUrl,
+    private function mergeDefaultConfiguration(array $userSettings) : array{
+        $root = $userSettings['root_dir'] ?? getcwd();
+        $config = array_replace([
+            'base_url' => sprintf('http%s://%s', ($_SERVER['HTTPS'] ?? false) ? 's' : '', $_SERVER['HTTP_HOST'] ?? 'localhost'),
             'site_title' => 'PhileCMS',
             'theme' => 'default',
             'date_format' => 'jS M Y',
@@ -121,24 +75,16 @@ class Core {
             'cache_dir' => $root . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR,
             'public_dir' => $root . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR,
             'storage_dir' => $root . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'datastorage' . DIRECTORY_SEPARATOR
-        ];
+        ], $userSettings);
+        $config['base_url'] = rtrim($config['base_url'], '/');
 
-        return $defaults;
-    }
-
-    private static function defaultPluginsConfiguration(array $config) : array{
-        $plugins = [
-            ErrorHandlerPlugin::class => [
-                'active' => true,
-                'handler' => Plugin\ErrorHandler\ErrorHandlerPlugin::HANDLER_DEVELOPMENT
-            ],
+        $config['plugins'] = array_merge_recursive([
+            ErrorHandlerPlugin::class => ['active' => true, 'priority' => PHP_INT_MAX],
             MarkdownPlugin::class => ['active' => true],
-            MetaParserPlugin::class => [
-                'active' => true
-            ],
+            MetaParserPlugin::class => ['active' => true],
             TwigTemplatePlugin::class => [
                 'active' => true,
-                'theme' => $config['theme'],
+                'theme' => 'default',
                 'themes_dir' => $config['themes_dir'],
                 'template_extension' => 'html',
                 'options' => [
@@ -155,74 +101,18 @@ class Core {
                 'active' => true,
                 'storage_dir' => $config['storage_dir']
             ]
-        ];
-
-        if (isset($config['plugins'])){
-            $plugins = array_replace_recursive($plugins, $config['plugins']);
-        }
-
-        $config['plugins'] = $plugins;
+        ], $config['plugins'] ?? []);
 
         return $config;
     }
 
-    /**
-     * @return string
-     */
-    protected static function findRootDirectory() : string{
-        //Attempt to determine the root directory location automatically.
-        $rootDirectory = dirname($_SERVER['SCRIPT_FILENAME']) . DIRECTORY_SEPARATOR . '..';
-        $rootDirectory = (string)realpath($rootDirectory);
-
-        return $rootDirectory;
-    }
-
-    protected static function findBaseUrl() : string{
-        $url = '';
-        if (isset($_SERVER['PHP_SELF'])){
-            $url = preg_replace('/index\.php(.*)?$/', '', $_SERVER['PHP_SELF']);
-        }
-
-        $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-        $protocol = $https ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? null;
-
-        if ($host){
-            $url = sprintf('%s://%s/%s', $protocol, $host, ltrim($url, '/'));
-        }
-
-        $url = rtrim($url, '/');
-
-        return $url;
-    }
-
-    protected static function loadPlugins(array $config) : array{
-        $plugins = [];
-        foreach ($config['plugins'] as $class => $pluginSpecificConfig){
-            if (isset($pluginSpecificConfig['active']) && !$pluginSpecificConfig['active']){
-                continue;
-            }
-
-            if (!class_exists($class)){
-                throw new PluginNotFoundException($class);
-            }
-
-            try {
-                unset($pluginSpecificConfig['active']);
-                $plugins[] = new $class($pluginSpecificConfig, $config);
-            } catch (\Exception $ex){
-                throw new PluginInitializationException($class, $ex);
-            }
-        }
-
-        return $plugins;
-    }
-
-    public function handleRequest(string $url) : void{
+    public function processRequest(string $url) : void{
         $url = $this->normalizeRequestUrl($url);
-        $contentFile = $this->router->match($url);
+        $router = $this->getService(RouterInterface::class);
+
+        $contentFile = $router->match($url);
         if ($contentFile === null){
-            $redirect = $this->router->matchRedirect($url);
+            $redirect = $router->matchRedirect($url);
             if (!$redirect){
                 $response = $this->handleHttpStatus(404);
             } else {
@@ -238,9 +128,9 @@ class Core {
 
     private function handleHttpStatus(int $status) : Response{
         $event = new NotFoundEvent($_SERVER['REQUEST_URI']);
-        $this->dispatcher->dispatch(NotFoundEvent::AFTER, $event);
+        $this->getService(EventDispatcherInterface::class)->dispatch(NotFoundEvent::AFTER, $event);
 
-        $contentFile = $this->router->match('/' . $status);
+        $contentFile = $this->getService(RouterInterface::class)->match('/' . $status);
         if ($contentFile === null){
             $response = new Response();
             $response
@@ -321,33 +211,27 @@ class Core {
     }
 
     private function handleContentFile(string $contentFile) : string{
-        /** @var TemplateInterface $template */
-        $template = ServiceLocator::getService('Phile_Template');
+        $template = $this->getService(TemplateInterface::class);
+        $dispatcher = $this->getService(EventDispatcherInterface::class);
         $page = $this->createPageModel($contentFile);
 
         $event = new RenderingEvent($page, $template, $page->getParsedContent());
-        $this->dispatcher->dispatch(RenderingEvent::BEFORE, $event);
+        $dispatcher->dispatch(RenderingEvent::BEFORE, $event);
 
         $output = $template->render($page);
         $event->setContent($output);
 
-        $this->dispatcher->dispatch(RenderingEvent::AFTER, $event);
+        $dispatcher->dispatch(RenderingEvent::AFTER, $event);
         $output = $event->getContent();
 
         return $output;
     }
 
     private function createPageModel(string $contentFile) : Page{
-        $parser = ServiceLocator::getService('Phile_Parser');
-        $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
-
-        return new Page($this->dispatcher, $parser, $metaParser, $contentFile);
+        return new Page($this, $contentFile);
     }
 
     private function outputResponse(Response $response) : void{
-        $this->closeSession();
-        $this->disableOutputBuffering();
-
         http_response_code($response->getStatusCode());
         $this->outputHeaders($response->getHeaders());
 
@@ -365,28 +249,58 @@ class Core {
         }
     }
 
-    private function closeSession() : void{
-        session_write_close();
-    }
-
-    private function disableOutputBuffering() : void{
-        while (ob_get_level()){
-            ob_end_flush();
-        }
-    }
-
     private function normalizeRequestUrl(string $url) : string{
         $baseUrl = $this->settings['base_url'];
-        $url = ltrim($url, '/');
+        $url = '/' . ltrim($url, '/');
 
         $basePath = parse_url($baseUrl, PHP_URL_PATH) ?? '/';
-        $basePath = ltrim($basePath, '/');
+        $basePath = '/' . ltrim($basePath, '/');
 
         if (stripos($url, $basePath) === 0){
             $url = substr($url, strlen($basePath));
-            $url = ltrim($url, '/');
+            $url = '/' . ltrim($url, '/');
         }
 
         return $url;
+    }
+
+    private function createDefaultServices() : void{
+        $this->registerService(EventDispatcherInterface::class, new EventDispatcher());
+        $this->registerService(RouterInterface::class, new Router($this));
+    }
+
+    public function registerService(string $interface, $object) : self{
+        if (!interface_exists($interface)){
+            throw new \RuntimeException('Interface ' . $interface . ' does not exist.');
+        }
+        if (!is_a($object, $interface)){
+            throw new \LogicException('Service does not implement ' . $interface . '.');
+        }
+
+        $this->services[$interface] = $object;
+
+        return $this;
+    }
+
+    public function hasService(string $interface) : bool{
+        return array_key_exists($interface, $this->services);
+    }
+
+    public function getService(string $interface){
+        if (!$this->hasService($interface)){
+            throw new \RuntimeException('Service ' . $interface . ' is not registered.');
+        }
+
+        return $this->services[$interface];
+    }
+
+    public function getSetting(string $path, $default = null){
+        $path = explode('.', $path);
+        $value = null;
+        for ($i = 0, $len = count($path); $i < $len; $i++){
+            $value = ($i === 0 ? $this->settings : $value)[$path[$i]] ?? null;
+        }
+
+        return $value ?? $default;
     }
 }

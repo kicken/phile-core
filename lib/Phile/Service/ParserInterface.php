@@ -3,7 +3,7 @@
  * The ServiceLocator interface
  */
 
-namespace Phile\ServiceLocator;
+namespace Phile\Service;
 
 /**
  * Interface ParserInterface

@@ -6,27 +6,14 @@
 namespace Phile\Repository;
 
 use FilesystemIterator;
-use Phile\Core\Registry;
-use Phile\Core\ServiceLocator;
-use Phile\Exception\ServiceLocatorException;
+use Phile\Core;
 use Phile\FilterIterator\ContentFileFilterIterator;
 use Phile\Model\Page as PageModel;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException;
 
-/**
- * the Repository class for pages
- *
- * @author  Frank Nägler
- * @link    https://philecms.com
- * @license http://opensource.org/licenses/MIT
- * @package Phile\Repository
- */
 class Page {
-    /**
-     * @var array the settings array
-     */
-    protected $settings;
+    protected $core;
 
     /**
      * @var array object storage for initialized objects, to prevent multiple loading of objects.
@@ -38,37 +25,13 @@ class Page {
      */
     protected $cache = null;
 
-    /**
-     * the constructor
-     *
-     * @param ?array $settings
-     *
-     * @throws \Exception
-     * @throws ServiceLocatorException
-     */
-    public function __construct(array $settings = null){
-        if ($settings === null){
-            $settings = Registry::get('Phile_Settings');
-        }
-
-        $this->settings = $settings;
-        if (ServiceLocator::hasService('Phile_Cache')){
-            $this->cache = ServiceLocator::getService('Phile_Cache');
-        }
+    public function __construct(Core $core){
+        $this->core = $core;
     }
 
-    /**
-     * find a page by path
-     *
-     * @param string $pageId
-     * @param ?string $folder
-     *
-     * @return ?PageModel
-     * @throws InvalidArgumentException
-     */
     public function findByPath(string $pageId, string $folder = null) : ?PageModel{
         if ($folder === null){
-            $folder = $this->settings['content_dir'];
+            $folder = $this->core->getSetting('content_dir');
         }
 
         // be merciful to lazy third-party-usage and accept a leading slash
@@ -78,7 +41,8 @@ class Page {
             $pageId .= 'index';
         }
 
-        $file = $folder . $pageId . $this->settings['content_ext'];
+        $contentExt = $this->core->getSetting('content_ext', '.md');
+        $file = $folder . $pageId . $contentExt;
         if (!file_exists($file)){
             if (substr($pageId, -6) === '/index'){
                 // try to resolve subdirectory 'sub/' to page 'sub'
@@ -87,7 +51,7 @@ class Page {
                 // try to resolve page 'sub' to subdirectory 'sub/'
                 $pageId .= '/index';
             }
-            $file = $folder . $pageId . $this->settings['content_ext'];
+            $file = $folder . $pageId . $contentExt;
         }
         if (!file_exists($file)){
             return null;
@@ -106,12 +70,11 @@ class Page {
      */
     public function findAll(array $options = [], string $folder = null) : PageCollection{
         if ($folder === null){
-            $folder = $this->settings['content_dir'];
+            $folder = $this->core->getSetting('content_dir');
         }
 
         return new PageCollection(
             function() use ($options, $folder){
-                $options += $this->settings;
                 // ignore files with a leading '.' in its filename
                 $files = $this->getFiles($folder);
                 $pages = [];
@@ -120,7 +83,7 @@ class Page {
                     $pages[] = $this->getPage($file);
                 }
 
-                if ($options['pages_order']){
+                if ($options['pages_order'] ?? null){
                     $pages = $this->sortPages($pages, $options['pages_order']);
                 }
 
@@ -159,17 +122,13 @@ class Page {
     }
 
     private function createPageModel(string $filePath) : PageModel{
-        $dispatcher = ServiceLocator::getService('Phile_EventDispatcher');
-        $parser = ServiceLocator::getService('Phile_Parser');
-        $metaParser = ServiceLocator::getService('Phile_Parser_Meta');
-
-        return new PageModel($dispatcher, $parser, $metaParser, $filePath);
+        return new PageModel($this->core, $filePath);
     }
 
     private function getFiles(string $folder) : array{
         $directoryIterator = new \RecursiveDirectoryIterator($folder, FilesystemIterator::FOLLOW_SYMLINKS);
         $recursiveIterator = new \RecursiveIteratorIterator($directoryIterator);
-        $filterIterator = new ContentFileFilterIterator($recursiveIterator, $this->settings['content_ext']);
+        $filterIterator = new ContentFileFilterIterator($recursiveIterator, $this->core->getSetting('content_ext', '.md'));
 
         $result = [];
         foreach ($filterIterator as $file){

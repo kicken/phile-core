@@ -5,9 +5,8 @@
 
 namespace Phile\Plugin\ParserMeta;
 
-use Phile\Core\ServiceLocator;
 use Phile\Plugin\AbstractPlugin;
-use Phile\ServiceLocator\MetaParserInterface;
+use Phile\Service\MetaParserInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -21,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class MetaParserPlugin extends AbstractPlugin implements MetaParserInterface {
     public function initialize() : void{
-        ServiceLocator::registerService('Phile_Parser_Meta', $this);
+        $this->core->registerService(MetaParserInterface::class, $this);
         $defaults = [
             'fences' => [
                 'c' => ['open' => '/*', 'close' => '*/'],

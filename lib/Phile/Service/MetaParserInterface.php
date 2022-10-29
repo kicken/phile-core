@@ -3,7 +3,7 @@
  * ServiceLocator MetaParser interface
  */
 
-namespace Phile\ServiceLocator;
+namespace Phile\Service;
 
 /**
  * Interface MetaInterface

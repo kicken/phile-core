@@ -5,13 +5,13 @@
 
 namespace Phile\Model;
 
-use Phile\Core\ServiceLocator;
+use Phile\Core;
 use Phile\Event\LoadPageContentEvent;
 use Phile\Event\ParsePageContentEvent;
 use Phile\Event\ParsePageMetaEvent;
-use Phile\ServiceLocator\MetaParserInterface;
-use Phile\ServiceLocator\ParserInterface;
-use Phile\ServiceLocator\RouterInterface;
+use Phile\Service\MetaParserInterface;
+use Phile\Service\ParserInterface;
+use Phile\Service\RouterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -23,14 +23,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @package Phile\Model
  */
 class Page {
-    /** @var EventDispatcherInterface Event dispatcher */
-    private $dispatcher;
-    /** @var string Content file path */
+    private $core;
     private $contentFile;
-    /** @var ParserInterface Content parser to use */
-    private $parser;
-    /** @var MetaParserInterface Meta parser to use */
-    private $metaParser;
 
     /** @var string Loaded file content cache */
     private $content;
@@ -39,17 +33,16 @@ class Page {
     /** @var array Page meta data cache */
     private $meta;
 
-    public function __construct(EventDispatcherInterface $dispatcher, ParserInterface $parser, MetaParserInterface $metaParser, string $contentFile){
-        $this->dispatcher = $dispatcher;
+    public function __construct(Core $core, string $contentFile){
+        $this->core = $core;
         $this->contentFile = $contentFile;
-        $this->parser = $parser;
-        $this->metaParser = $metaParser;
     }
 
     public function getContent() : string{
         if (!$this->content){
             $event = new LoadPageContentEvent($this);
-            $this->dispatcher->dispatch(LoadPageContentEvent::BEFORE, $event);
+            $dispatcher = $this->core->getService(EventDispatcherInterface::class);
+            $dispatcher->dispatch(LoadPageContentEvent::BEFORE, $event);
 
             $content = $event->getContent();
             if ($content === null){
@@ -57,7 +50,7 @@ class Page {
                 $event->setContent($content);
             }
 
-            $this->dispatcher->dispatch(LoadPageContentEvent::AFTER, $event);
+            $dispatcher->dispatch(LoadPageContentEvent::AFTER, $event);
             $this->content = $event->getContent();
         }
 
@@ -67,15 +60,16 @@ class Page {
     public function getParsedContent() : string{
         if (!$this->parsedContent){
             $content = $this->getContent();
+            $dispatcher = $this->core->getService(EventDispatcherInterface::class);
 
             $event = new ParsePageContentEvent($this, $content);
-            $this->dispatcher->dispatch(ParsePageContentEvent::BEFORE, $event);
+            $dispatcher->dispatch(ParsePageContentEvent::BEFORE, $event);
 
             $content = $event->getContent();
-            $parsedContent = $this->parser->parse($content);
+            $parsedContent = $this->core->getService(ParserInterface::class)->parse($content);
             $event->setParsedContent($parsedContent);
 
-            $this->dispatcher->dispatch(ParsePageContentEvent::AFTER, $event);
+            $dispatcher->dispatch(ParsePageContentEvent::AFTER, $event);
             $this->parsedContent = $event->getParsedContent();
         }
 
@@ -85,28 +79,24 @@ class Page {
     public function getMeta(){
         if (!$this->meta){
             $content = $this->getContent();
+            $dispatcher = $this->core->getService(EventDispatcherInterface::class);
 
             $event = new ParsePageMetaEvent($this, $content);
-            $this->dispatcher->dispatch(ParsePageMetaEvent::BEFORE, $event);
+            $dispatcher->dispatch(ParsePageMetaEvent::BEFORE, $event);
 
             $content = $event->getContent();
-            $meta = $this->metaParser->parse($content);
+            $meta = $this->core->getService(MetaParserInterface::class)->parse($content);
             $event->setMeta($meta);
 
-            $this->dispatcher->dispatch(ParsePageMetaEvent::AFTER, $event);
+            $dispatcher->dispatch(ParsePageMetaEvent::AFTER, $event);
             $this->meta = new Meta($event->getMeta());
         }
 
         return $this->meta;
     }
 
-    /**
-     * get the title of page from meta information
-     *
-     * @return string|null
-     */
     public function getTitle() : ?string{
-        return $this->meta['title'];
+        return $this->getMeta()['title'];
     }
 
     public function getContentFile() : string{
@@ -115,7 +105,7 @@ class Page {
 
     public function getUrl() : string{
         /** @var RouterInterface $router */
-        $router = ServiceLocator::getService('Phile_Router');
+        $router = $this->core->getService(RouterInterface::class);
 
         return $router->urlForPath($this->contentFile);
     }

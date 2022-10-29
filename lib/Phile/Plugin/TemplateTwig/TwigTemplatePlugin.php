@@ -6,11 +6,10 @@
 namespace Phile\Plugin\TemplateTwig;
 
 use Phile\Core\Registry;
-use Phile\Core\ServiceLocator;
 use Phile\Model\Page;
 use Phile\Plugin\AbstractPlugin;
 use Phile\Repository\Page as PageRepository;
-use Phile\ServiceLocator\TemplateInterface;
+use Phile\Service\TemplateInterface;
 
 /**
  * Class Plugin
@@ -27,7 +26,7 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
 
     public function initialize() : void{
         $this->twig = $this->createTwigEngine();
-        ServiceLocator::registerService('Phile_Template', $this);
+        $this->core->registerService(TemplateInterface::class, $this);
     }
 
     public function render(Page $page) : string{
@@ -85,20 +84,22 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
     }
 
     protected function getTemplateVars(Page $page){
-        $repository = new PageRepository($this->phileConfig);
+        $repository = new PageRepository($this->core);
+        $contentDir = $this->core->getSetting('content_dir');
+        $baseUrl = $this->core->getSetting('base_url');
+
         $defaults = [
             'content' => $page->getParsedContent(),
             'meta' => $page->getMeta(),
             'current_page' => $page,
-            'base_dir' => rtrim($this->phileConfig['root_dir'], '/'),
-            'base_url' => $this->phileConfig['base_url'],
-            'config' => $this->phileConfig,
-            'content_dir' => $this->phileConfig['content_dir'],
-            'content_url' => $this->phileConfig['base_url'] . '/' . basename($this->phileConfig['content_dir']),
+            'base_dir' => rtrim($this->core->getSetting('root_dir'), '/'),
+            'base_url' => $baseUrl,
+            'content_dir' => $contentDir,
+            'content_url' => $baseUrl . '/' . basename($contentDir),
             'pages' => $repository->findAll(),
-            'site_title' => $this->phileConfig['site_title'],
+            'site_title' => $this->core->getSetting('site_title'),
             'theme_dir' => $this->config['themes_dir'] . $this->config['theme'],
-            'theme_url' => $this->phileConfig['base_url'] . '/' . basename($this->config['themes_dir']) . '/' . $this->config['theme'],
+            'theme_url' => $baseUrl . '/' . basename($this->config['themes_dir']) . '/' . $this->config['theme'],
         ];
 
         $templateVars = [];

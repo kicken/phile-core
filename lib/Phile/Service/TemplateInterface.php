@@ -3,7 +3,7 @@
  * The TemplateInterface
  */
 
-namespace Phile\ServiceLocator;
+namespace Phile\Service;
 
 use Phile\Model\Page;
 

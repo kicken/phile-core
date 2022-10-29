@@ -10,7 +10,7 @@ namespace Phile\Event;
 
 
 use Phile\Model\Page;
-use Phile\ServiceLocator\TemplateInterface;
+use Phile\Service\TemplateInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 class RenderingEvent extends Event {

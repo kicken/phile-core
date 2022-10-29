@@ -5,7 +5,7 @@
 
 namespace Phile\Plugin\PhpFastCache;
 
-use Phile\Core\ServiceLocator;
+use Phile\Core\ServiceRegistry;
 use Phile\Plugin\AbstractPlugin;
 use Phpfastcache\CacheManager;
 use Phpfastcache\Config\ConfigurationOption;
@@ -16,6 +16,7 @@ use Phpfastcache\Exceptions\PhpfastcacheInvalidConfigurationException;
 use Phpfastcache\Exceptions\PhpfastcacheInvalidTypeException;
 use Phpfastcache\Exceptions\PhpfastcacheLogicException;
 use Phpfastcache\Helper\Psr16Adapter;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Class Plugin
@@ -46,6 +47,6 @@ class FastCachePlugin extends AbstractPlugin {
         unset($config['active'], $config['driver']);
         $engine = new Psr16Adapter($driver, new ConfigurationOption($config));
 
-        ServiceLocator::registerService('Phile_Cache', $engine);
+        $this->core->registerService(CacheInterface::class, $engine);
     }
 }

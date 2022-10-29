@@ -6,7 +6,7 @@
  * Time: 12:22 AM
  */
 
-namespace Phile\ServiceLocator;
+namespace Phile\Service;
 
 
 interface RouterInterface {

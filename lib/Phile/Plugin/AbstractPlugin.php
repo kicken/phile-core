@@ -5,55 +5,20 @@
 
 namespace Phile\Plugin;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Phile\Core;
 
-/**
- * the AbstractPlugin class for implementing a plugin for PhileCMS
- *
- * @author  PhileCMS
- * @link    https://philecms.com
- * @license http://opensource.org/licenses/MIT
- * @package Phile\Plugin
- */
-abstract class AbstractPlugin implements EventSubscriberInterface {
+abstract class AbstractPlugin {
+    /** @var Core */
+    protected $core;
     /** @var array Plugin specific configuration */
     protected $config;
-    /** @var array Phile's global configuration */
-    protected $phileConfig;
 
-    /**
-     * AbstractPlugin constructor.
-     *
-     * @param array $pluginConfig Plugin specific configuration
-     * @param array $phileConfig Global Phile configuration
-     */
-    final public function __construct(array $pluginConfig, array $phileConfig){
-        $this->config = $pluginConfig;
-        $this->phileConfig = $phileConfig;
+    final public function __construct(Core $core, array $config){
+        $this->core = $core;
+        $this->config = $config;
         $this->initialize();
     }
 
-    public static function getSubscribedEvents() : array{
-        return [];
-    }
-
     public function initialize() : void{
-    }
-
-    /**
-     * Get a path relative to the plugin's source directory.
-     *
-     * @param string $sub
-     *
-     * @return string
-     */
-    public function getPluginPath(string $sub = '') : string{
-        static $dir = null;
-        if ($dir === null){
-            $rf = new \ReflectionObject($this);
-            $dir = dirname($rf->getFileName()) . DIRECTORY_SEPARATOR;
-        }
-
-        return $dir . ltrim($sub, DIRECTORY_SEPARATOR);
     }
 }
