@@ -2,6 +2,7 @@
 
 namespace Phile\Plugin\ParserMeta;
 
+use Phile\Core;
 use PHPUnit\Framework\TestCase;
 
 class MetaParserPluginTest extends TestCase {
@@ -17,7 +18,13 @@ Date: 2014/08/01
     private $parser;
 
     protected function setUp() : void{
-        $this->parser = new MetaParserPlugin([], []);
+        $this->parser = new MetaParserPlugin($this->mockCore(), []);
+    }
+
+    private function mockCore(){
+        $core = $this->getMockBuilder(Core::class)->disableOriginalConstructor()->getMock();
+
+        return $core;
     }
 
     public function testCanParseCStyleFence(){

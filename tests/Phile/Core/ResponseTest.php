@@ -18,7 +18,7 @@ class ResponseTest extends TestCase {
 
     protected function setUp() : void{
         parent::setUp();
-        $this->response = $this->getMockBuilder(Response::class)->getMock();
+        $this->response = new Response();
     }
 
     protected function tearDown() : void{
@@ -28,15 +28,9 @@ class ResponseTest extends TestCase {
     public function testRedirect(){
         $location = 'foo';
 
-        $this->response->expects($this->once())
-            ->method('setStatusCode')
-            ->with('301')
-            ->will($this->returnSelf());
-        $this->response->expects($this->once())
-            ->method('setHeader')
-            ->with('Location', $location, true)
-            ->will($this->returnSelf());
-
         $this->response->redirect($location, 301);
+        $this->assertEquals(301, $this->response->getStatusCode());
+        $this->assertEquals(['Location' => 'foo'], $this->response->getHeaders());
+        $this->assertStringContainsString('<a href', $this->response->getBody());
     }
 }

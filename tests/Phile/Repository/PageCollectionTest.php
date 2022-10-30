@@ -2,6 +2,7 @@
 
 namespace Phile\Test\Repository;
 
+use Phile\Model\Page;
 use Phile\Repository\PageCollection;
 use PHPUnit\Framework\TestCase;
 
@@ -18,9 +19,11 @@ class PageCollectionTest extends TestCase {
      */
     protected $collection;
 
-    protected $fixture = [0 => 'a', 1 => 'b'];
+    protected $fixture;
 
     protected function setUp() : void{
+        $page = $this->getMockBuilder(Page::class)->disableOriginalConstructor();
+        $this->fixture = [$page->getMock(), $page->getMock()];
         $loader = function(){
             return $this->fixture;
         };

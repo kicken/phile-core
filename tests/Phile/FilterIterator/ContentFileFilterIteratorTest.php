@@ -3,7 +3,7 @@
 namespace Phile\Test\FilterIterator;
 
 use Phile\FilterIterator\ContentFileFilterIterator;
-use Phile\Test\TemporaryContentDirectory;
+use Phile\Test\TemporaryRootDirectory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,27 +14,22 @@ use PHPUnit\Framework\TestCase;
  * @license http://opensource.org/licenses/MIT
  */
 class ContentFileFilterIteratorTest extends TestCase {
-    use TemporaryContentDirectory;
-
-    private static $contentRoot;
+    private static $root;
 
     public static function setUpBeforeClass() : void{
         try {
-            self::$contentRoot = self::buildContentDir();
+            self::$root = new TemporaryRootDirectory();
         } catch (\RuntimeException $exception){
             self::markTestSkipped($exception->getMessage());
         }
     }
 
-    public static function tearDownAfterClass() : void{
-        self::removeContentDir(self::$contentRoot);
-    }
-
     public function testContentFileFilterIterator(){
-        $files = new ContentFileFilterIterator(new \DirectoryIterator(self::$contentRoot), 'md');
+        $iter = new \DirectoryIterator(self::$root->getRoot() . DIRECTORY_SEPARATOR . 'content');
+        $iter = new ContentFileFilterIterator($iter, '.md');
         $result = [];
         /** @var \SplFileInfo $file */
-        foreach ($files as $file){
+        foreach ($iter as $file){
             $result[] = $file->getFilename();
         }
 

@@ -2,9 +2,10 @@
 
 namespace Phile\Test\Core;
 
+use Phile\Core;
 use Phile\Core\Router;
 use Phile\Event\RoutingEvent;
-use Phile\Test\TemporaryContentDirectory;
+use Phile\Test\TemporaryRootDirectory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -17,34 +18,40 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @package PhileTest
  */
 class RouterTest extends TestCase {
-    use TemporaryContentDirectory;
-
-    private static $contentRoot;
+    private static $root;
     private $router;
+    private $dispatcher;
 
     public static function setUpBeforeClass() : void{
         try {
-            self::$contentRoot = self::buildContentDir();
+            self::$root = new TemporaryRootDirectory();
         } catch (\RuntimeException $exception){
             self::markTestSkipped($exception->getMessage());
         }
     }
 
-    public static function tearDownAfterClass() : void{
-        self::removeContentDir(self::$contentRoot);
-    }
-
     protected function setUp() : void{
         try {
-            $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
-            $this->router = new Router([
-                'content_dir' => self::$contentRoot
-                , 'base_url' => 'http://test/'
-                , 'content_ext' => 'md'
-            ], $dispatcher);
+            $this->dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
+            $core = $this->mockCore();
+            $this->router = new Router($core);
         } catch (\RuntimeException $exception){
             $this->markTestSkipped($exception->getMessage());
         }
+    }
+
+    private function mockCore(){
+        $core = $this->getMockBuilder(Core::class)->disableOriginalConstructor()->getMock();
+        $core->method('getSetting')->willReturnMap([
+            ['content_dir', null, self::$root->getRoot()]
+            , ['base_url', null, 'http://test/']
+            , ['content_ext', '.md', '.md']
+        ]);
+        $core->method('getService')->willReturnMap([
+            [EventDispatcherInterface::class, $this->dispatcher]
+        ]);
+
+        return $core;
     }
 
     public function testUrlForPathAbsolute(){
@@ -56,42 +63,42 @@ class RouterTest extends TestCase {
 
     public function testUrlForPageRelative(){
         $page = 'sub/index.md';
-        $expected = 'sub/';
+        $expected = '/sub/';
         $result = $this->router->urlForPath($page, false);
         $this->assertEquals($expected, $result);
     }
 
     public function testMatchPrePostEvents(){
-        $beforeHandler = $this->getMockBuilder(\stdClass::class)->addMethods(['__invoke'])->getMock();
-        $beforeHandler->expects($this->once())->method('__invoke')->with($this->isInstanceOf(RoutingEvent::class));
-        $afterHandler = $this->getMockBuilder(\stdClass::class)->addMethods(['__invoke'])->getMock();
-        $afterHandler->expects($this->once())->method('__invoke')->with($this->isInstanceOf(RoutingEvent::class));
-
+        $this->dispatcher->expects($this->atLeast(2))->method('dispatch')
+            ->withConsecutive(
+                [$this->equalTo(RoutingEvent::BEFORE), $this->isInstanceOf(RoutingEvent::class)]
+                , [$this->equalTo(RoutingEvent::AFTER), $this->isInstanceOf(RoutingEvent::class)]
+            );
         $this->router->match('/');
     }
 
     public function testMatchRootIndex(){
         $result = $this->router->match('/');
-        $this->assertEquals(self::$contentRoot . '/index.md', $result);
+        $this->assertEquals(self::$root->getRoot() . 'index.md', $result);
     }
 
     public function testMatchSubDirectoryNoSlash(){
-        $this->assertEquals(self::$contentRoot . '/sub/index.md', $this->router->match('/sub'));
+        $this->assertEquals(self::$root->getRoot() . 'sub/index.md', $this->router->match('/sub'));
     }
 
     public function testMatchSubDirectoryWithSlash(){
-        $this->assertEquals(self::$contentRoot . '/sub/index.md', $this->router->match('/sub/'));
+        $this->assertEquals(self::$root->getRoot() . 'sub/index.md', $this->router->match('/sub/'));
     }
 
     public function testMatchSubSubDirectoryNoSlash(){
-        $this->assertEquals(self::$contentRoot . '/sub/page/index.md', $this->router->match('/sub/page'));
+        $this->assertEquals(self::$root->getRoot() . 'sub/page/index.md', $this->router->match('/sub/page'));
     }
 
     public function testMatchSubSubDirectoryWithSlash(){
-        $this->assertEquals(self::$contentRoot . '/sub/page/index.md', $this->router->match('/sub/page/'));
+        $this->assertEquals(self::$root->getRoot() . 'sub/page/index.md', $this->router->match('/sub/page/'));
     }
 
     public function testMatchSubPage(){
-        $this->assertEquals(self::$contentRoot . '/sub/page/test.md', $this->router->match('/sub/page/test.md'));
+        $this->assertEquals(self::$root->getRoot() . 'sub/page/test.md', $this->router->match('/sub/page/test.md'));
     }
 }
