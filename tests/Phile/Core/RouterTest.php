@@ -1,9 +1,13 @@
 <?php
 
-namespace PhileTest\Core;
+namespace Phile\Test\Core;
 
-use Phile\Core\Registry;
+use Phile\Core;
 use Phile\Core\Router;
+use Phile\Event\RoutingEvent;
+use Phile\Test\TemporaryRootDirectory;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * the Router class
@@ -13,138 +17,88 @@ use Phile\Core\Router;
  * @license http://opensource.org/licenses/MIT
  * @package PhileTest
  */
-class RouterTest extends \PHPUnit_Framework_TestCase
-{
+class RouterTest extends TestCase {
+    private static $root;
+    private $router;
+    private $dispatcher;
 
-    protected $settings;
-
-    /**
-     * @var Router
-     */
-    protected $router;
-
-    protected function setUp()
-    {
-        $this->router = new Router();
-        $this->settings = Registry::get('Phile_Settings');
-        parent::setup();
+    public static function setUpBeforeClass() : void{
+        try {
+            self::$root = new TemporaryRootDirectory();
+        } catch (\RuntimeException $exception){
+            self::markTestSkipped($exception->getMessage());
+        }
     }
 
-    protected function tearDown()
-    {
-        Registry::set('Phile_Settings', $this->settings);
-        unset($this->router, $this->settings);
+    protected function setUp() : void{
+        try {
+            $this->dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)->getMock();
+            $core = $this->mockCore();
+            $this->router = new Router($core);
+        } catch (\RuntimeException $exception){
+            $this->markTestSkipped($exception->getMessage());
+        }
     }
 
-    public function testUrlForPageFull()
-    {
-        $this->mockBaseUrl('http://barbaz');
-        $page = 'index/foo';
-        $expected = 'http://barbaz/index/foo';
-        $result = $this->router->urlForPage($page);
+    private function mockCore(){
+        $core = $this->getMockBuilder(Core::class)->disableOriginalConstructor()->getMock();
+        $core->method('getSetting')->willReturnMap([
+            ['content_dir', null, self::$root->getRoot()]
+            , ['base_url', null, 'http://test/']
+            , ['content_ext', '.md', '.md']
+        ]);
+        $core->method('getService')->willReturnMap([
+            [EventDispatcherInterface::class, $this->dispatcher]
+        ]);
+
+        return $core;
+    }
+
+    public function testUrlForPathAbsolute(){
+        $page = 'sub/index.md';
+        $expected = 'http://test/sub/';
+        $result = $this->router->urlForPath($page);
         $this->assertEquals($expected, $result);
     }
 
-    public function testUrlForPageRelative()
-    {
-        $page = 'index/foo';
-        $expected = 'index/foo';
-        $result = $this->router->urlForPage($page, false);
+    public function testUrlForPageRelative(){
+        $page = 'sub/index.md';
+        $expected = '/sub/';
+        $result = $this->router->urlForPath($page, false);
         $this->assertEquals($expected, $result);
     }
 
-    public function testUrl()
-    {
-        $this->mockBaseUrl('http://barbaz');
-        $expected = 'http://barbaz/sub/page';
-        $result = $this->router->url('sub/page');
-        $this->assertEquals($expected, $result);
+    public function testMatchPrePostEvents(){
+        $this->dispatcher->expects($this->atLeast(2))->method('dispatch')
+            ->withConsecutive(
+                [$this->equalTo(RoutingEvent::BEFORE), $this->isInstanceOf(RoutingEvent::class)]
+                , [$this->equalTo(RoutingEvent::AFTER), $this->isInstanceOf(RoutingEvent::class)]
+            );
+        $this->router->match('/');
     }
 
-    public function testGetBaseUrl()
-    {
-        $this->mockBaseUrl();
-
-        $server = ['PHP_SELF' => '/bar/index.php', 'HTTP_HOST' => 'foo'];
-        $router = new Router($server);
-        $this->assertEquals('http://foo/bar', $router->getBaseUrl());
+    public function testMatchRootIndex(){
+        $result = $this->router->match('/');
+        $this->assertEquals(self::$root->getRoot() . 'index.md', $result);
     }
 
-    /**
-     * test baseUrl on `php -S localhost` server
-     */
-    public function testGetBaseUrlPhpBuildInServer()
-    {
-        $this->mockBaseUrl();
-
-        $server = ['PHP_SELF' => '/foo/index.php', 'HTTP_HOST' => 'host'];
-        $router = new Router($server);
-        $this->assertEquals('http://host/foo', $router->getBaseUrl());
-
-        $server = [
-            'PHP_SELF' => '/foo/index.php/sub/page',
-            'HTTP_HOST' => 'host'
-        ];
-        $router = new Router($server);
-        $this->assertEquals('http://host/foo', $router->getBaseUrl());
+    public function testMatchSubDirectoryNoSlash(){
+        $this->assertEquals(self::$root->getRoot() . 'sub/index.md', $this->router->match('/sub'));
     }
 
-    public function testGetBaseUrlPreset()
-    {
-        $this->mockBaseUrl('https://barbaz');
-        $this->assertEquals('https://barbaz', $this->router->getBaseUrl());
+    public function testMatchSubDirectoryWithSlash(){
+        $this->assertEquals(self::$root->getRoot() . 'sub/index.md', $this->router->match('/sub/'));
     }
 
-    /**
-     * test that URL is UTF8-decoded
-     */
-    public function testGetUrlUrlDecoded()
-    {
-        $router = new Router(['REQUEST_URI' => '/bar/b%C3%A4z%20page?q=a']);
-        $this->assertEquals('bar/bäz page', $router->getCurrentUrl());
+    public function testMatchSubSubDirectoryNoSlash(){
+        $this->assertEquals(self::$root->getRoot() . 'sub/page/index.md', $this->router->match('/sub/page'));
     }
 
-    /**
-     * test that + is not decoded to space
-     */
-    public function testPlusNotSpace()
-    {
-        $router = new Router(['REQUEST_URI' => '/foo+bar/foobar']);
-        $this->assertEquals('foo+bar/foobar', $router->getCurrentUrl());
+    public function testMatchSubSubDirectoryWithSlash(){
+        $this->assertEquals(self::$root->getRoot() . 'sub/page/index.md', $this->router->match('/sub/page/'));
     }
 
-    /**
-     * test that base-URL is removed
-     */
-    public function testGetUrlRemoveUrlPath()
-    {
-        $pathFragment = 'sub';
-        // assume installation in http://localhost/sub
-        $this->mockBaseUrl('http://localhost/' . $pathFragment);
-
-        // incoming request-URI: /sub/sub/page
-        $requestUri = '/' . $pathFragment . '/' . $pathFragment . '/page';
-        $router = new Router(['REQUEST_URI' => $requestUri]);
-        // requested page: sub/page.md
-        $this->assertEquals('sub/page', $router->getCurrentUrl());
-    }
-
-    public function testGetProtocol()
-    {
-        $this->assertEquals(null, $this->router->getProtocol());
-
-        $router = new Router(['HTTP_HOST' => 'foo']);
-        $this->assertEquals('http', $router->getProtocol());
-
-        $router = new Router(['HTTP_HOST' => 'foo', 'HTTPS' => 'ON']);
-        $this->assertEquals('https', $router->getProtocol());
-    }
-
-    public function mockBaseUrl($url = '')
-    {
-        Registry::set(
-            'Phile_Settings',
-            ['base_url' => $url] + $this->settings
-        );
+    public function testMatchSubPage(){
+        $this->assertEquals(self::$root->getRoot() . 'sub/page/test.md', $this->router->match('/sub/page/test.md'));
     }
 }

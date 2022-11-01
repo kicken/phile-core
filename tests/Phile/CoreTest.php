@@ -1,83 +1,38 @@
 <?php
 
-namespace PhileTest;
+namespace Phile\Test;
 
 use Phile\Core;
-use Phile\Core\Registry;
-use Phile\Core\Response;
-use Phile\Core\Router;
+use Phile\Service\MetaParserInterface;
+use Phile\Service\ParserInterface;
+use Phile\Service\PersistenceInterface;
+use Phile\Service\RouterInterface;
+use Phile\Service\TemplateInterface;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-/**
- * the CoreTest class
- *
- * @author  Phile CMS
- * @link    https://philecms.com
- * @license http://opensource.org/licenses/MIT
- * @package PhileTest
- */
-class CoreTest extends \PHPUnit_Framework_TestCase
-{
+class CoreTest extends TestCase {
+    private $core;
+    private static $root;
 
-    /**
-     *
-     */
-    public function testInitializeCurrentPageTidyUrlRedirect()
-    {
-        $baseUrl = 'http://foo';
-
-        $settings = Registry::get('Phile_Settings');
-        Registry::set('Phile_Settings', ['base_url' => $baseUrl] + $settings);
-
-        $redirects = [
-            'sub' => 'sub/',
-            'sub/page/' => 'sub/page'
-        ];
-
-        foreach ($redirects as $current => $expected) {
-            $Core = $this->getMockBuilder('Phile\Core')
-                ->setMethods(
-                    [
-                        'checkSetup',
-                        'initializeErrorHandling',
-                        'initializeTemplate'
-                    ]
-                )
-                ->disableOriginalConstructor()
-                ->getMock();
-
-            $response = $this->getMock(
-                '\Phile\Core\Response',
-                ['redirect', 'stop']
-            );
-            $router = new Router(['REQUEST_URI' => $current]);
-
-            $response->expects($this->once())
-                ->method('redirect')
-                ->with($baseUrl . '/' . $expected, 301);
-
-            $Core->__construct($router, $response);
-        }
+    public static function setUpBeforeClass() : void{
+        self::$root = new TemporaryRootDirectory();
     }
 
-    /**
-     * tests show setup page if setup is unfinished
-     */
-    public function testCheckSetupRedirectToSetupPage()
-    {
-        $settings = Registry::get('Phile_Settings');
-        Registry::set('Phile_Settings', ['encryptionKey' => ''] + $settings);
+    protected function setUp() : void{
+        $this->core = new Core(['root_dir' => self::$root->getRoot()]);
+    }
 
-        $_SERVER['REQUEST_URI'] = '/';
+    public function testHasDefaultServices(){
+        $this->assertTrue($this->core->hasService(EventDispatcherInterface::class));
+        $this->assertTrue($this->core->hasService(MetaParserInterface::class));
+        $this->assertTrue($this->core->hasService(ParserInterface::class));
+        $this->assertTrue($this->core->hasService(PersistenceInterface::class));
+        $this->assertTrue($this->core->hasService(RouterInterface::class));
+        $this->assertTrue($this->core->hasService(TemplateInterface::class));
+    }
 
-        $response = new Response();
-        new Core(new Router, $response);
-
-        $expected = 'Welcome to the PhileCMS Setup';
-        $body = $this->getObjectAttribute($response, 'body');
-        $this->assertContains($expected, $body);
-
-        // 64 char encryption key on page
-        $pattern = '/\<code\>(\s*?).{64}(\s*?)\<\/code\>/';
-        $this->assertRegExp($pattern, $body);
+    public function testGetSetting(){
+        $this->assertEquals(self::$root->getRoot(), $this->core->getSetting('root_dir'));
     }
 }
