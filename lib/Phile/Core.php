@@ -58,7 +58,7 @@ class Core {
     }
 
     private function mergeDefaultConfiguration(array $userSettings) : array{
-        $root = $userSettings['root_dir'] ?? getcwd();
+        $root = $userSettings['root_dir'] ?? dirname(getcwd());
         $config = array_replace([
             'base_url' => sprintf('http%s://%s', ($_SERVER['HTTPS'] ?? false) ? 's' : '', $_SERVER['HTTP_HOST'] ?? 'localhost'),
             'site_title' => 'PhileCMS',
@@ -78,7 +78,7 @@ class Core {
         ], $userSettings);
         $config['base_url'] = rtrim($config['base_url'], '/');
 
-        $config['plugins'] = array_merge_recursive([
+        $config['plugins'] = array_replace_recursive([
             ErrorHandlerPlugin::class => ['active' => true, 'priority' => PHP_INT_MAX],
             MarkdownPlugin::class => ['active' => true],
             MetaParserPlugin::class => ['active' => true],

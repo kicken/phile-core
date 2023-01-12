@@ -45,7 +45,7 @@ class ErrorHandlerPlugin extends AbstractPlugin {
 
     public function handleShutdown(){
         $error = error_get_last();
-        if ($error === null || (error_reporting() & $error['type']) == 0){
+        if (headers_sent() || $error === null || (error_reporting() & $error['type']) == 0){
             return;
         }
 
