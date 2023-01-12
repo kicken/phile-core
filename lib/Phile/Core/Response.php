@@ -48,11 +48,11 @@ class Response {
     /**
      * set the response body
      *
-     * @param string $body
+     * @param string|resource $body
      *
      * @return $this
      */
-    public function setBody(string $body) : self{
+    public function setBody($body) : self{
         $this->body = $body;
 
         return $this;
@@ -92,7 +92,7 @@ class Response {
     /**
      * @return string|resource
      */
-    public function getBody() : ?string{
+    public function getBody(){
         return $this->body;
     }
 
