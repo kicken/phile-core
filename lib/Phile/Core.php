@@ -22,6 +22,7 @@ use Phile\Service\RouterInterface;
 use Phile\Service\TemplateInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Phile Core class
@@ -38,6 +39,7 @@ class Core {
     public function __construct(array $settings){
         $this->settings = $this->mergeDefaultConfiguration($settings);
         $this->createDefaultServices();
+        $dispatcher = $this->getService(EventDispatcherInterface::class);
 
         $pluginList = $this->settings['plugins'] ?? [];
         uasort($pluginList, function(array $a, array $b){
@@ -49,12 +51,15 @@ class Core {
             }
 
             if (class_exists($pluginClass) && is_a($pluginClass, AbstractPlugin::class, true)){
-                new $pluginClass($this, $pluginConfig);
+                $plugin = new $pluginClass($this, $pluginConfig);
+                if ($plugin instanceof EventSubscriberInterface){
+                    $dispatcher->addSubscriber($plugin);
+                }
             }
         }
 
         $event = new CoreEvent();
-        $this->getService(EventDispatcherInterface::class)->dispatch(CoreEvent::LOADED, $event);
+        $dispatcher->dispatch(CoreEvent::LOADED, $event);
     }
 
     private function mergeDefaultConfiguration(array $userSettings) : array{
