@@ -212,6 +212,14 @@ class Core {
             }
         }
 
+        if ($type === 'text/plain'){
+            $ext = pathinfo($file, PATHINFO_EXTENSION);
+            $type = [
+                'js' => 'text/javascript',
+                'css' => 'text/css'
+            ][$ext] ?? $type;
+        }
+
         return $type;
     }
 
