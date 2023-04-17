@@ -68,13 +68,11 @@ class Page {
      *
      * @return PageCollection of \Phile\Model\Page objects
      */
-    public function findAll(array $options = [], string $folder = null) : PageCollection{
-        if ($folder === null){
-            $folder = $this->core->getSetting('content_dir');
-        }
+    public function findAll() : PageCollection{
+        $folder = $this->core->getSetting('content_dir');
 
         return new PageCollection(
-            function() use ($options, $folder){
+            function() use ($folder){
                 // ignore files with a leading '.' in its filename
                 $files = $this->getFiles($folder);
                 $pages = [];
@@ -83,9 +81,7 @@ class Page {
                     $pages[] = $this->getPage($file);
                 }
 
-                if ($options['pages_order'] ?? null){
-                    $pages = $this->sortPages($pages, $options['pages_order']);
-                }
+                $pages = $this->sortPages($pages);
 
                 return $pages;
             }
@@ -158,8 +154,9 @@ class Page {
         return $sorting;
     }
 
-    private function sortPages(array $pages, string $criteria) : array{
+    private function sortPages(array $pages) : array{
         // parse search	criteria
+        $criteria = $this->core->getSetting('pages_order');
         $sorting = $this->parseSortCriteria($criteria);
 
         // prepare search criteria for array_multisort
