@@ -8,7 +8,7 @@ use Phile\Service\RouterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Router implements RouterInterface {
-    private $core;
+    private Core $core;
 
     public function __construct(Core $core){
         $this->core = $core;
@@ -56,11 +56,11 @@ class Router implements RouterInterface {
 
     private function needsRedirect(string $url, ?string $contentFile) : bool{
         $root = $url === "";
-        $endsInSlash = substr($url, -1) === '/';
+        $endsInSlash = str_ends_with($url, '/');
         $isDefaultFile = false;
         if ($contentFile !== null){
             $default = DIRECTORY_SEPARATOR . 'index' . $this->getContentExt();
-            $isDefaultFile = substr($contentFile, -strlen($default)) === $default;
+            $isDefaultFile = str_ends_with($contentFile, $default);
         }
 
         return !$root && !$endsInSlash && $isDefaultFile;
@@ -93,7 +93,11 @@ class Router implements RouterInterface {
             return $file;
         }
 
-        $file = $base . 'index' . $contentExt;
+        if (str_ends_with($base, DIRECTORY_SEPARATOR)){
+            $file = $base . 'index' . $contentExt;
+        } else {
+            $file = $base . DIRECTORY_SEPARATOR . 'index' . $contentExt;
+        }
         if (file_exists($file) && is_file($file)){
             return $file;
         }
@@ -113,26 +117,33 @@ class Router implements RouterInterface {
      */
     public function urlForPath(string $path, bool $absolute = true) : string{
         $contentDir = $this->core->getSetting('content_dir');
-        if (strpos($path, $contentDir) === 0){
+        if (str_starts_with($path, $contentDir)){
             $path = substr($path, strlen($contentDir));
             $path = ltrim($path, DIRECTORY_SEPARATOR);
         }
 
         $contentExt = $this->getContentExt();
-        $path = '/' . str_replace(DIRECTORY_SEPARATOR, '/', $path);
+        $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+        if (!str_starts_with($path, '/')){
+            $path = '/' . $path;
+        }
 
-        if (substr($path, -strlen($contentExt)) === $contentExt){
+        if (str_ends_with($path, $contentExt)){
             $path = substr($path, 0, -strlen($contentExt));
         }
 
         $default = '/index';
-        if (substr($path, -strlen($default)) === $default){
+        if (str_ends_with($path, $default)){
             $path = substr($path, 0, -strlen($default) + 1);
         }
 
         $url = $path;
         if ($absolute){
-            $url = $this->core->getSetting('base_url') . $url;
+            $baseUrl = $this->core->getSetting('base_url');
+            if (str_ends_with($baseUrl, '/')){
+                $baseUrl = rtrim($baseUrl, '/');
+            }
+            $url = $baseUrl . $url;
         }
 
         return $url;

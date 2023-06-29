@@ -18,8 +18,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @package PhileTest
  */
 class RouterTest extends TestCase {
-    private static $root;
-    private $router;
+    private static TemporaryRootDirectory $root;
+    private Router $router;
     private $dispatcher;
 
     public static function setUpBeforeClass() : void{
@@ -43,7 +43,7 @@ class RouterTest extends TestCase {
     private function mockCore(){
         $core = $this->getMockBuilder(Core::class)->disableOriginalConstructor()->getMock();
         $core->method('getSetting')->willReturnMap([
-            ['content_dir', null, self::$root->getRoot()]
+            ['content_dir', null, $this->getContentRoot()]
             , ['base_url', null, 'http://test/']
             , ['content_ext', '.md', '.md']
         ]);
@@ -57,15 +57,29 @@ class RouterTest extends TestCase {
     public function testUrlForPathAbsolute(){
         $page = 'sub/index.md';
         $expected = 'http://test/sub/';
-        $result = $this->router->urlForPath($page);
-        $this->assertEquals($expected, $result);
+        $actual = $this->router->urlForPath($page);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testUrlForPathAbsoluteWithLeadingSlash(){
+        $page = '/sub/index.md';
+        $expected = 'http://test/sub/';
+        $actual = $this->router->urlForPath($page);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testUrlForPageRelative(){
         $page = 'sub/index.md';
         $expected = '/sub/';
-        $result = $this->router->urlForPath($page, false);
-        $this->assertEquals($expected, $result);
+        $actual = $this->router->urlForPath($page, false);
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testUrlForPageRelativeWithLeadingSlash(){
+        $page = '/sub/index.md';
+        $expected = '/sub/';
+        $actual = $this->router->urlForPath($page, false);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testMatchPrePostEvents(){
@@ -78,27 +92,44 @@ class RouterTest extends TestCase {
     }
 
     public function testMatchRootIndex(){
-        $result = $this->router->match('/');
-        $this->assertEquals(self::$root->getRoot() . 'index.md', $result);
+        $actual = $this->router->match('/');
+        $this->assertEquals($this->getExpectedContentPath('index.md'), $actual);
     }
 
     public function testMatchSubDirectoryNoSlash(){
-        $this->assertEquals(self::$root->getRoot() . 'sub/index.md', $this->router->match('/sub'));
+        //Should return null because the request should be
+        //redirected to the url with a trailing slash.
+        $actual = $this->router->match('/sub');
+        $this->assertNull($actual);
     }
 
     public function testMatchSubDirectoryWithSlash(){
-        $this->assertEquals(self::$root->getRoot() . 'sub/index.md', $this->router->match('/sub/'));
+        $actual = $this->router->match('/sub/');
+        $this->assertEquals($this->getExpectedContentPath('sub/index.md'), $actual);
     }
 
     public function testMatchSubSubDirectoryNoSlash(){
-        $this->assertEquals(self::$root->getRoot() . 'sub/page/index.md', $this->router->match('/sub/page'));
+        //Should return null because the request should be
+        //redirected to the url with a trailing slash.
+        $actual = $this->router->match('/sub/page');
+        $this->assertNull($actual);
     }
 
     public function testMatchSubSubDirectoryWithSlash(){
-        $this->assertEquals(self::$root->getRoot() . 'sub/page/index.md', $this->router->match('/sub/page/'));
+        $actual = $this->router->match('/sub/page/');
+        $this->assertEquals($this->getExpectedContentPath('sub/page/index.md'), $actual);
     }
 
     public function testMatchSubPage(){
-        $this->assertEquals(self::$root->getRoot() . 'sub/page/test.md', $this->router->match('/sub/page/test.md'));
+        $actual = $this->router->match('/sub/page/test');
+        $this->assertEquals($this->getExpectedContentPath('sub/page/test.md'), $actual);
+    }
+
+    private function getContentRoot() : string{
+        return self::$root->getRoot() . DIRECTORY_SEPARATOR . 'content';
+    }
+
+    private function getExpectedContentPath(string $path) : string{
+        return $this->getContentRoot() . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
     }
 }
