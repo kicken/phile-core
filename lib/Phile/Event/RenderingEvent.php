@@ -8,10 +8,9 @@
 
 namespace Phile\Event;
 
-
 use Phile\Model\Page;
 use Phile\Service\TemplateInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class RenderingEvent extends Event {
     const BEFORE = 'rendering_before';

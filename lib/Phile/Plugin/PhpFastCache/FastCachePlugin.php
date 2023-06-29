@@ -5,7 +5,6 @@
 
 namespace Phile\Plugin\PhpFastCache;
 
-use Phile\Core\ServiceRegistry;
 use Phile\Plugin\AbstractPlugin;
 use Phpfastcache\CacheManager;
 use Phpfastcache\Config\ConfigurationOption;

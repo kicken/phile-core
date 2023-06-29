@@ -43,17 +43,16 @@
     }
   },
   "require": {
-    "php": ">=7.2",
+    "php": ">=8.0",
     "ext-fileinfo": "*",
     "ext-json": "*",
-    "twig/twig": "^1.15.0",
-    "michelf/php-markdown": ">=1.4",
-    "phpfastcache/phpfastcache": "~9.0",
-    "symfony/yaml": "^2.7",
-    "symfony/event-dispatcher": "^2.1"
+    "twig/twig": "^3.0",
+    "michelf/php-markdown": "^2.0",
+    "phpfastcache/phpfastcache": "^9.0",
+    "symfony/yaml": "^6.0",
+    "symfony/event-dispatcher": "^6.0"
   },
   "require-dev": {
-    "phpdocumentor/phpdocumentor": "^2.8",
     "phing/phing": "^2.14",
     "phpunit/phpunit": "^8.0",
     "squizlabs/php_codesniffer": "^2.3",

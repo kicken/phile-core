@@ -8,8 +8,7 @@
 
 namespace Phile\Event;
 
-
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class RoutingEvent extends Event {
     const BEFORE = 'route_before';

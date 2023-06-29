@@ -2,8 +2,7 @@
 
 namespace Phile\Event;
 
-
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class NotFoundEvent extends Event {
     const AFTER = 'after_not_found';

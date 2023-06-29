@@ -30,6 +30,7 @@ class Meta implements \ArrayAccess {
         return array_key_exists($offset, $this->data);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset){
         return $this->offsetExists($offset) ? $this->data[$offset] : null;
     }

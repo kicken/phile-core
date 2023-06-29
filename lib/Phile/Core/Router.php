@@ -19,7 +19,7 @@ class Router implements RouterInterface {
         $dispatcher = $this->core->getService(EventDispatcherInterface::class);
 
         $event = new RoutingEvent($url);
-        $dispatcher->dispatch(RoutingEvent::BEFORE, $event);
+        $dispatcher->dispatch($event, RoutingEvent::BEFORE);
 
         if ($event->getContentPath() === null){
             $url = $event->getRequestUrl();
@@ -29,7 +29,7 @@ class Router implements RouterInterface {
             }
         }
 
-        $dispatcher->dispatch(RoutingEvent::AFTER, $event);
+        $dispatcher->dispatch($event, RoutingEvent::AFTER);
 
         return $event->getContentPath();
     }

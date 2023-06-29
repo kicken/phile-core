@@ -2,9 +2,8 @@
 
 namespace Phile\Event;
 
-
 use Phile\Model\Page;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class LoadPageContentEvent extends Event {
     const BEFORE = 'load_page_content_before';

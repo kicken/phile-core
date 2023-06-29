@@ -59,7 +59,7 @@ class Core {
         }
 
         $event = new CoreEvent();
-        $dispatcher->dispatch(CoreEvent::LOADED, $event);
+        $dispatcher->dispatch($event,CoreEvent::LOADED);
     }
 
     private function mergeDefaultConfiguration(array $userSettings) : array{
@@ -133,7 +133,7 @@ class Core {
 
     private function handleHttpStatus(int $status) : Response{
         $event = new NotFoundEvent($_SERVER['REQUEST_URI']);
-        $this->getService(EventDispatcherInterface::class)->dispatch(NotFoundEvent::AFTER, $event);
+        $this->getService(EventDispatcherInterface::class)->dispatch($event, NotFoundEvent::AFTER);
 
         $contentFile = $this->getService(RouterInterface::class)->match('/' . $status);
         if ($contentFile === null){
@@ -229,12 +229,12 @@ class Core {
         $page = $this->createPageModel($contentFile);
 
         $event = new RenderingEvent($page, $template, $page->getParsedContent());
-        $dispatcher->dispatch(RenderingEvent::BEFORE, $event);
+        $dispatcher->dispatch($event, RenderingEvent::BEFORE);
 
         $output = $template->render($page);
         $event->setContent($output);
 
-        $dispatcher->dispatch(RenderingEvent::AFTER, $event);
+        $dispatcher->dispatch($event, RenderingEvent::AFTER);
         $output = $event->getContent();
 
         return $output;

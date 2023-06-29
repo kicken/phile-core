@@ -71,8 +71,8 @@ class RouterTest extends TestCase {
     public function testMatchPrePostEvents(){
         $this->dispatcher->expects($this->atLeast(2))->method('dispatch')
             ->withConsecutive(
-                [$this->equalTo(RoutingEvent::BEFORE), $this->isInstanceOf(RoutingEvent::class)]
-                , [$this->equalTo(RoutingEvent::AFTER), $this->isInstanceOf(RoutingEvent::class)]
+                [$this->isInstanceOf(RoutingEvent::class), $this->equalTo(RoutingEvent::BEFORE)]
+                , [$this->isInstanceOf(RoutingEvent::class), $this->equalTo(RoutingEvent::AFTER)]
             );
         $this->router->match('/');
     }

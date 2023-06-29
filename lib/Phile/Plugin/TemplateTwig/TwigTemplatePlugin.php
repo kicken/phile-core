@@ -10,6 +10,9 @@ use Phile\Model\Page;
 use Phile\Plugin\AbstractPlugin;
 use Phile\Repository\Page as PageRepository;
 use Phile\Service\TemplateInterface;
+use Twig\Environment;
+use Twig\Extension\DebugExtension;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Class Plugin
@@ -21,8 +24,8 @@ use Phile\Service\TemplateInterface;
  * @package Phile\Plugin\Phile\TemplateTwig
  */
 class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
-    /** @var \Twig_Environment */
-    private $twig;
+    /** @var Environment */
+    private Environment $twig;
 
     public function initialize() : void{
         $this->twig = $this->createTwigEngine();
@@ -38,18 +41,18 @@ class TwigTemplatePlugin extends AbstractPlugin implements TemplateInterface {
         return $engine->render($template, $vars);
     }
 
-    public function getTwig() : \Twig_Environment{
+    public function getTwig() : Environment{
         return $this->twig;
     }
 
-    protected function createTwigEngine() : \Twig_Environment{
+    protected function createTwigEngine() : Environment{
         $options = $this->config['options'] ?? [];
-        $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
-        $twig = new \Twig_Environment($loader, $options);
+        $loader = new FilesystemLoader($this->getTemplatePath());
+        $twig = new Environment($loader, $options);
 
         // load the twig debug extension if required
         if (!empty($options['debug'])){
-            $twig->addExtension(new \Twig_Extension_Debug());
+            $twig->addExtension(new DebugExtension());
         }
 
         return $twig;

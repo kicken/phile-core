@@ -42,7 +42,7 @@ class Page {
         if (!$this->content){
             $event = new LoadPageContentEvent($this);
             $dispatcher = $this->core->getService(EventDispatcherInterface::class);
-            $dispatcher->dispatch(LoadPageContentEvent::BEFORE, $event);
+            $dispatcher->dispatch($event,LoadPageContentEvent::BEFORE);
 
             $content = $event->getContent();
             if ($content === null){
@@ -50,7 +50,7 @@ class Page {
                 $event->setContent($content);
             }
 
-            $dispatcher->dispatch(LoadPageContentEvent::AFTER, $event);
+            $dispatcher->dispatch($event, LoadPageContentEvent::AFTER);
             $this->content = $event->getContent();
         }
 
@@ -63,13 +63,13 @@ class Page {
             $dispatcher = $this->core->getService(EventDispatcherInterface::class);
 
             $event = new ParsePageContentEvent($this, $content);
-            $dispatcher->dispatch(ParsePageContentEvent::BEFORE, $event);
+            $dispatcher->dispatch($event, ParsePageContentEvent::BEFORE);
 
             $content = $event->getContent();
             $parsedContent = $this->core->getService(ParserInterface::class)->parse($content);
             $event->setParsedContent($parsedContent);
 
-            $dispatcher->dispatch(ParsePageContentEvent::AFTER, $event);
+            $dispatcher->dispatch($event, ParsePageContentEvent::AFTER);
             $this->parsedContent = $event->getParsedContent();
         }
 
@@ -82,13 +82,13 @@ class Page {
             $dispatcher = $this->core->getService(EventDispatcherInterface::class);
 
             $event = new ParsePageMetaEvent($this, $content);
-            $dispatcher->dispatch(ParsePageMetaEvent::BEFORE, $event);
+            $dispatcher->dispatch($event, ParsePageMetaEvent::BEFORE);
 
             $content = $event->getContent();
             $meta = $this->core->getService(MetaParserInterface::class)->parse($content);
             $event->setMeta($meta);
 
-            $dispatcher->dispatch(ParsePageMetaEvent::AFTER, $event);
+            $dispatcher->dispatch($event, ParsePageMetaEvent::AFTER);
             $this->meta = new Meta($event->getMeta());
         }
 
