@@ -33,7 +33,9 @@ class MarkdownPlugin extends AbstractPlugin implements ParserInterface {
     public function parse(string $data) : string{
         $parser = new MarkdownExtra;
         foreach ($this->config as $key => $value){
-            $parser->{$key} = $value;
+            if (property_exists($parser, $key)){
+                $parser->{$key} = $value;
+            }
         }
 
         return $parser->transform($data);
